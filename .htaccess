@@ -1,7 +1,11 @@
 <IfModule mod_rewrite.c>
 
-	RewriteEngine On
+	RewriteEngine On 
 	RewriteBase /feedbacker/
+	
+	RewriteCond %{REQUEST_FILENAME} !-f 
+	RewriteCond %{REQUEST_FILENAME} !-d 
+	RewriteRule ^(.*)$ /feedbacker/index.php?/$1 [L]
 	
 	#Removes access to the system folder by users.
 
@@ -13,8 +17,6 @@
 
 	RewriteCond %{REQUEST_URI} ^system.*
 
-	RewriteRule ^(.*)$ /feedbacker/index.php?/$1 [L]
-
 	#When your application folder isn't in the system folder
 
 	#This snippet prevents user access to the application folder
@@ -25,19 +27,11 @@
 
 	RewriteCond %{REQUEST_URI} ^application.*
 
-	RewriteRule ^(.*)$ /feedbacker/index.php?/$1 [L]
-
 	#Checks to see if the user is attempting to access a valid file,
 
 	#such as an image or css document, if this isn't true it sends the
 
 	#request to index.php
-
-	RewriteCond %{REQUEST_FILENAME} !-f
-
-	RewriteCond %{REQUEST_FILENAME} !-d
-
-	RewriteRule ^(.*)$ /feedbacker/index.php?/$1 [L]
 
 </IfModule>
 
