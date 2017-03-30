@@ -3,9 +3,10 @@
 	RewriteEngine On 
 	RewriteBase /feedbacker/
 	
-	RewriteCond %{REQUEST_FILENAME} !-f 
-	RewriteCond %{REQUEST_FILENAME} !-d 
-	RewriteRule ^(.*)$ /feedbacker/index.php?/$1 [L]
+	RewriteCond $1 !^(index\.php|resources|robots\.txt)
+	RewriteCond %{REQUEST_FILENAME} !-f
+	RewriteCond %{REQUEST_FILENAME} !-d
+	RewriteRule ^(.*)$ index.php/$1 [L,QSA]
 	
 	#Removes access to the system folder by users.
 
