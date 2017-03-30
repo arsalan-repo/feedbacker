@@ -1,8 +1,7 @@
 <IfModule mod_rewrite.c>
 
 	RewriteEngine On
-	#RewriteBase /feedbacker1/
-	RewriteBase /projects/feedbacker1/
+	RewriteBase /feedbacker/
 	
 	#Removes access to the system folder by users.
 
@@ -14,8 +13,7 @@
 
 	RewriteCond %{REQUEST_URI} ^system.*
 
-	#RewriteRule ^(.*)$ /feedbacker1/index.php?/$1 [L]
-	RewriteRule ^(.*)$ /projects/feedbacker1/index.php?/$1 [L]
+	RewriteRule ^(.*)$ /feedbacker/index.php?/$1 [L]
 
 	#When your application folder isn't in the system folder
 
@@ -27,8 +25,7 @@
 
 	RewriteCond %{REQUEST_URI} ^application.*
 
-	#RewriteRule ^(.*)$ /feedbacker1/index.php?/$1 [L]
-	RewriteRule ^(.*)$ /projects/feedbacker1/index.php?/$1 [L]
+	RewriteRule ^(.*)$ /feedbacker/index.php?/$1 [L]
 
 	#Checks to see if the user is attempting to access a valid file,
 
@@ -40,8 +37,7 @@
 
 	RewriteCond %{REQUEST_FILENAME} !-d
 
-	#RewriteRule ^(.*)$ /feedbacker1/index.php?/$1 [L]
-	RewriteRule ^(.*)$ /projects/feedbacker1/index.php?/$1 [L]
+	RewriteRule ^(.*)$ /feedbacker/index.php?/$1 [L]
 
 	
 
@@ -59,6 +55,6 @@
 
 
 
-	ErrorDocument 404 /projects/feedbacker1/index.php
+	ErrorDocument 404 /feedbacker/index.php
 
 </IfModule>
