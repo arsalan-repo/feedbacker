@@ -99,8 +99,8 @@ if($_SERVER['HTTP_HOST']=="localhost") {
 	$db['default'] = array(
 		'dsn'	=> '',
 		'hostname' => 'localhost',
-		'username' => 'feedbacker',
-		'password' => 'Dr5c85!n',
+		'username' => 'root',
+		'password' => '15qPEWbAHkrh',
 		'database' => 'feedbacker',
 		'dbdriver' => 'mysqli',
 		'dbprefix' => 'db_',
