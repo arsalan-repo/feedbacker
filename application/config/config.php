@@ -24,8 +24,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 |
 */
 
-$config['base_url'] = 'http://jusstpost.com/projects/feedbacker/';
-$config['upload_url'] = 'http://jusstpost.com/projects/feedbacker/uploads/';
+$config['base_url'] = 'http://feedbacker.me/';
+$config['upload_url'] = 'http://feedbacker.me/uploads/';
 
 /*
 |--------------------------------------------------------------------------
