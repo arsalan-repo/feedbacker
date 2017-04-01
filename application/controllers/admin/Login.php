@@ -52,7 +52,7 @@ class Login extends MY_Controller {
                 $this->session->set_userdata('mec_admin', $admin_check[0]['id']);
                 $this->session->set_userdata('mec_admin', $admin_check);
 
-                redirect('admin/dashboard', 'refresh');
+                redirect('admin/Dashboard', 'refresh');
             
             } else {
                 $this->session->set_flashdata('error', '<div class="callout callout-danger"><p>Please Enter Valid Credential</p></div>');
