@@ -24,7 +24,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 |
 */
 
-$config['base_url'] = 'http://feedbacker.me/';
+$config['base_url'] = '';
 $config['upload_url'] = 'http://feedbacker.me/uploads/';
 
 /*
