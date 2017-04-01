@@ -23,9 +23,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 | a PHP script and you can easily do that on your own.
 |
 */
-
-$config['base_url'] = 'http://feedbacker.me/';
-$config['upload_url'] = 'http://feedbacker.me/uploads/';
+if($_SERVER['HTTP_HOST']=="localhost") {
+	$config['base_url'] = 'http://localhost/feedbacker/';
+	$config['upload_url'] = 'http://localhost/feedbacker/uploads/';	
+} else {
+	$config['base_url'] = 'http://feedbacker.me/';
+	$config['upload_url'] = 'http://feedbacker.me/uploads/';	
+}
 
 /*
 |--------------------------------------------------------------------------
