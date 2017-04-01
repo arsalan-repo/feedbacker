@@ -7,15 +7,15 @@
         <!-- Tell the browser to be responsive to screen width -->
         <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
         <!-- Bootstrap 3.3.5 -->
-        <link rel="stylesheet" href="<?php echo base_url($frameworks_dir . '/bootstrap/css/bootstrap.min.css')?>">
+        <link rel="stylesheet" href="<?php echo S3_CDN . $frameworks_dir . '/bootstrap/css/bootstrap.min.css'?>">
         <!-- Font Awesome -->
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
         <!-- Ionicons -->
         <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
         <!-- Theme style -->
-        <link rel="stylesheet" href="<?php echo base_url($frameworks_dir . '/adminlte/css/AdminLTE.css')?>">
+        <link rel="stylesheet" href="<?php echo S3_CDN . $frameworks_dir . '/adminlte/css/AdminLTE.css'; ?>">
         <!-- iCheck -->
-        <link rel="stylesheet" href="<?php echo base_url($plugins_dir . '/iCheck/square/blue.css')?>">
+        <link rel="stylesheet" href="<?php echo S3_CDN . $plugins_dir . '/iCheck/square/blue.css';?>">
 
         <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
         <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -29,7 +29,7 @@
           <div class="login-logo">
             <a href="javascript:void(0)">
                 <!--Monika's Eyebrow-->
-                <img src="<?php echo base_url($frameworks_dir . '/adminlte/img/logo.jpg')?>"/>
+                <img src="<?php echo S3_CDN . $frameworks_dir . '/adminlte/img/logo.jpg'; ?>"/>
             </a>
           </div><!-- /.login-logo -->
 
@@ -71,13 +71,13 @@
         </div><!-- /.login-box -->
 
         <!-- jQuery 2.1.4 -->
-        <script src="<?php echo base_url($plugins_dir . '/jQuery/jQuery-2.1.4.min.js')?>"></script>
+        <script src="<?php echo S3_CDN . $plugins_dir . '/jQuery/jQuery-2.1.4.min.js';?>"></script>
         <!-- Bootstrap 3.3.5 -->
-        <script src="<?php echo base_url($frameworks_dir . '/bootstrap/js/bootstrap.min.js')?>"></script>
+        <script src="<?php echo S3_CDN . $frameworks_dir . '/bootstrap/js/bootstrap.min.js';?>"></script>
         <!-- iCheck -->
-        <script src="<?php echo base_url($plugins_dir . '/iCheck/icheck.min.js')?>"></script>
+        <script src="<?php echo S3_CDN . $plugins_dir . '/iCheck/icheck.min.js';?>"></script>
          <!-- jQuery validation -->
-        <script type="text/javascript" src="<?php echo base_url($plugins_dir . '/validation/jquery.validate.min.js'); ?>"></script>
+        <script type="text/javascript" src="<?php echo S3_CDN . $plugins_dir . '/validation/jquery.validate.min.js'; ?>"></script>
 
     </body>
 </html>
@@ -113,7 +113,7 @@
     </div>
 </div>
 
-<script type="text/javascript" src="<?php echo base_url($plugins_dir . '/validation/jquery.validate.min.js') ?>"></script>
+<script type="text/javascript" src="<?php echo S3_CDN . $plugins_dir . '/validation/jquery.validate.min.js'; ?>"></script>
 <script type="text/javascript">
     //validation for edit email formate form
     $(document).ready(function () {
