@@ -1789,9 +1789,9 @@ class V1 extends CI_Controller {
 					
 					$this->s3->putObjectFile($imgdata['full_path'], S3_BUCKET, $config_thumb['source_image'], S3::ACL_PUBLIC_READ);
 					$this->s3->putObjectFile($thumb_file_path.$feedback_thumb, S3_BUCKET, $thumb_file_name, S3::ACL_PUBLIC_READ);
-//					echo $s3file = S3_CDN.$config_thumb['source_image'];
-//					echo "<br/>";
-//					echo $s3file = S3_CDN.$thumb_file_name; exit();
+					echo $s3file = S3_CDN.$config_thumb['source_image'];
+					echo "<br/>";
+					echo $s3file = S3_CDN.$thumb_file_name; exit();
 
                     // Remove File from Local Storage
                     unlink($config_thumb['source_image']);
