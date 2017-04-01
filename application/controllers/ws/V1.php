@@ -1839,9 +1839,8 @@ class V1 extends CI_Controller {
 					$video_path = $video_details['full_path'];
 					$thumb_name = $video_details['raw_name']."_video.jpg";
 					$thumb_path = $config_video['thumb_upload_path'].$thumb_name;
-					
-					echo "ffmpeg -itsoffset -3 -i ".$video_path."  -y -an -sameq -f image2 -s 400x270 ".$thumb_path.""; exit();
-					shell_exec("ffmpeg -itsoffset -3 -i ".$video_path."  -y -an -sameq -f image2 -s 400x270 ".$thumb_path."");
+
+					shell_exec("ffmpeg -itsoffset -3 -i ".$video_path."  -y -an -f image2 -s 400x270 ".$thumb_path."");
 					$feedback_thumb = $thumb_name;
 					
 					// AWS S3 Upload
