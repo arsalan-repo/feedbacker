@@ -3,7 +3,7 @@
 class PushNotifications extends CI_Model {
 
 	// (Android)API access key from Google API's Console.
-	private static $API_ACCESS_KEY = 'AIzaSyBJTi57Sq-CONb1qeTRHcfhHQTiU-09Cdc';
+	private static $API_ACCESS_KEY = 'AIzaSyDI53cBRTUvpowMbY5BIf3W95lhjM6Ssww';
 	// (iOS) Private key's passphrase.
 	private static $passphrase = '';
 	// (Windows Phone 8) The name of our push channel.
