@@ -55,6 +55,22 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             </div>
             <!-- end Users box -->
             
+            <!-- start Titles box -->
+            <div class="col-lg-3 col-xs-6">
+                <!-- small box -->
+                <div class="small-box bg-aqua">
+                    <div class="inner">
+                        <h3><?php echo $titles_count; ?></h3>
+                        <p>Titles</p>
+                    </div>
+                    <div class="icon">
+                        <i class="fa fa-terminal"></i>
+                    </div>
+                    <a href="<?php echo base_url('admin/titles')?>" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
+                </div>
+            </div>
+            <!-- end Titles box -->
+            
             <!-- start Feedbacks box -->
             <div class="col-lg-3 col-xs-6">
                 <!-- small box -->

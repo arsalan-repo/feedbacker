@@ -26,6 +26,13 @@
                 </a>
             </li>
             <!--End Users-->
+            <!--Start Titles-->
+            <li <?php if ($this->uri->segment(2) == 'titles') { ?> class="active treeview" <?php } else { ?> class="treeview"   <?php } ?>>
+                <a href="<?php echo base_url('admin/titles'); ?>">    
+                    <i class="fa fa-terminal"></i><span>Titles</span>
+                </a>
+            </li>
+            <!--End Titles-->
             <!--Start Feedbacks-->
             <li <?php if ($this->uri->segment(2) == 'feedbacks') { ?> class="active treeview" <?php } else { ?> class="treeview"   <?php } ?>>
                 <a href="<?php echo base_url('admin/feedbacks'); ?>">    
@@ -33,6 +40,17 @@
                 </a>
             </li>
             <!--End Feedbacks-->
+            <!--Start Reports-->
+            <li <?php if ($this->uri->segment(1) == 'reports' || $this->uri->segment(1) == '') { ?> class="active treeview" <?php } else { ?> class="treeview"   <?php } ?>>
+                <a href="#">
+                    <i class="fa fa-bars"></i> <span>Reports</span>
+                    <i class="fa fa-angle-left pull-right"></i>
+                </a>
+                <ul class="treeview-menu">
+                    <li><a href="<?php echo base_url('admin/reports/titles'); ?>"><i class="fa fa-circle-o"></i>Search Titles</a></li>
+                </ul>
+            </li>
+            <!--Start Reports-->
             <!--Start Settings -->
             <li <?php if ($this->uri->segment(2) == 'settings') { ?> class="active treeview" <?php } else { ?> class="treeview"   <?php } ?>>
                 <a href="<?php echo base_url('admin/settings'); ?>">    

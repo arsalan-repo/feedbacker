@@ -33,6 +33,9 @@ class Dashboard extends MY_Controller {
 		// Get users count
         $this->data['users_count']=  count($this->common->select_data_by_condition('users', $condition_array=array(),'id'));
 		
+		// Get titles count
+		$this->data['titles_count']=  count($this->common->select_data_by_condition('titles', $condition_array=array(),'title_id'));
+		
 		// Get feedbacks count
 		$this->data['feedbacks_count']=  count($this->common->select_data_by_condition('feedback', $condition_array=array(),'feedback_id'));
         
