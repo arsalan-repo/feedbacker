@@ -1324,106 +1324,111 @@ class V1 extends CI_Controller {
             	$feedback = $this->common->select_data_by_search('feedback', $search_condition, $condition_array = array(), $data, $sortby = '', $orderby = '', $limit = '', $offset = '', $join_str);
 			}
 			
-			if($this->input->post('debug')) {
-				echo "<pre>";
-				print_r($feedback);
+			if(count($feedback) > 0) {
+			
+				if($this->input->post('debug')) {
+					echo "<pre>";
+					print_r($feedback);
+					exit();
+				}
+				
+				$return_array = array();
+				foreach ($feedback as $item) {
+					$return = array();
+					$return['id'] = $item['feedback_id'];
+					$return['title_id'] = $item['title_id'];				
+					$return['title'] = $item['title'];
+					
+					// Get likes for this feedback
+					$contition_array_lk = array('feedback_id' => $item['feedback_id']);
+					$flikes = $this->common->select_data_by_condition('feedback_likes', $contition_array_lk, $data = '*', $short_by = '', $order_by = '', $limit = '', $offset = '', $join_str = array(), $group_by = '');
+					
+					$return['likes'] = "";
+					
+					if(count($flikes) > 1000) {
+						$return['likes'] = (count($flikes)/1000)."k";
+					} else {
+						$return['likes'] = count($flikes);
+					}
+					
+					// Get followers for this title
+					$contition_array_fo = array('title_id' => $item['title_id']);
+					$followings = $this->common->select_data_by_condition('followings', $contition_array_fo, $data = '*', $short_by = '', $order_by = '', $limit = '', $offset = '', $join_str = array(), $group_by = '');
+					
+					$return['followers'] = "";
+					
+					if(count($followings) > 1000) {
+						$return['followers'] = (count($followings)/1000)."k";
+					} else {
+						$return['followers'] = count($followings);
+					}
+					
+					// Check If user liked this feedback
+					$contition_array_li = array('feedback_id' => $item['feedback_id'], 'user_id' => $user_id);
+					$likes = $this->common->select_data_by_condition('feedback_likes', $contition_array_li, $data = '*', $short_by = '', $order_by = '', $limit = '', $offset = '', $join_str = array(), $group_by = '');
+								
+					if(count($likes) > 0) {
+						$return['is_liked'] = TRUE;
+					} else {
+						$return['is_liked'] = FALSE;
+					}
+					
+					// Check If user followed this title
+					$contition_array_ti = array('title_id' => $item['title_id'], 'user_id' => $user_id);
+					$followtitles = $this->common->select_data_by_condition('followings', $contition_array_ti, $data = '*', $short_by = '', $order_by = '', $limit = '', $offset = '', $join_str = array(), $group_by = '');
+								
+					if(count($followtitles) > 0) {
+						$return['is_followed'] = TRUE;
+					} else {
+						$return['is_followed'] = FALSE;
+					}
+					
+					$return['name'] = $item['name'];
+					
+					if(isset($item['photo'])) {
+						$return['user_avatar'] = S3_CDN . 'uploads/user/thumbs/' . $item['photo'];
+					} else {
+						$return['user_avatar'] = ASSETS_URL . 'images/user-avatar.png';
+					}
+					
+					if($item['feedback_img'] !== "") {
+						$return['feedback_img'] = S3_CDN . 'uploads/feedback/main/' . $item['feedback_img'];
+					} else {
+						$return['feedback_img'] = "";
+					}
+	
+					if($item['feedback_thumb'] !== "") {
+						$return['feedback_thumb'] = S3_CDN . 'uploads/feedback/thumbs/' . $item['feedback_thumb'];
+					} else {
+						$return['feedback_thumb'] = "";
+					}
+					
+					if($item['feedback_video'] !== "") {
+						$return['feedback_video'] = S3_CDN . 'uploads/feedback/video/' . $item['feedback_video'];
+						//$return['feedback_thumb'] = S3_CDN . 'uploads/feedback/thumbs/video_thumbnail.png';
+					} else {
+						$return['feedback_video'] = "";
+					}
+	
+					$return['feedback'] = $item['feedback_cont'];
+					$return['location'] = $item['location'];				
+					$return['time'] = $this->common->timeAgo($item['time']);
+	
+					array_push($return_array, $return);
+				}
+	
+				// Null to Empty String
+				array_walk_recursive($return_array, function (&$item, $key) {
+					$item = null === $item ? '' : $item;
+				});
+				
+				$total_records = count($return_array);
+	
+				echo json_encode(array('RESULT' => $return_array, 'TOTAL' => $total_records,'MESSAGE' => 'SUCCESS', 'STATUS' => 1));
 				exit();
+			} else {
+				echo json_encode(array('RESULT' => array(), 'TOTAL' => 0,'MESSAGE' => $this->lang->line('no_record_found'), 'STATUS' => 0));
 			}
-			
-            $return_array = array();
-            foreach ($feedback as $item) {
-                $return = array();
-                $return['id'] = $item['feedback_id'];
-                $return['title_id'] = $item['title_id'];				
-                $return['title'] = $item['title'];
-				
-				// Get likes for this feedback
-				$contition_array_lk = array('feedback_id' => $item['feedback_id']);
-				$flikes = $this->common->select_data_by_condition('feedback_likes', $contition_array_lk, $data = '*', $short_by = '', $order_by = '', $limit = '', $offset = '', $join_str = array(), $group_by = '');
-				
-				$return['likes'] = "";
-				
-				if(count($flikes) > 1000) {
-					$return['likes'] = (count($flikes)/1000)."k";
-				} else {
-					$return['likes'] = count($flikes);
-				}
-				
-				// Get followers for this title
-				$contition_array_fo = array('title_id' => $item['title_id']);
-				$followings = $this->common->select_data_by_condition('followings', $contition_array_fo, $data = '*', $short_by = '', $order_by = '', $limit = '', $offset = '', $join_str = array(), $group_by = '');
-				
-				$return['followers'] = "";
-				
-				if(count($followings) > 1000) {
-					$return['followers'] = (count($followings)/1000)."k";
-				} else {
-					$return['followers'] = count($followings);
-				}
-				
-				// Check If user liked this feedback
-				$contition_array_li = array('feedback_id' => $item['feedback_id'], 'user_id' => $user_id);
-				$likes = $this->common->select_data_by_condition('feedback_likes', $contition_array_li, $data = '*', $short_by = '', $order_by = '', $limit = '', $offset = '', $join_str = array(), $group_by = '');
-							
-				if(count($likes) > 0) {
-					$return['is_liked'] = TRUE;
-				} else {
-					$return['is_liked'] = FALSE;
-				}
-				
-				// Check If user followed this title
-				$contition_array_ti = array('title_id' => $item['title_id'], 'user_id' => $user_id);
-				$followtitles = $this->common->select_data_by_condition('followings', $contition_array_ti, $data = '*', $short_by = '', $order_by = '', $limit = '', $offset = '', $join_str = array(), $group_by = '');
-							
-				if(count($followtitles) > 0) {
-					$return['is_followed'] = TRUE;
-				} else {
-					$return['is_followed'] = FALSE;
-				}
-				
-                $return['name'] = $item['name'];
-				
-				if(isset($item['photo'])) {
-	                $return['user_avatar'] = S3_CDN . 'uploads/user/thumbs/' . $item['photo'];
-				} else {
-					$return['user_avatar'] = ASSETS_URL . 'images/user-avatar.png';
-				}
-				
-				if($item['feedback_img'] !== "") {
-	                $return['feedback_img'] = S3_CDN . 'uploads/feedback/main/' . $item['feedback_img'];
-				} else {
-					$return['feedback_img'] = "";
-				}
-
-                if($item['feedback_thumb'] !== "") {
-                    $return['feedback_thumb'] = S3_CDN . 'uploads/feedback/thumbs/' . $item['feedback_thumb'];
-                } else {
-                    $return['feedback_thumb'] = "";
-                }
-				
-				if($item['feedback_video'] !== "") {
-	                $return['feedback_video'] = S3_CDN . 'uploads/feedback/video/' . $item['feedback_video'];
-					//$return['feedback_thumb'] = S3_CDN . 'uploads/feedback/thumbs/video_thumbnail.png';
-				} else {
-					$return['feedback_video'] = "";
-				}
-
-                $return['feedback'] = $item['feedback_cont'];
-                $return['location'] = $item['location'];				
-                $return['time'] = $this->common->timeAgo($item['time']);
-
-                array_push($return_array, $return);
-            }
-
-            // Null to Empty String
-            array_walk_recursive($return_array, function (&$item, $key) {
-                $item = null === $item ? '' : $item;
-            });
-			
-			$total_records = count($return_array);
-
-			echo json_encode(array('RESULT' => $return_array, 'TOTAL' => $total_records,'MESSAGE' => 'SUCCESS', 'STATUS' => 1));
-            exit();
         }
     }
 	
