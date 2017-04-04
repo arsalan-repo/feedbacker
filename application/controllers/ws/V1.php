@@ -1324,12 +1324,6 @@ class V1 extends CI_Controller {
             	$feedback = $this->common->select_data_by_search('feedback', $search_condition, $condition_array = array(), $data, $sortby = '', $orderby = '', $limit = '', $offset = '', $join_str);
 			}
 			
-			// API LOG
-			$insert_array['post_request'] = json_encode(array('RESULT' => $this->input->post(), 'MESSAGE' => '', 'STATUS' => 0));
-			$insert_array['json_response'] = json_encode(array('RESULT' => $feedback, 'MESSAGE' => '', 'STATUS' => 0));
-			
-			$insert_result = $this->common->insert_data($insert_array, $tablename = 'api_log');
-			
 			if(count($feedback) > 0) {
 				
 				$return_array = array();
@@ -1424,6 +1418,13 @@ class V1 extends CI_Controller {
 				
 				$total_records = count($return_array);
 	
+				// API LOG
+				$insert_array['post_request'] = json_encode(array('RESULT' => $this->input->post(), 'MESSAGE' => '', 'STATUS' => 0));
+				$insert_array['json_response'] = json_encode(array('RESULT' => $feedback, 'MESSAGE' => '', 'STATUS' => 0));
+				$insert_array['log_time'] = date('Y-m-d H:i:s');
+				
+				$insert_result = $this->common->insert_data($insert_array, $tablename = 'api_log');
+			
 				echo json_encode(array('RESULT' => $return_array, 'TOTAL' => $total_records,'MESSAGE' => 'SUCCESS', 'STATUS' => 1));
 				exit();
 			} else {
