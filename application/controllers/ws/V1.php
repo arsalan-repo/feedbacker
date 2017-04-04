@@ -1284,9 +1284,6 @@ class V1 extends CI_Controller {
 	
 	// Get All Feedbacks for a Query string
     function search_results() {
-		echo json_encode(array('RESULT' => array(), 'MESSAGE' => 'Search results not found', 'STATUS' => 0));
-        exit();
-		
         $user_id = $this->input->post('user_id');
         $qs = $this->input->post('qs');		
         $limit = $this->input->post('limit');
