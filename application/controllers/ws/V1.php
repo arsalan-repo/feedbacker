@@ -1324,13 +1324,13 @@ class V1 extends CI_Controller {
             	$feedback = $this->common->select_data_by_search('feedback', $search_condition, $condition_array = array(), $data, $sortby = '', $orderby = '', $limit = '', $offset = '', $join_str);
 			}
 			
-			if(count($feedback) > 0) {
+			// API LOG
+			$insert_array['post_request'] = $this->input->post();
+			$insert_array['json_response'] = $feedback;
 			
-				if($this->input->post('debug')) {
-					echo "<pre>";
-					print_r($feedback);
-					exit();
-				}
+			$insert_result = $this->common->insert_data($insert_array, $tablename = 'api_log');
+			
+			if(count($feedback) > 0) {
 				
 				$return_array = array();
 				foreach ($feedback as $item) {
@@ -1428,6 +1428,7 @@ class V1 extends CI_Controller {
 				exit();
 			} else {
 				echo json_encode(array('RESULT' => array(), 'TOTAL' => 0,'MESSAGE' => $this->lang->line('no_record_found'), 'STATUS' => 0));
+				exit();
 			}
         }
     }
