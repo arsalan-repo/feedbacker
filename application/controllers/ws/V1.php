@@ -1285,11 +1285,18 @@ class V1 extends CI_Controller {
 	// Get All Feedbacks for a Query string
     function search_results() {
         $user_id = $this->input->post('user_id');
+		$debug = $this->input->post('debug');
         $qs = $this->input->post('qs');		
         $limit = $this->input->post('limit');
         $offset = $this->input->post('offset');		
 				
-        if ($user_id == '') {
+        if ($debug == '') {
+            $error = 1;
+            echo json_encode(array('RESULT' => array(), 'MESSAGE' => 'No search result to show', 'STATUS' => 0));
+            exit();
+        }
+		
+		if ($user_id == '') {
             $error = 1;
             echo json_encode(array('RESULT' => array(), 'MESSAGE' => 'Please enter user id', 'STATUS' => 0));
             exit();
