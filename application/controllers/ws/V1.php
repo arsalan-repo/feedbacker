@@ -1420,7 +1420,7 @@ class V1 extends CI_Controller {
 	
 				// API LOG
 				$insert_array['post_request'] = json_encode(array('RESULT' => $this->input->post(), 'MESSAGE' => '', 'STATUS' => 0));
-				$insert_array['json_response'] = json_encode(array('RESULT' => $feedback, 'MESSAGE' => '', 'STATUS' => 0));
+				$insert_array['json_response'] = json_encode(array('RESULT' => $return_array, 'MESSAGE' => '', 'STATUS' => 0));
 				$insert_array['log_time'] = date('Y-m-d H:i:s');
 				
 				$insert_result = $this->common->insert_data($insert_array, $tablename = 'api_log');
