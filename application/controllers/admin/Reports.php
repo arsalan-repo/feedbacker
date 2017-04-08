@@ -26,12 +26,12 @@ class Reports extends MY_Controller {
         $this->output->set_header('Cache-Control: post-check=0, pre-check=0', false);
         $this->output->set_header('Pragma: no-cache');
     }
+	
+	//display search keywords
+    public function search() {
 
-    //display search titles
-    public function titles() {
-
-        $this->data['module_name'] = 'Titles | Search History';
-        $this->data['section_title'] = 'Titles | Search History';
+        $this->data['module_name'] = 'Reports | Search Log';
+        $this->data['section_title'] = 'Reports | Search Log';
 
         $join_str = array(
 			array(
@@ -45,9 +45,10 @@ class Reports extends MY_Controller {
 		$data = 'titles.title_id, titles.title, titles.datetime, count('.$this->db->dbprefix('followings').'.title_id) as followers';
 		
 		$this->data['title_list'] = $this->common->select_data_by_condition('titles', $contition_array = array(), $data, $sortby = 'titles.datetime', $orderby = 'DESC', $limit = '', $offset = '', $join_str, $group_by = 'titles.title_id');
+		$this->data['country_list'] = $this->common->select_data_by_condition('countries', $contition_array = array(), '*', $short_by = 'country_name', $order_by = 'ASC', $limit = '', $offset = '');
 
         /* Load Template */
-        $this->template->admin_render('admin/reports/titles', $this->data);
+        $this->template->admin_render('admin/reports/search', $this->data);
     }
 
     //update the user detail

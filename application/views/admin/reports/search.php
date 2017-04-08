@@ -39,15 +39,16 @@
             <div class="col-sm-6">
                 <label for="country" id="page_title">Country</label>
                 <select name="country" id="country" class="form-control select2">
-                    <option value="None">Select</option>
-                    <option value="United States">United States</option>
-                    <option value="Jordan">Jordan</option>
+                    <option value="">Select</option>
+					<?php foreach ($country_list as $country) { ?>
+                    <option value="<?php echo $country['country_code']; ?>"><?php echo $country['country_name']; ?></option>
+                    <?php } ?>
                 </select>
             </div>
             <div class="col-xs-12">
                 <div class="box">
                     <div class="box-header">
-                        <h3 class="box-title">Titles</h3>
+                        <h3 class="box-title">Keywords</h3>
                         <?php /*?><div class=" pull-right">
                             <a href="<?php echo site_url('admin/title/add'); ?>" class="btn btn-primary pull-right">Add Feedback</a>
                         </div><?php */?>
@@ -59,7 +60,7 @@
                             <thead>
                                 <tr>
                                     <th>ID</th>
-                                    <th>Title</th>
+                                    <th>Keyword</th>
                                     <th>Count</th>
                                     <th>Action</th>
                                 </tr>
@@ -122,7 +123,7 @@
                 <h4 class="modal-title" id="frm_title">Delete Conformation</h4>
             </div>
             <div class="modal-body">
-                Are you sure want to delete this entry?
+                Are you sure want to delete this keyword?
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
