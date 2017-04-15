@@ -52,6 +52,7 @@
                                     <th>ID</th>
                                     <th>Title</th>
                                     <th>Feedback</th>
+                                    <th>Visibility</th>
                                     <th>User</th>
                                     <th>Time</th>
                                     <th>Action</th>
@@ -60,19 +61,19 @@
                             <tbody>
                                 <?php
                                 foreach ($feedback_list as $feedback) {
-                                    /*if ($feedback['status'] == 1) {
-                                        $feedback_status = 'Active';
+                                    if ($feedback['status'] == 1) {
+                                        $feedback_status = 'Published';
                                     } elseif ($feedback['status'] == 0) {
-                                        $feedback_status = 'In Active';
-                                    }*/
+                                        $feedback_status = 'Unpublished';
+                                    }
                                     ?>
                                     <tr>
                                         <td><?php echo $feedback['feedback_id'] ?></td>
                                         <td><?php echo $feedback['title'] ?></td>
                                         <td><?php echo $feedback['feedback_cont'] ?></td>
+                                        <?php ?><td><a href="<?php echo base_url('admin/feedbacks/visibility/' . $feedback['feedback_id'] . '/' . $feedback['status']); ?>" id="edit_btn">
+                                                <?php echo $feedback_status ?> </a></td><?php ?>
                                         <td><?php echo $feedback['name'] ?></td>
-                                        <?php /*?><td><a href="<?php echo base_url('admin/feedbacks/change_status/' . $feedback['id'] . '/' . $feedback['status']); ?>" id="edit_btn">
-                                                <?php echo $feedback_status ?> </a></td><?php */?>
                                         <td><?php echo $feedback['time'] ?></td>
                                         <td>
                                             <a href="<?php echo base_url('admin/feedbacks/edit/' . $feedback['feedback_id']); ?>" id="edit_btn" title="Edit Feedback">

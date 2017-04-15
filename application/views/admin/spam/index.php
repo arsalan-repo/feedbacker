@@ -38,10 +38,10 @@
             <div class="col-xs-12">
                 <div class="box">
                     <div class="box-header">
-                        <h3 class="box-title">Titles</h3>
-                        <div class=" pull-right">
-                            <a href="<?php echo site_url('admin/titles/add'); ?>" class="btn btn-primary pull-right">Add Title</a>
-                        </div>
+                        <h3 class="box-title">Reported as Spam</h3>
+                        <?php /*?><div class=" pull-right">
+                            <a href="<?php echo site_url('admin/feedbacks/add'); ?>" class="btn btn-primary pull-right">Add Feedback</a>
+                        </div><?php */?>
                     </div>
 
                     <!-- /.box-header -->
@@ -51,41 +51,29 @@
                                 <tr>
                                     <th>ID</th>
                                     <th>Title</th>
-                                    <th>Created by</th>
-                                    <th>Followers</th>
+                                    <th>Feedback</th>
+                                    <th>Visibility</th>
+                                    <th>User</th>
                                     <th>Time</th>
-                                    <th>Action</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <?php
-                                foreach ($title_list as $title) {
-                                    /*if ($title['status'] == 1) {
-                                        $title_status = 'Active';
-                                    } elseif ($title['status'] == 0) {
-                                        $title_status = 'In Active';
-                                    }*/
-									
-									/*if(count($title['followers']) > 1000) {
-										$followers = (count($title['followers'])/1000)."k";
-									} else {
-										$followers = count($title['followers']);
-									}*/
+                                foreach ($spam_list as $spam) {
+                                    if ($spam['status'] == 1) {
+                                        $spam_status = 'Published';
+                                    } elseif ($spam['status'] == 0) {
+                                        $spam_status = 'Unpublished';
+                                    }
                                     ?>
                                     <tr>
-                                        <td><?php echo $title['title_id'] ?></td>
-                                        <td><?php echo $title['title'] ?></td>
-                                        <td><?php echo $title['created_by'] ?></td>
-                                        <td><?php echo $title['followers']; ?></td>
-                                        <td><?php echo $title['datetime'] ?></td>
-                                        <td>
-                                            <a href="<?php echo base_url('admin/titles/edit/' . $title['title_id']); ?>" id="edit_btn" title="Edit Feedback">
-                                                <button type="button" class="btn btn-primary" style="margin-top: 3px;"><i class="icon-pencil"></i> <i class="fa fa-pencil-square-o"></i></button>
-                                            </a>
-                                            <a data-href="<?php echo base_url('admin/titles/delete/' . $title['title_id']); ?>" id="delete_btn" data-toggle="modal" data-target="#confirm-delete" href="#" title="Delete Feedback">
-                                                <button type="button" class="btn btn-primary" style="margin-top: 3px;"><i class="icon-trash"></i> <i class="fa fa-ban"></i></button>
-                                            </a>
-                                        </td>
+                                        <td><?php echo $spam['feedback_id'] ?></td>
+                                        <td><?php echo $spam['title'] ?></td>
+                                        <td><?php echo $spam['feedback_cont'] ?></td>
+                                        <?php ?><td><a href="<?php echo base_url('admin/spam/visibility/' . $spam['feedback_id'] . '/' . $spam['status']); ?>" id="edit_btn">
+                                                <?php echo $spam_status ?> </a></td><?php ?>
+                                        <td><?php echo $spam['name'] ?></td>
+                                        <td><?php echo $spam['time'] ?></td>
                                     </tr>
                                     <?php
                                 }
@@ -117,7 +105,7 @@
                 <h4 class="modal-title" id="frm_title">Delete Conformation</h4>
             </div>
             <div class="modal-body">
-                Are you sure want to delete this title?
+                Are you sure want to delete this feedback?
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>

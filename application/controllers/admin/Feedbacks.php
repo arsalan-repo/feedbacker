@@ -48,11 +48,12 @@ class Feedbacks extends MY_Controller {
 			)
 		);
 		
-		$contition_array = array('replied_to' => NULL);
+		// $contition_array = array('replied_to' => NULL, 'deleted' => 0);
+        $contition_array = array('feedback.deleted' => 0);
 		
-		$data = 'feedback_id, feedback.title_id, title, name, photo, feedback_cont, feedback_img, feedback_thumb, feedback_video, replied_to, location, feedback.datetime as time';
+		$data = 'feedback_id, feedback.title_id, title, name, photo, feedback_cont, feedback_img, feedback_thumb, feedback_video, replied_to, location, feedback.status, feedback.datetime as time';
 		
-		$this->data['feedback_list'] = $this->common->select_data_by_condition('feedback', $contition_array = array(), $data, $sortby = 'feedback.datetime', $orderby = 'DESC', $limit = '', $offset = '', $join_str, $group_by = '');
+		$this->data['feedback_list'] = $this->common->select_data_by_condition('feedback', $contition_array, $data, $sortby = 'feedback.datetime', $orderby = 'DESC', $limit = '', $offset = '', $join_str, $group_by = '');
 
         /* Load Template */
         $this->template->admin_render('admin/feedbacks/index', $this->data);
@@ -67,35 +68,18 @@ class Feedbacks extends MY_Controller {
             $this->data['section_title'] = 'View Users';
             $this->data['users_detail'] = $users_detail;
 
-            $this->load->view('admin/users/view', $this->data);
+            $this->load->view('admin/feedbacks/view', $this->data);
         } else {
             $this->session->set_flashdata('error', 'Errorout Occurred. Try Again.');
-            redirect('admin/users', 'refresh');
+            redirect('admin/feedbacks', 'refresh');
         }
     }
     
-    // Reset User Password
-    public function reset_password($id = '') {
-
-        $transactions_detail = $this->common->select_data_by_id('user_transactions', 'user_id', $id, '*');
-        
-        if (count($transactions_detail) > 0) {
-            $this->data['module_name'] = 'View User Transaction';
-            $this->data['section_title'] = 'View User Transaction';
-            $this->data['transactions_detail'] = $transactions_detail;
-
-            $this->load->view('users/transaction', $this->data);
-        } else {
-            $this->session->set_flashdata('error', 'No transaction found.');
-            redirect('admin/users', 'refresh');
-        }
-    }
-    
-    // users status change
-    public function change_status($users_id = '', $status = '') {
-        if ($users_id == '' || $status == '') {
+    // feedbacks status change
+    public function visibility($feedback_id = '', $status = '') {
+        if ($feedback_id == '' || $status == '') {
             $this->session->set_flashdata('error', 'Error Occurred. Try Agaim!');
-            redirect('users', 'refresh');
+            redirect('admin/feedbacks', 'refresh');
         }
         if ($status == 1) {
             $status = 0;
@@ -104,17 +88,17 @@ class Feedbacks extends MY_Controller {
         }
         $update_data = array('status' => $status);
 
-        $update_result = $this->common->update_data($update_data, 'users', 'id', $users_id);
+        $update_result = $this->common->update_data($update_data, 'feedback', 'feedback_id', $feedback_id);
         if ($update_result) {
-            $this->session->set_flashdata('success', 'Users status successfully updated');
-            redirect('admin/users', 'refresh');
+            $this->session->set_flashdata('success', 'Visibility successfully updated');
+            redirect('admin/feedbacks', 'refresh');
         } else {
             $this->session->set_flashdata('error', 'Error Occurred. Try Again!');
-            redirect('admin/users', 'refresh');
+            redirect('admin/feedbacks', 'refresh');
         }
     }
 
-    //add new user
+    //add new feedback
     public function add() {
         //check post and save data
         if ($this->input->post('btn_save')) {
@@ -124,7 +108,7 @@ class Feedbacks extends MY_Controller {
 
             if ($this->form_validation->run() === FALSE){
                 $this->session->set_flashdata('error', validation_errors());
-                redirect('admin/users');
+                redirect('admin/feedbacks');
             } else {
 
                 if ($_FILES['photo']['name']) {
@@ -219,10 +203,10 @@ class Feedbacks extends MY_Controller {
 //                    $this->email->send();
                     
                     $this->session->set_flashdata('success', 'User successfully inserted.');
-                    redirect('admin/users', 'refresh');
+                    redirect('admin/feedbacks', 'refresh');
                 } else {
                     $this->session->set_flashdata('error', 'Error Occurred. Try Again!');
-                    redirect('admin/users', 'refresh');
+                    redirect('admin/feedbacks', 'refresh');
                 }
             }
         }
@@ -232,118 +216,55 @@ class Feedbacks extends MY_Controller {
 		$this->data['country_list'] = $this->common->select_data_by_condition('countries', $contition_array = array(), '*', $short_by = 'country_name', $order_by = 'ASC', $limit = '', $offset = '');
 		
         /* Load Template */
-        $this->template->admin_render('admin/users/add', $this->data);
+        $this->template->admin_render('admin/feedbacks/add', $this->data);
     }
 
-    //update the user detail
+    //update the feedback detail
     public function edit($id = '') {
 
-        if ($this->input->post('user_id')) {
-			
-			$dataimage = '';
-
-            if ($_FILES['photo']['name']) {
-                $config['upload_path'] = $this->config->item('user_main_upload_path');
-                $config['allowed_types'] = 'jpg|png|jpeg|gif';
-                $config['file_name'] = time();
-
-                $this->load->library('upload');
-                $this->upload->initialize($config);
-                //Uploading Image
-                $this->upload->do_upload('photo');
-                //Getting Uploaded Image File Data
-                $imgdata = $this->upload->data();
-                $imgerror = $this->upload->display_errors();
-                if ($imgerror == '') {
-                    //Configuring Thumbnail 
-                    $config_thumb['image_library'] = 'gd2';
-                    $config_thumb['source_image'] = $config['upload_path'] . $imgdata['file_name'];
-                    $config_thumb['new_image'] = $this->config->item('user_thumb_upload_path') . $imgdata['file_name'];
-                    $config_thumb['create_thumb'] = TRUE;
-                    $config_thumb['maintain_ratio'] = FALSE;
-                    $config_thumb['thumb_marker'] = '';
-                    $config_thumb['width'] = $this->config->item('user_thumb_width');
-                    $config_thumb['height'] = $this->config->item('user_thumb_height');
-
-                    //Loading Image Library
-                    $this->load->library('image_lib', $config_thumb);
-                    $dataimage = $imgdata['file_name'];
-                    //Creating Thumbnail
-                    $this->image_lib->resize();
-                    $thumberror = $this->image_lib->display_errors();
-                } else {
-                    $thumberror = '';
-                }
-
-                if ($imgerror != '' || $thumberror != '') {
-                    $error[0] = $imgerror;
-                    $error[1] = $thumberror;
-                } else {
-                    $error = array();
-                }
-
-                if ($error) {
-                    $this->session->set_flashdata('error', $error[0]);
-                    redirect('users', 'refresh');
-                }
-            }
+        if ($this->input->post('feedback_id')) {
           
             $update_array = array(
-				'name' => trim($this->input->post('name')),
-				'email' => trim($this->input->post('email')),
-				'gender' => $this->input->post('gender'),
-				'country' => $this->input->post('country'),
-                'modify_date' => date('Y-m-d H:i:s')
+				'feedback_cont' => trim($this->input->post('feedback_cont'))
             );
 
-			if($this->input->post('dob') !== '') {
-				$update_array['dob'] = $this->input->post('dob');
-			}
-			
-			if($this->input->post('reset_password') != '') {
-				$update_array['password'] = md5($this->input->post('reset_password'));
-			}
-			
-            if($dataimage) {
-                $update_array['photo'] = $dataimage;
-            }
-            
-            $update_result = $this->common->update_data($update_array, 'users', 'id', $this->input->post('user_id'));
+			$update_result = $this->common->update_data($update_array, 'feedback', 'feedback_id', $this->input->post('feedback_id'));
            
             if ($update_result) {
-                $this->session->set_flashdata('success', 'User successfully updated.');
-                redirect('admin/users', 'refresh');
+                $this->session->set_flashdata('success', 'Feedback successfully updated.');
+                redirect('admin/feedbacks', 'refresh');
             } else {
                 $this->session->set_flashdata('error', 'Something went wrong! Please try Again.');
-                redirect('admin/users', 'refresh');
+                redirect('admin/feedbacks', 'refresh');
             }
         }
 
-        $user_detail = $this->common->select_data_by_id('users', 'id', $id, '*');
-        if (!empty($user_detail)) {
-            $this->data['module_name'] = 'User Management';
-            $this->data['section_title'] = 'Edit User';
-            $this->data['user_detail'] = $user_detail;
-			$this->data['country_list'] = $this->common->select_data_by_condition('countries', $contition_array = array(), '*', $short_by = 'country_name', $order_by = 'ASC', $limit = '', $offset = '');
+        $feedback_detail = $this->common->select_data_by_id('feedback', 'feedback_id', $id, '*');
+        if (!empty($feedback_detail)) {
+            $this->data['module_name'] = 'Feedback Management';
+            $this->data['section_title'] = 'Edit Feedback';
+            $this->data['feedback_detail'] = $feedback_detail;
 
             /* Load Template */
-            $this->template->admin_render('admin/users/edit', $this->data);
+            $this->template->admin_render('admin/feedbacks/edit', $this->data);
         } else {
             $this->session->set_flashdata('error', 'Something went wrong! Please try Again.');
-            redirect('admin/users', 'refresh');
+            redirect('admin/feedbacks', 'refresh');
         }
     }
 
-    // users delete
+    // feedbacks delete
     public function delete($id = '') {
-        $delete_result = $this->common->delete_data('users', 'id', $id);
+        // $delete_result = $this->common->delete_data('feedback', 'feedback_id', $id);
+        $update_data = array('deleted' => 1);
+        $update_result = $this->common->update_data($update_data, 'feedback', 'feedback_id', $id);
 
-        if ($delete_result) {
-            $this->session->set_flashdata('success', 'Users successfully deleted');
-            redirect('admin/users', 'refresh');
+        if ($update_result) {
+            $this->session->set_flashdata('success', 'Feedback successfully deleted');
+            redirect('admin/feedbacks', 'refresh');
         } else {
             $this->session->set_flashdata('error', 'Error Occurred. Try Again!');
-            redirect('admin/users', 'refresh');
+            redirect('admin/feedbacks', 'refresh');
         }
     }
 
@@ -389,27 +310,39 @@ class Feedbacks extends MY_Controller {
         return $response;
     }
 
-    public function remove_photo($user_id = '') {
-        if ($user_id != '') {
+    public function remove_photo($feedback_id = '') {
+        if ($feedback_id != '') {
 
-            $get_image = $this->common->select_data_by_id('users', 'id', $user_id, $data = 'photo', $join_str = array());
-            $image_name = $get_image[0]['photo'];
+            $update_array['feedback_img'] = '';
+            $update_array['feedback_thumb'] = '';
 
-            $main_image = $this->config->item('user_main_upload_path') . $image_name;
-            $thumb_image = $this->config->item('user_thumb_upload_path') . $image_name;
+            $update_result = $this->common->update_data($update_data, 'feedback', 'feedback_id', $id);
 
-            if (file_exists($main_image)) {
-                unlink($main_image);
+            if ($update_result) {
+                $this->session->set_flashdata('success', 'Photo successfully removed.');
+                redirect('admin/feedbacks/edit/' . $user_id);
+            } else {
+                $this->session->set_flashdata('error', 'Error Occurred. Try Again!');
+                redirect('admin/feedbacks', 'refresh');
             }
-            if (file_exists($thumb_image)) {
-                unlink($thumb_image);
+        }
+    }
+
+    public function remove_video($user_id = '') {
+        if ($feedback_id != '') {
+
+            $update_array['feedback_video'] = '';
+            $update_array['feedback_thumb'] = '';
+            
+            $update_result = $this->common->update_data($update_data, 'feedback', 'feedback_id', $id);
+
+            if ($update_result) {
+                $this->session->set_flashdata('success', 'Video successfully removed.');
+                redirect('admin/feedbacks/edit/' . $user_id);
+            } else {
+                $this->session->set_flashdata('error', 'Error Occurred. Try Again!');
+                redirect('admin/feedbacks', 'refresh');
             }
-
-            $update_array['photo'] = '';
-            $this->common->update_data($update_array, 'users', 'id', $user_id);
-
-            $this->session->set_flashdata('success', 'Photo successfully removed.');
-            redirect('admin/users/edit/' . $user_id);
         }
     }
 

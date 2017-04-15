@@ -14,6 +14,10 @@ class Users extends MY_Controller {
         //$GLOBALS['record_per_page']=10;
         //site setting details
         $this->load->model('common');
+
+        // Load Library
+        $this->load->library('s3');
+
         $site_name_values = $this->common->select_data_by_id('settings', 'setting_id', '1', '*');
 
         $this->data['site_name'] = $site_name = $site_name_values[0]['setting_value'];
@@ -33,7 +37,8 @@ class Users extends MY_Controller {
         $this->data['module_name'] = 'Users';
         $this->data['section_title'] = 'Users';
 
-        $this->data['user_list'] = $this->common->select_data_by_condition('users', $contition_array = array(), '*', $short_by = '', $order_by = '', $limit = '', $offset = '');
+        $contition_array = array('deleted' => 0);
+        $this->data['user_list'] = $this->common->select_data_by_condition('users', $contition_array, '*', $short_by = 'id', $order_by = 'ASC', $limit = '', $offset = '');
 
         /* Load Template */
         $this->template->admin_render('admin/users/index', $this->data);
@@ -76,7 +81,7 @@ class Users extends MY_Controller {
     public function change_status($users_id = '', $status = '') {
         if ($users_id == '' || $status == '') {
             $this->session->set_flashdata('error', 'Error Occurred. Try Agaim!');
-            redirect('users', 'refresh');
+            redirect('admin/users', 'refresh');
         }
         if ($status == 1) {
             $status = 0;
@@ -108,23 +113,28 @@ class Users extends MY_Controller {
                 redirect('admin/users');
             } else {
 
-                if ($_FILES['photo']['name']) {
+                if (isset($_FILES['photo']['name']) && $_FILES['photo']['name'] != '') {
                     $config['upload_path'] = $this->config->item('user_main_upload_path');
+                    $config['thumb_upload_path'] = $this->config->item('user_thumb_upload_path');
                     $config['allowed_types'] = 'jpg|png|jpeg|gif';
                     $config['file_name'] = time();
 
                     $this->load->library('upload');
                     $this->upload->initialize($config);
+                    
                     //Uploading Image
                     $this->upload->do_upload('photo');
+                    
                     //Getting Uploaded Image File Data
                     $imgdata = $this->upload->data();
                     $imgerror = $this->upload->display_errors();
+                    
                     if ($imgerror == '') {
+                        
                         //Configuring Thumbnail 
                         $config_thumb['image_library'] = 'gd2';
                         $config_thumb['source_image'] = $config['upload_path'] . $imgdata['file_name'];
-                        $config_thumb['new_image'] = $this->config->item('user_thumb_upload_path') . $imgdata['file_name'];
+                        $config_thumb['new_image'] = $config['thumb_upload_path'] . $imgdata['file_name'];
                         $config_thumb['create_thumb'] = TRUE;
                         $config_thumb['maintain_ratio'] = FALSE;
                         $config_thumb['thumb_marker'] = '';
@@ -134,9 +144,24 @@ class Users extends MY_Controller {
                         //Loading Image Library
                         $this->load->library('image_lib', $config_thumb);
                         $dataimage = $imgdata['file_name'];
+                        
                         //Creating Thumbnail
                         $this->image_lib->resize();
                         $thumberror = $this->image_lib->display_errors();
+                        
+                        // AWS S3 Upload
+                        $thumb_file_path = str_replace("main", "thumbs", $imgdata['file_path']);
+                        $thumb_file_name = $config['thumb_upload_path'] . $imgdata['raw_name'].$imgdata['file_ext'];
+                        
+                        $this->s3->putObjectFile($imgdata['full_path'], S3_BUCKET, $config_thumb['source_image'], S3::ACL_PUBLIC_READ);
+                        $this->s3->putObjectFile($thumb_file_path.$dataimage, S3_BUCKET, $thumb_file_name, S3::ACL_PUBLIC_READ);
+                     // echo $s3file = S3_CDN.$config_thumb['source_image'];
+                     // echo "<br/>";
+                     // echo $s3file = S3_CDN.$thumb_file_name; exit();
+
+                        // Remove File from Local Storage
+                        unlink($config_thumb['source_image']);
+                        unlink($thumb_file_name);
                     } else {
                         $thumberror = '';
                     }
@@ -145,6 +170,15 @@ class Users extends MY_Controller {
                         $error[0] = $imgerror;
                         $error[1] = $thumberror;
                     } else {
+                        // $main_old_file = $this->config->item('user_main_upload_path') . $user_data[0]['photo'];
+                        // $thumb_old_file = $this->config->item('user_thumb_upload_path') . $user_data[0]['photo'];
+
+                        /*    if (file_exists($main_old_file)) {
+                          unlink($main_old_file);
+                          }
+                          if (file_exists($thumb_old_file)) {
+                          unlink($thumb_old_file);
+                          } */
                         $error = array();
                     }
 
@@ -223,23 +257,28 @@ class Users extends MY_Controller {
 			
 			$dataimage = '';
 
-            if ($_FILES['photo']['name']) {
+            if (isset($_FILES['photo']['name']) && $_FILES['photo']['name'] != '') {
                 $config['upload_path'] = $this->config->item('user_main_upload_path');
+                $config['thumb_upload_path'] = $this->config->item('user_thumb_upload_path');
                 $config['allowed_types'] = 'jpg|png|jpeg|gif';
                 $config['file_name'] = time();
 
                 $this->load->library('upload');
                 $this->upload->initialize($config);
+                
                 //Uploading Image
                 $this->upload->do_upload('photo');
+                
                 //Getting Uploaded Image File Data
                 $imgdata = $this->upload->data();
                 $imgerror = $this->upload->display_errors();
+                
                 if ($imgerror == '') {
+                    
                     //Configuring Thumbnail 
                     $config_thumb['image_library'] = 'gd2';
                     $config_thumb['source_image'] = $config['upload_path'] . $imgdata['file_name'];
-                    $config_thumb['new_image'] = $this->config->item('user_thumb_upload_path') . $imgdata['file_name'];
+                    $config_thumb['new_image'] = $config['thumb_upload_path'] . $imgdata['file_name'];
                     $config_thumb['create_thumb'] = TRUE;
                     $config_thumb['maintain_ratio'] = FALSE;
                     $config_thumb['thumb_marker'] = '';
@@ -249,9 +288,24 @@ class Users extends MY_Controller {
                     //Loading Image Library
                     $this->load->library('image_lib', $config_thumb);
                     $dataimage = $imgdata['file_name'];
+                    
                     //Creating Thumbnail
                     $this->image_lib->resize();
                     $thumberror = $this->image_lib->display_errors();
+                    
+                    // AWS S3 Upload
+                    $thumb_file_path = str_replace("main", "thumbs", $imgdata['file_path']);
+                    $thumb_file_name = $config['thumb_upload_path'] . $imgdata['raw_name'].$imgdata['file_ext'];
+                    
+                    $this->s3->putObjectFile($imgdata['full_path'], S3_BUCKET, $config_thumb['source_image'], S3::ACL_PUBLIC_READ);
+                    $this->s3->putObjectFile($thumb_file_path.$dataimage, S3_BUCKET, $thumb_file_name, S3::ACL_PUBLIC_READ);
+                 // echo $s3file = S3_CDN.$config_thumb['source_image'];
+                 // echo "<br/>";
+                 // echo $s3file = S3_CDN.$thumb_file_name; exit();
+
+                    // Remove File from Local Storage
+                    unlink($config_thumb['source_image']);
+                    unlink($thumb_file_name);
                 } else {
                     $thumberror = '';
                 }
@@ -260,6 +314,15 @@ class Users extends MY_Controller {
                     $error[0] = $imgerror;
                     $error[1] = $thumberror;
                 } else {
+                    // $main_old_file = $this->config->item('user_main_upload_path') . $user_data[0]['photo'];
+                    // $thumb_old_file = $this->config->item('user_thumb_upload_path') . $user_data[0]['photo'];
+
+                    /*    if (file_exists($main_old_file)) {
+                      unlink($main_old_file);
+                      }
+                      if (file_exists($thumb_old_file)) {
+                      unlink($thumb_old_file);
+                      } */
                     $error = array();
                 }
 
@@ -317,9 +380,11 @@ class Users extends MY_Controller {
 
     // users delete
     public function delete($id = '') {
-        $delete_result = $this->common->delete_data('users', 'id', $id);
+        //$delete_result = $this->common->delete_data('users', 'id', $id);
+        $update_data = array('deleted' => 1);
+        $update_result = $this->common->update_data($update_data, 'users', 'id', $id);
 
-        if ($delete_result) {
+        if ($update_result) {
             $this->session->set_flashdata('success', 'Users successfully deleted');
             redirect('admin/users', 'refresh');
         } else {

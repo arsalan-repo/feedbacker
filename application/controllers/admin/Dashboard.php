@@ -101,16 +101,16 @@ class Dashboard extends MY_Controller {
                 $update_result=  $this->common->update_data($update_array,'admin','id',1);
                 if($update_result){
                     $this->session->set_flashdata('success','Your password is successfully changed.');
-                    redirect('dashboard/change_password','refresh');
+                    redirect('admin/dashboard/change_password','refresh');
                 }
                 else{
                     $this->session->set_flashdata('error','Error Occurred. Try Again!');
-                    redirect('dashboard/change_password','refresh');
+                    redirect('admin/dashboard/change_password','refresh');
                 }
             }
             else{
                 $this->session->set_flashdata('error','Old password does not match');
-                redirect('dashboard/change_password','refresh');
+                redirect('admin/dashboard/change_password','refresh');
             }
         }
         

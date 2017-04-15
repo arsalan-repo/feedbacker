@@ -54,7 +54,9 @@
                                     <th>Photo</th>
                                     <th>Email Address</th>
                                     <th>Status</th>
-                                    <th>Created Date</th>
+                                    <th>Gender</th>
+                                    <th>Country</th>
+                                    <th>Birth Date</th>
                                     <th>Action</th>
                                 </tr>
                             </thead>
@@ -71,14 +73,16 @@
                                         <td><?php echo $user['id'] ?></td>
                                         <td><?php echo $user['name'] ?></td>
                                         <?php if($user['photo']) { ?>
-                                            <td><img src="<?php echo base_url('uploads/user/thumbs/' . $user['photo']) ?>" width='50' height="50"></td>
+                                            <td><img src="<?php echo S3_CDN . 'uploads/user/thumbs/' . $user['photo']; ?>" width='50' height="50"></td>
                                         <?php } else { ?>
-                                            <td><img src="<?php echo base_url('uploads/user/thumbs/1486837202_profle.png')?>" width='50' height="50"></td>
+                                            <td><img src="<?php echo ASSETS_URL . 'images/user-avatar.png'; ?>" width='50' height="50"></td>
                                         <?php } ?>
                                         <td><?php echo $user['email'] ?></td>
                                         <td><a href="<?php echo base_url('admin/users/change_status/' . $user['id'] . '/' . $user['status']); ?>" id="edit_btn">
                                                 <?php echo $user_status ?> </a></td>
-                                        <td><?php echo $user['create_date'] ?></td>
+                                        <td><?php echo $user['gender'] ?></td>
+                                        <td><?php echo $user['country'] ?></td>
+                                        <td><?php echo ($user['dob']) ? $user['dob'] : 'N/A' ?></td>
                                         <td>
                                             <a href="<?php echo base_url('admin/users/edit/' . $user['id']); ?>" id="edit_btn" title="Edit User">
                                                 <button type="button" class="btn btn-primary" style="margin-top: 3px;"><i class="icon-pencil"></i> <i class="fa fa-pencil-square-o"></i></button>

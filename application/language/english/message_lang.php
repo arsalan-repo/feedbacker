@@ -48,6 +48,8 @@ $lang['success_like_feedback'] = 'You liked this feedback';
 $lang['success_unlike_feedback'] = 'You disliked this feedback';
 $lang['success_follow_title'] = 'You followed this title';
 $lang['success_unfollow_title'] = 'You unfollow this title';
+$lang['success_report_spam'] = 'Thank you, this feedback has been reported';
+$lang['success_undo_report'] = 'Your action has been undone';
 $lang['success_language_set'] = 'You preffered language has been set';
 
 $lang['success_feedback_submit'] = 'Thank you for posting your feedback';

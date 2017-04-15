@@ -46,7 +46,7 @@
                         <table id="example1" class="table table-bordered table-striped">
                             <thead>
                                 <tr>
-                                    <th>Title</th>
+                                    <th>Key</th>
                                     <th>Value</th>
                                     <th>Action</th>
                                 </tr>
@@ -54,7 +54,7 @@
                             <tbody>
                                 <?php foreach ($setting_list as $setting) { ?>
                                     <tr>
-                                        <td><?php echo $setting['setting_name'] ?></td>
+                                        <td><?php echo $setting['setting_key'] ?></td>
                                         <td><?php echo substr($setting['setting_value'],'0','80')?></td>
                                         <td>
                                             <a href="<?php echo base_url() . 'admin/settings/edit/' . $setting['setting_id']; ?>" id="edit_btn" title="Edit Setting">

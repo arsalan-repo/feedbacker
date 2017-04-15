@@ -56,7 +56,7 @@
                         <?php if($user_detail[0]['photo']) { ?>
                         <div class="form-group col-sm-10">
                             <label for="photo" id="page_title"></label>
-                            <img src="<?php echo base_url() . 'uploads/user/thumbs/' . $user_detail[0]['photo'] ?>" alt="<?php echo $user_detail[0]['photo'] ?>" width="180">
+                            <img src="<?php echo S3_CDN . 'uploads/user/thumbs/' . $user_detail[0]['photo']; ?>" alt="<?php echo $user_detail[0]['photo'] ?>" width="180">
                             <input type="hidden" name="old_image" value="<?php echo $user_detail[0]['photo']; ?>" />
                             <a href="<?php echo base_url('admin/users/remove_photo/' . $user_detail[0]['id']) ?>" title="Remove Photo" style="margin: 0 auto; width: 120px;" >Remove Photo</a>
                         </div>

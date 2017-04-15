@@ -123,7 +123,6 @@ class Settings extends MY_Controller {
             $settings_array = array(
                 
                 'setting_id' => $this->input->post('setting_id'),
-                'setting_name' => $this->input->post('setting_name'),
                 'setting_value' => $this->input->post('setting_value'),
 
             );

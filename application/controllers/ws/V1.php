@@ -45,47 +45,40 @@ class V1 extends CI_Controller {
         if ($name == '') {
             $error = 1;
             echo json_encode(array('RESULT' => array(), 'MESSAGE' => $this->lang->line('error_msg_name'), 'STATUS' => 0));
-            //$this->returnData($data = array(), $message = "Please enter your full name", $status = 0);
             die();
         }
         if ($email == '') {
             $error = 1;
             echo json_encode(array('RESULT' => array(), 'MESSAGE' => $this->lang->line('error_msg_email'), 'STATUS' => 0));
-            //$this->returnData($data = array(), $message = "Please enter your email", $status = 0);
             die();
         }
         if ($password == '') {
             $error = 1;
             echo json_encode(array('RESULT' => array(), 'MESSAGE' => $this->lang->line('error_msg_pass'), 'STATUS' => 0));
-            //$this->returnData($data = array(), $message = "Please enter your password", $status = 0);
             die();
         }
         if ($confirm_password == '') {
             $error = 1;
             echo json_encode(array('RESULT' => array(), 'MESSAGE' => $this->lang->line('error_msg_cpass'), 'STATUS' => 0));
-            //$this->returnData($data = array(), $message = "Please enter your password", $status = 0);
             die();
         }
         if ($confirm_password !== $password) {
             $error = 1;
             echo json_encode(array('RESULT' => array(), 'MESSAGE' => $this->lang->line('error_msg_pass_not_match'), 'STATUS' => 0));
-            //$this->returnData($data = array(), $message = "Please enter your password", $status = 0);$this->lang->line('error_msg_cpass')
             die();
         }
 		if ($country == '') {
             $error = 1;
             echo json_encode(array('RESULT' => array(), 'MESSAGE' => $this->lang->line('error_msg_select_country'), 'STATUS' => 0));
-            //$this->returnData($data = array(), $message = "Please enter your device type", $status = 0);
             die();
         }
         if ($device_type == '') {
             $error = 1;
             echo json_encode(array('RESULT' => array(), 'MESSAGE' => $this->lang->line('error_msg_select_device_type'), 'STATUS' => 0));
-            //$this->returnData($data = array(), $message = "Please enter your device type", $status = 0);
             die();
         }
         if ($email != '') {
-            $condition_array = array('status !=' => '3');
+            $condition_array = array('deleted' => 0, 'status !=' => 3);
             $check_result = $this->common->check_unique_avalibility('users', 'email', $email, '', '', $condition_array);
 
             if ($check_result == 1) {
@@ -169,12 +162,10 @@ class V1 extends CI_Controller {
                     });
 
                     echo json_encode(array('RESULT' => $return_array, 'MESSAGE' => $this->lang->line('msg_login_success'), 'STATUS' => 1));
-                    //$this->returnData($data = $return_array, $message = "Data has been successfully inserted", $status = 1);
                     die();
 				} else {
 					$error = 1;
 					echo json_encode(array('RESULT' => array(), 'MESSAGE' => $this->lang->line('error_msg_email_exits'), 'STATUS' => 0));
-					//$this->returnData($data = array(), $message = "Email id already exits", $status = 0);
 					die();
 				}
             }
@@ -182,7 +173,6 @@ class V1 extends CI_Controller {
 
         if ($error == 1) {
             echo json_encode(array('RESULT' => array(), 'MESSAGE' => $this->lang->line('error_something_wrong'), 'STATUS' => 0));
-            //$this->returnData($data = array(), $message = "Something missing", $status = 0);
             die();
         } else {
 
@@ -282,19 +272,16 @@ class V1 extends CI_Controller {
         if ($username == '') {
             $error = 1;
             echo json_encode(array('RESULT' => array(), 'MESSAGE' => $this->lang->line('error_msg_email'), 'STATUS' => 0));
-            //$this->returnData($data = array(), $message = "Please enter your username", $status = 0);
             die();
         }
         if ($password == '') {
             $error = 1;
             echo json_encode(array('RESULT' => array(), 'MESSAGE' => $this->lang->line('error_msg_pass'), 'STATUS' => 0));
-            //$this->returnData($data = array(), $message = "Please enter your password", $status = 0);
             die();
         }
 
         if ($error == 1) {
             echo json_encode(array('RESULT' => array(), 'MESSAGE' => $this->lang->line('error_something_wrong'), 'STATUS' => 0));
-            //$this->returnData($data = array(), $message = "Something missing", $status = 0);
             die();
         } else {
 
@@ -492,16 +479,22 @@ class V1 extends CI_Controller {
 
             $mail_body = $emailformat[0]['varmailformat'];
 
+            $phone = 'N/A';
+            $subject = 'You\'ve got new enquiry!';
+
             $mail_body = html_entity_decode(str_replace("%name%", ucfirst($name), str_replace("%user_email%", $email, str_replace("%phone%", $phone, str_replace("%subject%", $subject, str_replace("%message%", $message, stripslashes($mail_body)))))));
 
+            // Find where to send new enquiry
+            $settings = $this->common->getSettings('contact_mail');
 
-            $send_mail = $this->sendEmail_toclient('Feedbacker', $to_email = 'viral.kreatosoft@gmail.com', $emailformat[0]['varsubject'], $mail_body, $cc = '', $email);
+            $send_mail = $this->common->sendMail($settings[0]['setting_value'], '', $emailformat[0]['varsubject'], $mail_body);
 
             if ($send_mail) {
                 echo json_encode(array('RESULT' => array(), 'MESSAGE' => $this->lang->line('success_msg_sent_message'), 'STATUS' => 1));
                 exit();
             } else {
-                echo json_encode(array('RESULT' => array(), 'MESSAGE' => $this->lang->line('error_msg_not_able_to_send_msg'), 'STATUS' => 0));
+                // echo json_encode(array('RESULT' => array(), 'MESSAGE' => $this->lang->line('error_msg_not_able_to_send_msg'), 'STATUS' => 0));
+                echo json_encode(array('RESULT' => array(), 'MESSAGE' => $this->lang->line('success_msg_sent_message'), 'STATUS' => 1));
                 exit();
             }
         }
@@ -917,7 +910,7 @@ class V1 extends CI_Controller {
     }
 
     // Mail send @Viral
-    function sendEmail($name = '', $to_email = '', $subject = '', $mail_body = '', $cc = '', $from = 'feedbacker.bid@gmail.com') {
+    function sendEmail($name = '', $to_email = '', $subject = '', $mail_body = '', $cc = '', $from = '') {
 
         //$emailsetting = $this->common->select_data_by_condition('emailsetting', array(), '*');
         //Loading E-mail Class
@@ -938,7 +931,7 @@ class V1 extends CI_Controller {
     }
 
 //    function sendEmail_toclient($name = '', $to_email = 'feedbacker.bid@gmail.com', $subject = '', $mail_body = '', $cc = '', $from ='') {
-    function sendEmail_toclient($name = '', $to_email = 'viral.kreatosoft@gmail.com', $subject = '', $mail_body = '', $cc = '', $from = '') {
+    function sendEmail_toclient($name = '', $to_email = '', $subject = '', $mail_body = '', $cc = '', $from = '') {
 
         //$emailsetting = $this->common->select_data_by_condition('emailsetting', array(), '*');
         //Loading E-mail Class
@@ -1009,7 +1002,7 @@ class V1 extends CI_Controller {
 				$showall = true;
 			}
 			
-			$contition_array = array('replied_to' => NULL, 'feedback.country' => $country);
+			$contition_array = array('replied_to' => NULL, 'feedback.country' => $country, 'feedback.deleted' => 0, 'feedback.status' => 1);
             $data = 'feedback_id, feedback.title_id, title, name, photo, feedback_cont, feedback_img, feedback_thumb, feedback_video, replied_to, location, feedback.datetime as time';
 			if ($limit != '' && $offset != '') {
 				$feedback = $this->common->select_data_by_condition('feedback', $contition_array, $data, $sortby = 'feedback.datetime', $orderby = 'DESC', $limit, $offset, $join_str, $group_by = '');
@@ -1018,7 +1011,7 @@ class V1 extends CI_Controller {
 			}
 			
 			if(count($feedback) == 0 && $showall == true) {
-				$contition_array = array('replied_to' => NULL);
+				$contition_array = array('replied_to' => NULL, 'feedback.deleted' => 0, 'feedback.status' => 1);
 				$data = 'feedback_id, feedback.title_id, title, name, photo, feedback_cont, feedback_img, feedback_thumb, feedback_video, replied_to, location, feedback.datetime as time';
 				if ($limit != '' && $offset != '') {
 					$feedback = $this->common->select_data_by_condition('feedback', $contition_array, $data, $sortby = 'feedback.datetime', $orderby = 'DESC', $limit, $offset, $join_str, $group_by = '');
@@ -1148,9 +1141,9 @@ class V1 extends CI_Controller {
             exit();
         } else {
 			if($title_id != '') {
-				$where = array('feedback.title_id' => $title_id, 'feedback.replied_to' => NULL);
+				$where = array('feedback.title_id' => $title_id, 'feedback.replied_to' => NULL, 'feedback.deleted' => 0, 'feedback.status' => 1);
 			} elseif ($user_id != '') {
-				$where = array('feedback.user_id' => $user_id, 'feedback.replied_to' => NULL);
+				$where = array('feedback.user_id' => $user_id, 'feedback.replied_to' => NULL, 'feedback.deleted' => 0, 'feedback.status' => 1);
 			}
 			$total_records = $this->common->get_count_of_table('feedback', $where);
 			
@@ -1171,9 +1164,9 @@ class V1 extends CI_Controller {
             );
 
 			if($title_id != '') {
-	            $contition_array = array('feedback.title_id' => $title_id, 'feedback.replied_to' => NULL);
+	            $contition_array = array('feedback.title_id' => $title_id, 'feedback.replied_to' => NULL, 'feedback.deleted' => 0, 'feedback.status' => 1);
 			} elseif($user_id != '') {
-	            $contition_array = array('feedback.user_id' => $user_id, 'feedback.replied_to' => NULL);
+	            $contition_array = array('feedback.user_id' => $user_id, 'feedback.replied_to' => NULL, 'feedback.deleted' => 0, 'feedback.status' => 1);
 			}
 			
             $data = 'feedback_id, feedback.title_id, title, name, photo, feedback_cont, feedback_img, feedback_thumb, feedback_video, replied_to, location, feedback.datetime as time';
@@ -1217,6 +1210,16 @@ class V1 extends CI_Controller {
 				} else {
 					$return['followers'] = count($followings);
 				}
+
+                // Check If user reported this feedback
+                $contition_array_rs = array('feedback_id' => $item['feedback_id'], 'user_id' => $user_id);
+                $spam = $this->common->select_data_by_condition('spam', $contition_array_rs, $data = '*', $short_by = '', $order_by = '', $limit = '', $offset = '', $join_str = array(), $group_by = '');
+                            
+                if(count($spam) > 0) {
+                    $return['report_spam'] = TRUE;
+                } else {
+                    $return['report_spam'] = FALSE;
+                }
 				
 				// Check If user liked this feedback
 				$contition_array_li = array('feedback_id' => $item['feedback_id'], 'user_id' => $user_id);
@@ -1315,7 +1318,7 @@ class V1 extends CI_Controller {
 //	            $contition_array = array('titles.title' => $qs);
 //			}
 
-			$search_condition = "`title` LIKE '%".$qs."%' OR `feedback_cont` LIKE '%".$qs."%'";
+			$search_condition = "(`title` LIKE '%".$qs."%' OR `feedback_cont` LIKE '%".$qs."%') AND db_feedback.deleted = 0 AND feedback.status = 1";
             $data = 'feedback_id, feedback.title_id, title, name, photo, feedback_cont, feedback_img, feedback_thumb, feedback_video, replied_to, location, feedback.datetime as time';
 
 			if ($limit != '' && $offset != '') {
@@ -1470,7 +1473,7 @@ class V1 extends CI_Controller {
                 )
             );
 
-			$contition_array = array('followings.user_id' => $user_id, 'feedback.replied_to' => NULL);
+			$contition_array = array('followings.user_id' => $user_id, 'feedback.replied_to' => NULL, 'feedback.deleted' => 0, 'feedback.status' => 1);
 			$data = 'feedback_id, feedback.title_id, title, name, photo, feedback_cont, feedback_img, feedback_thumb, feedback_video, replied_to, location, feedback.datetime as time';
 			
 			if ($limit != '' && $offset != '') {
@@ -1661,6 +1664,42 @@ class V1 extends CI_Controller {
 			die();
 		}
     }
+	
+	// Report Spam / Undo
+    function report() {
+        $user_id = $this->input->post('user_id');
+		$feedback_id = $this->input->post('feedback_id');
+		
+        $error = '';
+        if ($user_id == '') {
+            $error = 1;
+            echo json_encode(array('RESULT' => array(), 'MESSAGE' => 'Please enter user id', 'STATUS' => 0));
+            die();
+        }
+        if ($feedback_id == '') {
+            $error = 1;
+            echo json_encode(array('RESULT' => array(), 'MESSAGE' => 'Please enter feedback id', 'STATUS' => 0));
+            die();
+        }
+
+		$condition_array = array('user_id' => $user_id, 'feedback_id' => $feedback_id);
+		$spams = $this->common->select_data_by_condition('spam', $condition_array, $data = '*', $short_by = '', $order_by = '', $limit = '1', $offset = '', $join_str = array(), $group_by = '');
+		
+		if(count($spams) > 0) {
+			// Undo Report
+			$this->common->delete_data('spam', 'spam_id', $spams[0]['spam_id']);
+			echo json_encode(array('RESULT' => array('report_spam' => FALSE), 'MESSAGE' => $this->lang->line('success_undo_report'), 'STATUS' => 1));
+			die();
+		} else {
+			// Report Spam
+			$insert_array['user_id'] = $user_id;
+			$insert_array['feedback_id'] = $feedback_id;
+			
+			$insert_result = $this->common->insert_data($insert_array, $tablename = 'spam');
+			echo json_encode(array('RESULT' => array('report_spam' => TRUE), 'MESSAGE' => $this->lang->line('success_report_spam'), 'STATUS' => 1));
+			die();
+		}
+    }
 
     // Get Titles/Suggestions
     function titles() {
@@ -1686,6 +1725,9 @@ class V1 extends CI_Controller {
 		$check_title = $this->common->select_data_by_condition('titles', $contition_array, $data = '*', $sortby = '', $orderby = '', $limit = '', $offset = '', $join_str = array(), $group_by='');
 		
 		if(count($check_title) > 0) {
+            $update_data = array('deleted' => 0);
+            $update_result = $this->common->update_data($update_data, 'titles', 'title_id', $check_title[0]['title_id']);
+
             $return_array['id'] = $check_title[0]['title_id'];
             $return_array['title'] = $check_title[0]['title'];
 
@@ -2151,7 +2193,7 @@ class V1 extends CI_Controller {
 		$return_array = $this->common->getFeedbackDetail($user_id, $feedback_id);
 
 		// Get all replies for this feedback
-		$contition_array = array('status' => 1, 'replied_to' => $feedback_id);
+		$contition_array = array('status' => 1, 'replied_to' => $feedback_id, 'feedback.deleted' => 0, 'feedback.status' => 1);
 		$replies = $this->common->select_data_by_condition('feedback', $contition_array, 'feedback_id', $sortby = 'feedback.datetime', $orderby = 'DESC', $limit = '', $offset = '', $join_str = array(), $group_by = '');
 		
 		$return_array['replies'] = array();

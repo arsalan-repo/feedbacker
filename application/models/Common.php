@@ -12,6 +12,7 @@ class Common extends CI_Model {
         $this->db->select("id,name,email,password,country,lang_id,photo,fbid,status");
         $this->db->where("email", $user_name);
         $this->db->where("password", md5($user_password));
+        $this->db->where("deleted", 0);
         $this->db->from("users");
         $this->db->limit(1);
 
@@ -377,8 +378,28 @@ cos((`lat`*pi()/180)) * cos(((" . $longitude . "- `lng`)
         }
 
         //$query = $this->db->get();   
-		$query = $this->db->select('title_id, title')->from('titles')->where("title LIKE '$search_string%'")->get();  
+		$query = $this->db->select('title_id, title')->from('titles')->where("title LIKE '$search_string%' AND deleted = 0")->get();  
         return $query->result_array();  
+    }
+
+    function getSettings($key = '') {
+        $this->db->select('*');
+
+        if($key != '') {
+            $this->db->where("setting_key", $key);
+        }
+        
+        $this->db->from("settings");
+
+        $query = $this->db->get();
+        //echo $this->db->last_query();die();
+
+        if ($query->num_rows() > 0) {
+            $result = $query->result_array();        
+            return $result;
+        } else {
+            return array();
+        }   
     }
 
     function timeAgo($time_ago) {
@@ -446,6 +467,36 @@ cos((`lat`*pi()/180)) * cos(((" . $longitude . "- `lng`)
             }
         }
     }
+
+    function sendMail ($to = '', $cc = '', $subject = '', $mail_body = '') {
+        // Load Library
+        $this->load->library('email');
+
+        $config['protocol'] = "smtp";
+        $config['smtp_host'] = "ssl://smtp.gmail.com";
+        $config['smtp_port'] = "465";
+        $config['smtp_user'] = "smtp.feedbacker@gmail.com"; 
+        $config['smtp_pass'] = "Mach@Kit#$";
+        $config['charset'] = "utf-8";
+        $config['mailtype'] = "html";
+        $config['newline'] = "\r\n";
+
+        $this->email->initialize($config);
+
+        $this->email->from('noreply@feedbacker.me', 'Feedbacker');
+        $this->email->to($to);
+        $this->email->cc($cc);
+        $this->email->subject($subject);
+
+        $this->email->set_mailtype("html");
+        $this->email->message(html_entity_decode($mail_body));
+
+        if($this->email->send()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 	
 	function getFeedbackDetail ($user_id, $feedback_id) {
 		// Get User name
@@ -498,6 +549,16 @@ cos((`lat`*pi()/180)) * cos(((" . $longitude . "- `lng`)
 			$return_array['followers'] = (count($followings)/1000)."k";
 		} else {
 			$return_array['followers'] = count($followings);
+		}
+		
+		// Check If user reported this feedback
+		$contition_array_rs = array('feedback_id' => $feedback_id, 'user_id' => $user_id);
+		$spam = $this->select_data_by_condition('spam', $contition_array_rs, $data = '*', $short_by = '', $order_by = '', $limit = '', $offset = '', $join_str = array(), $group_by = '');
+					
+		if(count($spam) > 0) {
+			$return_array['report_spam'] = TRUE;
+		} else {
+			$return_array['report_spam'] = FALSE;
 		}
 		
 		// Check If user liked this feedback
@@ -569,7 +630,7 @@ cos((`lat`*pi()/180)) * cos(((" . $longitude . "- `lng`)
             )
         );
 
-        $condition_array = array('notification_id' => $notification_id, 'user_id' => $user_id);
+        $condition_array = array('notification_id' => $notification_id, 'user_notifications.user_id' => $user_id);
         $notifications = $this->select_data_by_condition('user_notifications', $condition_array, $data = 'user_notifications.id, users.name, users.photo, titles.title, titles.title_id, feedback_id, user_notifications.notification_id, user_notifications.datetime as time', $short_by = 'user_notifications.datetime', $order_by = 'DESC', $limit = '', $offset = '', $join_str, $group_by = '');
 
         $return_array = array();
@@ -775,10 +836,10 @@ cos((`lat`*pi()/180)) * cos(((" . $longitude . "- `lng`)
 
                             if(count($push_settings) > 0) {
                                 // Get device type and token key
-                                $contition_array = array('id' => $user['user_id']);
+                                $contition_array = array('id' => $user['user_id'], 'deleted' => 0, 'status' => 1);
                                 $user_info = $this->select_data_by_condition('users', $contition_array, $data = 'device_type, token_key', $short_by = '', $order_by = '', $limit = '', $offset = '', $join_str = array(), $group_by = '');
 
-                                if($user_info[0]['device_type'] != '' && $user_info[0]['token_key'] != '') {
+                                if($user_info[0]['device_type'] != '' && $user_info[0]['token_key'] != ''&& $user_info[0]['token_key'] != 'temp') {
                                     $this->push_notification($notif_id, $user_info[0]['device_type'], $user_info[0]['token_key']);
                                 }
                             }
@@ -832,10 +893,10 @@ cos((`lat`*pi()/180)) * cos(((" . $longitude . "- `lng`)
 
                     if(count($push_settings) > 0) {
                         // Get device type and token key
-                        $contition_array = array('id' => $feedback[0]['user_id']);
+                        $contition_array = array('id' => $feedback[0]['user_id'], 'deleted' => 0, 'status' => 1);
                         $user = $this->select_data_by_condition('users', $contition_array, $data = 'device_type, token_key', $short_by = '', $order_by = '', $limit = '', $offset = '', $join_str = array(), $group_by = '');
 
-                        if($user[0]['device_type'] != '' && $user[0]['token_key'] != '') {
+                        if($user[0]['device_type'] != '' && $user[0]['token_key'] != ''&& $user[0]['token_key'] != 'temp') {
                             $this->push_notification($notif_id, $user[0]['device_type'], $user[0]['token_key']);
                         }
                     }
@@ -890,10 +951,10 @@ cos((`lat`*pi()/180)) * cos(((" . $longitude . "- `lng`)
 
                     if(count($push_settings) > 0) {
                         // Get device type and token key
-                        $contition_array = array('id' => $feedback[0]['user_id']);
+                        $contition_array = array('id' => $feedback[0]['user_id'], 'deleted' => 0, 'status' => 1);
                         $user = $this->select_data_by_condition('users', $contition_array, $data = 'device_type, token_key', $short_by = '', $order_by = '', $limit = '', $offset = '', $join_str = array(), $group_by = '');
 
-                        if($user[0]['device_type'] != '' && $user[0]['token_key'] != '') {
+                        if($user[0]['device_type'] != '' && $user[0]['token_key'] != ''&& $user[0]['token_key'] != 'temp') {
                             $this->push_notification($notif_id, $user[0]['device_type'], $user[0]['token_key']);
                         }
                     }

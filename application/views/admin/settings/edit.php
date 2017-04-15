@@ -45,11 +45,11 @@
                     <input type="hidden" name="setting_id" value="<?php echo $setting_detail[0]['setting_id'] ?>">
                     <div class="box-body">
                         <div class="form-group col-sm-10">
-                            <label for="setting_name" name="setting_name" id="page_title">Setting Name*</label>
-                            <input type="text" class="form-control" name="setting_name" id="setting_name" value="<?php echo $setting_detail[0]['setting_name'] ?>">
+                            <label for="setting_key" id="page_title">Key</label>
+                            <input type="text" disabled="disabled" class="form-control" name="setting_key" id="setting_key" value="<?php echo $setting_detail[0]['setting_key'] ?>">
                         </div>
                         <div class="form-group col-sm-10">
-                            <label for="setting_value" name="setting_value" id="page_title">Setting Value*</label>
+                            <label for="setting_value" id="page_title">Value*</label>
                             <input type="text" class="form-control" name="setting_value" id="setting_value" value="<?php echo $setting_detail[0]['setting_value'] ?>">
                         </div>
                     </div><!-- /.box-body -->
@@ -75,18 +75,12 @@
     $(document).ready(function () {
         $("#edit_setting_frm").validate({
             rules: {
-                setting_name: {
-                    required: true,
-                },
                 setting_value: {
                     required: true,
                 }
             },
             messages:
             {
-                setting_name: {
-                    required: "Please enter setting name",
-                },
                 setting_value: {
                     required: "Please enter setting value",
                 }

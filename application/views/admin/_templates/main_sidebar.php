@@ -40,6 +40,13 @@
                 </a>
             </li>
             <!--End Feedbacks-->
+            <!--Start Spam-->
+            <li <?php if ($this->uri->segment(2) == 'spam') { ?> class="active treeview" <?php } else { ?> class="treeview"   <?php } ?>>
+                <a href="<?php echo base_url('admin/spam'); ?>">    
+                    <i class="fa fa-crosshairs"></i><span>Spam</span>
+                </a>
+            </li>
+            <!--End Spam-->
             <!--Start Reports-->
             <li <?php if ($this->uri->segment(1) == 'reports' || $this->uri->segment(1) == '') { ?> class="active treeview" <?php } else { ?> class="treeview"   <?php } ?>>
                 <a href="#">

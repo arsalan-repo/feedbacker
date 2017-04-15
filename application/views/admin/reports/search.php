@@ -123,7 +123,7 @@
                 <h4 class="modal-title" id="frm_title">Delete Conformation</h4>
             </div>
             <div class="modal-body">
-                Are you sure want to delete this keyword?
+                Are you sure want to delete this log entry?
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>

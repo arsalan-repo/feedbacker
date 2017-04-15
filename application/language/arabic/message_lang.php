@@ -48,6 +48,8 @@ $lang['success_like_feedback'] = 'حببت هذا ملاحظاتك';
 $lang['success_unlike_feedback'] = 'لم يعجبك هذا ملاحظاتك';
 $lang['success_follow_title'] = 'لقد اتبعت هذا العنوان';
 $lang['success_unfollow_title'] = 'لقد ألغيت إلغاء هذا العنوان';
+$lang['success_report_spam'] = 'شكرا لك، تم الإبلاغ عن هذه التعليقات';
+$lang['success_undo_report'] = 'تم التراجع عن الإجراء';
 $lang['success_language_set'] = 'لقد تم تحديد اللغة التي تم اختيارها مسبقا';
 
 $lang['success_feedback_submit'] = 'نشكرك على نشر تعليقاتك';
