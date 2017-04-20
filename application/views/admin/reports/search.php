@@ -41,7 +41,8 @@
                 <select name="country" id="country" class="form-control select2">
                     <option value="">Select</option>
 					<?php foreach ($country_list as $country) { ?>
-                    <option value="<?php echo $country['country_code']; ?>"><?php echo $country['country_name']; ?></option>
+
+                    <option value="<?php echo $country['country_code']; ?>" <?php if($selected == $country['country_code']) echo "selected"; ?>><?php echo $country['country_name']; ?></option>
                     <?php } ?>
                 </select>
             </div>
@@ -49,9 +50,6 @@
                 <div class="box">
                     <div class="box-header">
                         <h3 class="box-title">Keywords</h3>
-                        <?php /*?><div class=" pull-right">
-                            <a href="<?php echo site_url('admin/title/add'); ?>" class="btn btn-primary pull-right">Add Feedback</a>
-                        </div><?php */?>
                     </div>
 
                     <!-- /.box-header -->
@@ -60,35 +58,24 @@
                             <thead>
                                 <tr>
                                     <th>ID</th>
-                                    <th>Keyword</th>
-                                    <th>Count</th>
+                                    <th>Search Keyword</th>
+                                    <th>Search Count</th>
                                     <th>Action</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <?php
-                                foreach ($title_list as $title) {
-                                    /*if ($title['status'] == 1) {
-                                        $title_status = 'Active';
-                                    } elseif ($title['status'] == 0) {
-                                        $title_status = 'In Active';
-                                    }*/
-									
-									/*if(count($title['followers']) > 1000) {
-										$followers = (count($title['followers'])/1000)."k";
-									} else {
-										$followers = count($title['followers']);
-									}*/
+                                foreach ($search_log as $log) {
                                     ?>
                                     <tr>
-                                        <td><?php echo $title['title_id'] ?></td>
-                                        <td><?php echo $title['title'] ?></td>
-                                        <td><?php echo $title['followers']; ?></td>
+                                        <td><?php echo $log['slog_id'] ?></td>
+                                        <td><?php echo $log['search_keyword'] ?></td>
+                                        <td><?php echo $log['search_count']; ?></td>
                                         <td>
-                                            <a href="<?php echo base_url('admin/reports/users/' . $title['title_id']); ?>" id="edit_btn" title="View Users">
+                                            <a href="<?php echo base_url('admin/reports/users/' . $log['slog_id'] . '/'. $selected); ?>" id="edit_btn" title="View Users">
                                                 <button type="button" class="btn btn-primary" style="margin-top: 3px;"><i class="icon-pencil"></i> <i class="fa fa-users"></i></button>
                                             </a>
-                                            <a data-href="<?php echo base_url('admin/titles/delete/' . $title['title_id']); ?>" id="delete_btn" data-toggle="modal" data-target="#confirm-delete" href="#" title="Delete Entry">
+                                            <a data-href="<?php echo base_url('admin/reports/delete/' . $log['slog_id']); ?>" id="delete_btn" data-toggle="modal" data-target="#confirm-delete" href="#" title="Delete Entry">
                                                 <button type="button" class="btn btn-primary" style="margin-top: 3px;"><i class="icon-trash"></i> <i class="fa fa-ban"></i></button>
                                             </a>
                                         </td>
@@ -146,51 +133,15 @@
                 return false;
         });
 
-
-        $('#checkedall').click(function (service) {
-            if (this.checked) {
-                // Iterate each checkbox
-                $('.deletes').each(function () {
-                    this.checked = true;
-                });
-            }
-            else {
-                $('.deletes').each(function () {
-                    this.checked = false;
-                });
-            }
+        $('#country').click(function(){
+            window.location.href = "<?php echo base_url('admin/reports/search/'); ?>" + $(this).val();
         });
-
-        $('.deletes').click(function (service) {
-            var flag = 0;
-            $('.deletes').each(function () {
-                if (this.checked == false) {
-                    flag++;
-                }
-            });
-            if (flag) {
-                $('.checkedall').prop('checked', false);
-            }
-            else {
-                $('.checkedall').prop('checked', true);
-            }
-
-        });
-
     });
 </script>
 <!-- page script -->
 <script>
     $(function () {
         $("#example1").DataTable();
-        $('#example2').DataTable({
-            "paging": true,
-            "lengthChange": false,
-            "searching": false,
-            "ordering": true,
-            "info": true,
-            "autoWidth": false
-        });
     });
 </script>
 <script language="javascript" type="text/javascript">

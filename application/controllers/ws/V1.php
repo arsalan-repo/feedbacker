@@ -1297,6 +1297,57 @@ class V1 extends CI_Controller {
             echo json_encode(array('RESULT' => array(), 'MESSAGE' => 'Please enter user id', 'STATUS' => 0));
             exit();
         } else {
+            // Search Report Log
+            if ($qs != '') {
+                // Get User's Country
+                $get_country = $this->common->user_country($user_id);
+                $country_id = $get_country[0]['country'];
+
+                // Check If keyword Exists
+                $condition_log = "`search_keyword` LIKE '".$qs."'";
+                $search_log = $this->common->select_data_by_search('search_log', $condition_log, $condition_array = array(), '*', $sortby = '', $orderby = '', $limit = '', $offset = '', $join_str = array());
+
+                if(count($search_log) > 0) {
+                    // Append User ID
+                    if(strpos($search_log[0]['user_ids'], ',') === false) {
+                        if($user_id !== $search_log[0]['user_ids']) {
+                            $update_array['user_ids'] = $search_log[0]['user_ids'].",".$user_id;
+                        }
+                    } else {
+                        $userArr = explode(',', $search_log[0]['user_ids']);
+
+                        if(!in_array($user_id, $userArr)) {
+                            $update_array['user_ids'] = $search_log[0]['user_ids'].",".$user_id;
+                        }
+                    }
+
+                    // Append Country ID
+                    if(strpos($search_log[0]['country_ids'], ',') === false) {
+                        if($country_id !== $search_log[0]['country_ids']) {
+                            $update_array['country_ids'] = $search_log[0]['country_ids'].",".$country_id;
+                        }
+                    } else {
+                        $userArr = explode(',', $search_log[0]['country_ids']);
+
+                        if(!in_array($country_id, $userArr)) {
+                            $update_array['country_ids'] = $search_log[0]['country_ids'].",".$country_id;
+                        }
+                    }
+
+                    // Update Entry
+                    $search_count = $search_log[0]['search_count'] + 1;
+                    $update_array['search_count'] = $search_count;
+                    $this->common->update_data($update_array, 'search_log', 'slog_id', $search_log[0]['slog_id']);
+                } else {
+                    // Add New Entry
+                    $insert_array['search_keyword'] = $qs;
+                    $insert_array['search_count'] = 1;
+                    $insert_array['user_ids'] = $user_id;
+                    $insert_array['country_ids'] = $country_id;
+                    
+                    $this->common->insert_data($insert_array, $tablename = 'search_log');
+                }
+            }
 			
             // Get User name
             $join_str = array(
@@ -1314,10 +1365,7 @@ class V1 extends CI_Controller {
                 )
             );
 
-//			if($qs != '') {
-//	            $contition_array = array('titles.title' => $qs);
-//			}
-
+            // Get Search Results
 			$search_condition = "(`title` LIKE '%".$qs."%' OR `feedback_cont` LIKE '%".$qs."%') AND db_feedback.deleted = 0 AND feedback.status = 1";
             $data = 'feedback_id, feedback.title_id, title, name, photo, feedback_cont, feedback_img, feedback_thumb, feedback_video, replied_to, location, feedback.datetime as time';
 
@@ -1422,11 +1470,11 @@ class V1 extends CI_Controller {
 				$total_records = count($return_array);
 	
 				// API LOG
-				$insert_array['post_request'] = json_encode(array('RESULT' => $this->input->post(), 'MESSAGE' => '', 'STATUS' => 0));
-				$insert_array['json_response'] = json_encode(array('RESULT' => $return_array, 'MESSAGE' => '', 'STATUS' => 0));
-				$insert_array['log_time'] = date('Y-m-d H:i:s');
+				// $insert_array['post_request'] = json_encode(array('RESULT' => $this->input->post(), 'MESSAGE' => '', 'STATUS' => 0));
+				// $insert_array['json_response'] = json_encode(array('RESULT' => $return_array, 'MESSAGE' => '', 'STATUS' => 0));
+				// $insert_array['log_time'] = date('Y-m-d H:i:s');
 				
-				$insert_result = $this->common->insert_data($insert_array, $tablename = 'api_log');
+				// $insert_result = $this->common->insert_data($insert_array, $tablename = 'api_log');
 			
 				echo json_encode(array('RESULT' => $return_array, 'TOTAL' => $total_records,'MESSAGE' => 'SUCCESS', 'STATUS' => 1));
 				exit();
@@ -2296,13 +2344,14 @@ class V1 extends CI_Controller {
 		
 		// For iOS
 		// $deviceToken = 'b77db4458b084daacdec602865cd274114affc24995a4d612dd9f4cda8f6c13a'; // This will be dynamic
+		$deviceToken = '21063305a31fc6f9d66bf33558636bae850e31f68cb2ff64afd78015d3442b20';
 		// For WP8
 		// $uri = 'http://s.notify.live.net/u/1/sin/HmQAAAD1XJMXfQ8SR0b580NcxIoD6G7hIYP9oHvjjpMC2etA7U_xy_xtSAh8tWx7Dul2AZlHqoYzsSQ8jQRQ-pQLAtKW/d2luZG93c3Bob25lZGVmYXVsdA/EKTs2gmt5BG_GB8lKdN_Rg/WuhpYBv02fAmB7tjUfF7DG9aUL4';
 		
 		// Replace the above variable values
-		$responseText = $this->pushNotifications->android($msg_payload, $regId);
+		// $responseText = $this->pushNotifications->android($msg_payload, $regId);
 		//$this->pushNotifications->WP8($msg_payload, $uri);
-		//$responseText = $this->pushNotifications->iOS($msg_payload, $deviceToken);	
+		$responseText = $this->pushNotifications->iOS($msg_payload, $deviceToken);	
 		echo json_encode(array('RESULT' => array(), 'MESSAGE' => $responseText, 'STATUS' => 1));
         die();
 	}
