@@ -3,6 +3,9 @@
 if (!defined('BASEPATH'))
     exit('No direct script access allowed');
 
+require 'vendor/autoload.php';
+use Elasticsearch\ClientBuilder;
+
 class Titles extends MY_Controller {
 
     public $data;
@@ -19,6 +22,8 @@ class Titles extends MY_Controller {
         $this->data['site_name'] = $site_name = $site_name_values[0]['setting_value'];
         //set header, footer and leftmenu
         $this->data['title'] = 'Titles | ' . $site_name;
+
+        $this->aws_client = ClientBuilder::create()->setHosts(["search-feedbacker-q3gdcfwrt27ulaeee5gz3zbezm.eu-west-1.es.amazonaws.com:80"])->build(); 
 
         //remove catch so after logout cannot view last visited page if that page is this
         $this->output->set_header('Last-Modified:' . gmdate('D, d M Y H:i:s') . 'GMT');
@@ -116,7 +121,34 @@ class Titles extends MY_Controller {
                 );
 				
 				$insert_result = $this->common->insert_data($insert_array, 'titles');
-                
+
+
+                $params = ['index' => 'title'];
+                $response = $this->aws_client->indices()->exists($params);
+
+                if(!$response){
+                    $indexParams = [
+                        'index' => 'title',
+                        'body' => [
+                            'settings' => [
+                                'number_of_shards' => 5,
+                                'number_of_replicas' => 1
+                            ]
+                        ]
+                    ];
+
+                    $response = $this->aws_client->indices()->create($indexParams);
+                }
+
+                $docParams = [
+                    'index' => 'title',
+                    'type' => 'title_type',
+                    'id' => $insert_result,
+                    'body' => ['title' => trim($this->input->post('title')),'title_id' => $insert_result]
+                ]; 
+
+                $response = $this->aws_client->index($docParams); 
+
                 if ($insert_result) {                    
                     $this->session->set_flashdata('success', 'Title successfully inserted.');
                     redirect('admin/titles', 'refresh');
@@ -162,6 +194,33 @@ class Titles extends MY_Controller {
                 );
                 
                 $update_result = $this->common->update_data($update_array, 'titles', 'title_id', $this->input->post('title_id'));
+
+
+                $params = ['index' => 'title'];
+                $response = $this->aws_client->indices()->exists($params);
+
+                if(!$response){
+                    $indexParams = [
+                        'index' => 'title',
+                        'body' => [
+                            'settings' => [
+                                'number_of_shards' => 5,
+                                'number_of_replicas' => 1
+                            ]
+                        ]
+                    ];
+
+                    $response = $this->aws_client->indices()->create($indexParams);
+                }
+
+                $docParams = [
+                    'index' => 'title',
+                    'type' => 'title_type',
+                    'id' => $this->input->post('title_id'),
+                    'body' => ['title' => trim($this->input->post('title')),'title_id' => $this->input->post('title_id')]
+                ]; 
+
+                $response = $this->aws_client->index($docParams);
                
                 if ($update_result) {
                     $this->session->set_flashdata('success', 'Title successfully updated.');
@@ -194,6 +253,14 @@ class Titles extends MY_Controller {
         $update_result = $this->common->update_data($update_data, 'titles', 'title_id', $id);
 
         if ($update_result) {
+            $docParams = [
+                'index' => 'title',
+                'type' => 'title_type',
+                'id' => $id
+            ]; 
+
+            $response = $this->aws_client->delete($docParams);
+
             $this->session->set_flashdata('success', 'Title successfully deleted');
             redirect('admin/titles', 'refresh');
         } else {

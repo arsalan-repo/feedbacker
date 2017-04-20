@@ -2,9 +2,15 @@
 
 defined('BASEPATH') OR exit('No direct script access allowed');
 
+require 'vendor/autoload.php';
+use Elasticsearch\ClientBuilder;
+
 class V1 extends CI_Controller {
 
     //define global variables
+
+    private $aws_client;
+
     function __construct() {
         parent::__construct();
         $this->load->model('common');
@@ -12,6 +18,9 @@ class V1 extends CI_Controller {
 		
 		// Load Library
 		$this->load->library('s3');	
+
+        $this->aws_client = ClientBuilder::create()->setHosts(["search-feedbacker-q3gdcfwrt27ulaeee5gz3zbezm.eu-west-1.es.amazonaws.com:80"])->build();  
+
 		
 		// Load Language File		
 		if($this->input->post('language') == 'ar') {
@@ -1752,7 +1761,43 @@ class V1 extends CI_Controller {
     // Get Titles/Suggestions
     function titles() {
         $search_string = $this->input->post('search');
-        $titles = $this->common->getTitles($search_string, $order=null, $order_type='ASC', $offset='', $limit='');
+        //$titles = $this->common->getTitles($search_string, $order=null, $order_type='ASC', $offset='', $limit='');
+
+        $params = ['index' => 'title'];
+        $response = $this->aws_client->indices()->exists($params);
+
+        if(!$response){
+            $indexParams = [
+                'index' => 'title',
+                'body' => [
+                    'settings' => [
+                        'number_of_shards' => 5,
+                        'number_of_replicas' => 1
+                    ]
+                ]
+            ];
+
+            $response = $this->aws_client->indices()->create($indexParams);
+        }
+
+
+        $params = [
+            'index' => 'title',
+            'body' => [
+                'query' => [
+                    'query_string' => [
+                        'query' => 'title:'.$search_string.'*'
+                    ],
+                ]
+            ]
+        ];
+
+        $title = $this->aws_client->search($params);
+
+        $titles = [];
+        foreach ($title['hits']['hits'] as $key => $value) {
+            $titles[] = $value['_source'];
+        }
 
         echo json_encode(array('RESULT' => $titles, 'MESSAGE' => 'SUCCESS', 'STATUS' => 1));
         die();
@@ -1762,6 +1807,25 @@ class V1 extends CI_Controller {
     function addtitle() {
 		$user_id = $this->input->post('user_id');
         $title = trim($this->input->post('title'));
+        //$user_id = 1;
+        //$title = 'test1';
+
+        $params = ['index' => 'title'];
+        $response = $this->aws_client->indices()->exists($params);
+
+        if(!$response){
+            $indexParams = [
+                'index' => 'title',
+                'body' => [
+                    'settings' => [
+                        'number_of_shards' => 5,
+                        'number_of_replicas' => 1
+                    ]
+                ]
+            ];
+
+            $response = $this->aws_client->indices()->create($indexParams);
+        } 
 
         if ($title == '') {
             echo json_encode(array('RESULT' => array(), 'MESSAGE' => $this->lang->line('error_msg_title_blank'), 'STATUS' => 0));
@@ -1785,6 +1849,15 @@ class V1 extends CI_Controller {
 
         $insert_array['title'] = $title;
         $insert_result = $this->common->insert_data_getid($insert_array, $tablename = 'titles');
+
+        $docParams = [
+            'index' => 'title',
+            'type' => 'title_type',
+            'id' => $insert_result,
+            'body' => ['title' => $title,'title_id' => $insert_result]
+        ]; 
+
+        $response = $this->aws_client->index($docParams);
 		
 		// Auto Follow Title
         if ($user_id != '') {
