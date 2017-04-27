@@ -269,6 +269,40 @@ class Titles extends MY_Controller {
         }
     }
 
+    public function make_aws_index() {
+        $title_detail = $this->common->select_data_by_condition('titles',['deleted' => 0]);
+
+        foreach ($title_detail as $key => $value) {
+            $params = ['index' => 'title'];
+            $response = $this->aws_client->indices()->exists($params);
+
+            if(!$response){
+                $indexParams = [
+                    'index' => 'title',
+                    'body' => [
+                        'settings' => [
+                            'number_of_shards' => 5,
+                            'number_of_replicas' => 1
+                        ]
+                    ]
+                ];
+
+                $response = $this->aws_client->indices()->create($indexParams);
+            }
+
+            $docParams = [
+                'index' => 'title',
+                'type' => 'title_type',
+                'id' => $value['title_id'],
+                'body' => ['title' => trim($value['title']),'title_id' => $value['title_id']]
+            ]; 
+
+            $response = $this->aws_client->index($docParams);
+            //echo 'one done';die;
+        }
+        echo "Done all title indexing";die;
+    }
+
 }
 
 ?>
