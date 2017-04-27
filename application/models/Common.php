@@ -26,6 +26,23 @@ class Common extends CI_Model {
         }
     }
 
+    //get user country
+    function user_country($user_id) {
+        $this->db->select("country");
+        $this->db->where("id", $user_id);
+        $this->db->from("users");
+        $this->db->limit(1);
+
+        $query = $this->db->get();
+        
+        if ($query->num_rows() == 1) {
+            $result = $query->result_array();        
+            return $result;
+        } else {
+            return array();
+        }
+    }
+
     // insert database
     function insert_data($data, $tablename) {
         if ($this->db->insert($tablename, $data)) {
