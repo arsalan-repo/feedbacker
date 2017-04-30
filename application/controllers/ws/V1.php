@@ -2,32 +2,23 @@
 
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-require 'vendor/autoload.php';
-use Elasticsearch\ClientBuilder;
-
 class V1 extends CI_Controller {
 
     //define global variables
-
-    private $aws_client;
-
     function __construct() {
         parent::__construct();
         $this->load->model('common');
-        $this->load->model('pushNotifications');	
-		
-		// Load Library
-		$this->load->library('s3');	
-
-        $this->aws_client = ClientBuilder::create()->setHosts(["search-feedbacker-q3gdcfwrt27ulaeee5gz3zbezm.eu-west-1.es.amazonaws.com:80"])->build();  
-
-		
-		// Load Language File		
-		if($this->input->post('language') == 'ar') {
-			$this->lang->load('message','arabic');
-		} else {
-			$this->lang->load('message','english');
-		}
+        $this->load->model('pushNotifications');    
+        
+        // Load Library
+        $this->load->library('s3'); 
+        
+        // Load Language File       
+        if($this->input->post('language') == 'ar') {
+            $this->lang->load('message','arabic');
+        } else {
+            $this->lang->load('message','english');
+        }
 
         $GLOBALS['error_code'] = 0;
         $GLOBALS['api_debug_mode'] = false;
@@ -41,13 +32,13 @@ class V1 extends CI_Controller {
         $email = $this->input->post('email');
         $password = $this->input->post('password');
         $confirm_password = $this->input->post('confirm_password');
-		$country = $this->input->post('country');
-		$language = $this->input->post('language');
+        $country = $this->input->post('country');
+        $language = $this->input->post('language');
         $device_type = $this->input->post('device_type');
         $token_key = $this->input->post('token_key');
-		$fbid = $this->input->post('fbid');
-		$twitterid = $this->input->post('twitterid');
-		$is_social = $this->input->post('is_social');
+        $fbid = $this->input->post('fbid');
+        $twitterid = $this->input->post('twitterid');
+        $is_social = $this->input->post('is_social');
 
         $error = '';
 
@@ -76,7 +67,7 @@ class V1 extends CI_Controller {
             echo json_encode(array('RESULT' => array(), 'MESSAGE' => $this->lang->line('error_msg_pass_not_match'), 'STATUS' => 0));
             die();
         }
-		if ($country == '') {
+        if ($country == '') {
             $error = 1;
             echo json_encode(array('RESULT' => array(), 'MESSAGE' => $this->lang->line('error_msg_select_country'), 'STATUS' => 0));
             die();
@@ -92,15 +83,15 @@ class V1 extends CI_Controller {
 
             if ($check_result == 1) {
                 // CHECK IF LOGIN WITH FACEBOOK/TWITTER
-				if($is_social == true) {
+                if($is_social == true) {
                     // GET USER INFORMATION
                     $contition_array_user = array('email' => $email);
                     $user_result = $this->common->select_data_by_condition('users', $contition_array_user, $data = '*', $sortby = '', $orderby = '', $limit = '', $offset = '', $join_str = array());
-					// Check If user account is blocked by administrator
-					if ($user_result[0]['status'] == "0") {
-						echo json_encode(array('RESULT' => array(), 'MESSAGE' => $this->lang->line('error_account_blocked'), 'STATUS' => 0));
-						exit();
-					}
+                    // Check If user account is blocked by administrator
+                    if ($user_result[0]['status'] == "0") {
+                        echo json_encode(array('RESULT' => array(), 'MESSAGE' => $this->lang->line('error_account_blocked'), 'STATUS' => 0));
+                        exit();
+                    }
 
                     // UPDATE FBID
                     if ($fbid != '') {
@@ -113,8 +104,8 @@ class V1 extends CI_Controller {
                         $data = array('twitterid' => trim($twitterid));
                         $this->common->update_data($data, 'users', 'id', $user_result[0]['id']);
                     }
-					
-					// UPDATE DEVICE TYPE
+                    
+                    // UPDATE DEVICE TYPE
                     if ($device_type != '') {
                         $data = array('device_type' => trim($device_type));
                         $this->common->update_data($data, 'users', 'id', $user_result[0]['id']);
@@ -146,24 +137,24 @@ class V1 extends CI_Controller {
                     if ($user_result[0]['token_key'] != '') {
                         $return_array['token_key'] = $user_result[0]['token_key'];
                     }
-					
-					if($language != '') {
-						$return_array['language'] = $language;
-						
-						// Get language id from code
-						$contition_array = array('lang_code' => $language);
-						$languages = $this->common->select_data_by_condition('languages', $contition_array, $data = 'lang_id');
-						
-						$update_data = array('lang_id' => $languages[0]['lang_id']);
-						$this->common->update_data($update_data, 'users', 'id', $user_result[0]['id']);
-					} else {
-						$languages = $this->common->select_data_by_id('languages', 'lang_id', $user_result[0]['lang_id'], $data = 'lang_code', $join_str = array());
-						$return_array['language'] = $languages[0]['lang_code'];
-						
-						if($languages[0]['lang_code'] == 'ar') {
-							$this->lang->load('message','arabic');
-						}
-					}
+                    
+                    if($language != '') {
+                        $return_array['language'] = $language;
+                        
+                        // Get language id from code
+                        $contition_array = array('lang_code' => $language);
+                        $languages = $this->common->select_data_by_condition('languages', $contition_array, $data = 'lang_id');
+                        
+                        $update_data = array('lang_id' => $languages[0]['lang_id']);
+                        $this->common->update_data($update_data, 'users', 'id', $user_result[0]['id']);
+                    } else {
+                        $languages = $this->common->select_data_by_id('languages', 'lang_id', $user_result[0]['lang_id'], $data = 'lang_code', $join_str = array());
+                        $return_array['language'] = $languages[0]['lang_code'];
+                        
+                        if($languages[0]['lang_code'] == 'ar') {
+                            $this->lang->load('message','arabic');
+                        }
+                    }
 
                     // Null to Empty String
                     array_walk_recursive($return_array, function (&$item, $key) {
@@ -172,11 +163,11 @@ class V1 extends CI_Controller {
 
                     echo json_encode(array('RESULT' => $return_array, 'MESSAGE' => $this->lang->line('msg_login_success'), 'STATUS' => 1));
                     die();
-				} else {
-					$error = 1;
-					echo json_encode(array('RESULT' => array(), 'MESSAGE' => $this->lang->line('error_msg_email_exits'), 'STATUS' => 0));
-					die();
-				}
+                } else {
+                    $error = 1;
+                    echo json_encode(array('RESULT' => array(), 'MESSAGE' => $this->lang->line('error_msg_email_exits'), 'STATUS' => 0));
+                    die();
+                }
             }
         }
 
@@ -197,7 +188,7 @@ class V1 extends CI_Controller {
             if ($twitterid != '') {
                 $insert_array['twitterid'] = trim($twitterid);
             }
-			$insert_array['country'] = $country;
+            $insert_array['country'] = $country;
             $insert_array['device_type'] = $device_type;
             $insert_array['token_key'] = $token_key;
             $insert_array['status'] = 1;
@@ -206,34 +197,34 @@ class V1 extends CI_Controller {
 
             $insert_result = $this->common->insert_data_getid($insert_array, $tablename = 'users');
 
-			// Add User Notifications Preferences
-			$insert_pref_1['user_id'] = $insert_result;
-			$insert_pref_1['notification_id'] = 1;
-			$insert_pref_1['status'] = 'on';
-			$insert_pref_1['updated_on'] = date('Y-m-d h:i:s');
-			
-			$pref_result_1 = $this->common->insert_data($insert_pref_1, $tablename = 'user_preferences');
-			
-			$insert_pref_2['user_id'] = $insert_result;
-			$insert_pref_2['notification_id'] = 2;
-			$insert_pref_2['status'] = 'on';
-			$insert_pref_2['updated_on'] = date('Y-m-d h:i:s');
-			
-			$pref_result_2 = $this->common->insert_data($insert_pref_2, $tablename = 'user_preferences');
-			
-			$insert_pref_3['user_id'] = $insert_result;
-			$insert_pref_3['notification_id'] = 3;
-			$insert_pref_3['status'] = 'on';
-			$insert_pref_3['updated_on'] = date('Y-m-d h:i:s');
-			
-			$pref_result_3 = $this->common->insert_data($insert_pref_3, $tablename = 'user_preferences');
-			
-			$insert_pref_4['user_id'] = $insert_result;
-			$insert_pref_4['notification_id'] = 4;
-			$insert_pref_4['status'] = 'on';
-			$insert_pref_4['updated_on'] = date('Y-m-d h:i:s');
-			
-			$pref_result_4 = $this->common->insert_data($insert_pref_4, $tablename = 'user_preferences');
+            // Add User Notifications Preferences
+            $insert_pref_1['user_id'] = $insert_result;
+            $insert_pref_1['notification_id'] = 1;
+            $insert_pref_1['status'] = 'on';
+            $insert_pref_1['updated_on'] = date('Y-m-d h:i:s');
+            
+            $pref_result_1 = $this->common->insert_data($insert_pref_1, $tablename = 'user_preferences');
+            
+            $insert_pref_2['user_id'] = $insert_result;
+            $insert_pref_2['notification_id'] = 2;
+            $insert_pref_2['status'] = 'on';
+            $insert_pref_2['updated_on'] = date('Y-m-d h:i:s');
+            
+            $pref_result_2 = $this->common->insert_data($insert_pref_2, $tablename = 'user_preferences');
+            
+            $insert_pref_3['user_id'] = $insert_result;
+            $insert_pref_3['notification_id'] = 3;
+            $insert_pref_3['status'] = 'on';
+            $insert_pref_3['updated_on'] = date('Y-m-d h:i:s');
+            
+            $pref_result_3 = $this->common->insert_data($insert_pref_3, $tablename = 'user_preferences');
+            
+            $insert_pref_4['user_id'] = $insert_result;
+            $insert_pref_4['notification_id'] = 4;
+            $insert_pref_4['status'] = 'on';
+            $insert_pref_4['updated_on'] = date('Y-m-d h:i:s');
+            
+            $pref_result_4 = $this->common->insert_data($insert_pref_4, $tablename = 'user_preferences');
 
             $contition_array = array('status' => '1', 'id' => $insert_result);
             $user_result = $this->common->select_data_by_condition('users', $contition_array, $data = '*', $sortby = '', $orderby = '', $limit = '', $offset = '', $join_str = array());
@@ -244,17 +235,17 @@ class V1 extends CI_Controller {
             $return_array['user_avatar'] = ASSETS_URL . 'images/user-avatar.png';
             $return_array['fbid'] = $user_result[0]['fbid'];
             $return_array['twitterid'] = $user_result[0]['twitterid'];
-			$return_array['country'] = $user_result[0]['country'];
+            $return_array['country'] = $user_result[0]['country'];
             $return_array['device_type'] = $user_result[0]['device_type'];
             if ($user_result[0]['token_key'] != '') {
                 $return_array['token_key'] = $user_result[0]['token_key'];
             }
-			
-			if($language != '') {
-				$return_array['language'] = $language;
-			} else {
-				$return_array['language'] = 'en';
-			}
+            
+            if($language != '') {
+                $return_array['language'] = $language;
+            } else {
+                $return_array['language'] = 'en';
+            }
 
             // Null to Empty String
             array_walk_recursive($return_array, function (&$item, $key) {
@@ -272,7 +263,7 @@ class V1 extends CI_Controller {
 
         $username = $this->input->post('email');
         $password = $this->input->post('password');
-		$language = $this->input->post('language');
+        $language = $this->input->post('language');
         $device_type = $this->input->post('device_type');
         $token_key = $this->input->post('token_key');
 
@@ -309,32 +300,32 @@ class V1 extends CI_Controller {
                     $userinfo[0]['username'] = $this->input->post('user_name');
                     unset($userinfo[0]['username']);
                     unset($userinfo[0]['password']);
-					
-					if(isset($userinfo[0]['photo'])) {
-						$userinfo[0]['user_avatar'] = S3_CDN . 'uploads/user/thumbs/' . $userinfo[0]['photo'];
-					} else {
-						$userinfo[0]['user_avatar'] = ASSETS_URL . 'images/user-avatar.png';
-					}
-					
-					if($language != '') {
-						$userinfo[0]['language'] = $language;
-						
-						// Get language id from code
-						$contition_array = array('lang_code' => $language);
-						$languages = $this->common->select_data_by_condition('languages', $contition_array, $data = 'lang_id');
-						
-						$update_data = array('lang_id' => $languages[0]['lang_id']);
-						$this->common->update_data($update_data, 'users', 'id', $userinfo[0]['id']);
-					} else {
-						$languages = $this->common->select_data_by_id('languages', 'lang_id', $userinfo[0]['lang_id'], $data = 'lang_code', $join_str = array());
-						$userinfo[0]['language'] = $languages[0]['lang_code'];
-						
-						if($languages[0]['lang_code'] == 'ar') {
-							$this->lang->load('message','arabic');
-						}
-					}
-					
-					// UPDATE DEVICE TYPE
+                    
+                    if(isset($userinfo[0]['photo'])) {
+                        $userinfo[0]['user_avatar'] = S3_CDN . 'uploads/user/thumbs/' . $userinfo[0]['photo'];
+                    } else {
+                        $userinfo[0]['user_avatar'] = ASSETS_URL . 'images/user-avatar.png';
+                    }
+                    
+                    if($language != '') {
+                        $userinfo[0]['language'] = $language;
+                        
+                        // Get language id from code
+                        $contition_array = array('lang_code' => $language);
+                        $languages = $this->common->select_data_by_condition('languages', $contition_array, $data = 'lang_id');
+                        
+                        $update_data = array('lang_id' => $languages[0]['lang_id']);
+                        $this->common->update_data($update_data, 'users', 'id', $userinfo[0]['id']);
+                    } else {
+                        $languages = $this->common->select_data_by_id('languages', 'lang_id', $userinfo[0]['lang_id'], $data = 'lang_code', $join_str = array());
+                        $userinfo[0]['language'] = $languages[0]['lang_code'];
+                        
+                        if($languages[0]['lang_code'] == 'ar') {
+                            $this->lang->load('message','arabic');
+                        }
+                    }
+                    
+                    // UPDATE DEVICE TYPE
                     if ($device_type != '') {
                         $data = array('device_type' => trim($device_type));
                         $this->common->update_data($data, 'users', 'id', $userinfo[0]['id']);
@@ -345,16 +336,16 @@ class V1 extends CI_Controller {
                         $data = array('token_key' => trim($token_key));
                         $this->common->update_data($data, 'users', 'id', $userinfo[0]['id']);
                     }
-					
+                    
                     // Null to Empty String
                     array_walk_recursive($userinfo[0], function (&$item, $key) {
                         $item = null === $item ? '' : $item;
                     });
-					
+                    
                     echo json_encode(array('RESULT' => $userinfo[0], 'MESSAGE' => $this->lang->line('msg_login_success'), 'STATUS' => 1));
                     exit();
-//					$this->returnData($data = $userinfo[0], $message = "success", $status = 1);
-//					die();
+//                  $this->returnData($data = $userinfo[0], $message = "success", $status = 1);
+//                  die();
                 }
             } else {
                 echo json_encode(array('RESULT' => array(), 'MESSAGE' => $this->lang->line('error_msg_login'), 'STATUS' => 0));
@@ -718,11 +709,11 @@ class V1 extends CI_Controller {
             if(count($n_reply) > 0) {
                 $n_array = array_merge($n_array, $n_reply);
             }
-			
-			// Sort array by id
-			usort($n_array, function($a, $b) {
-				return $b['id'] - $a['id'];
-			});
+            
+            // Sort array by id
+            usort($n_array, function($a, $b) {
+                return $b['id'] - $a['id'];
+            });
             
             if(!empty($n_array)) {
                 echo json_encode(array('RESULT' => $n_array, 'TOTAL' => count($n_array),'MESSAGE' => 'SUCCESS', 'STATUS' => 1));
@@ -738,36 +729,36 @@ class V1 extends CI_Controller {
     // Edit Profile @Viral
     function update_profile() {
         $user_id = $this->input->post('user_id');
-		$gender = $this->input->post('gender');
+        $gender = $this->input->post('gender');
         $name = $this->input->post('name');
         $email = $this->input->post('email');
         $country = $this->input->post('country');
-		$dob = $this->input->post('dob');
-		
-		$update_data = array();
+        $dob = $this->input->post('dob');
+        
+        $update_data = array();
         $error = '';
-		
+        
         if ($user_id == '') {
             $error = 1;
             echo json_encode(array('RESULT' => array(), 'MESSAGE' => 'Please enter user id', 'STATUS' => 0));
             die();
         } else {
-			if ($email != '') {
-				$condition_array = array('id !=' => $user_id);
-				$check_result = $this->common->check_unique_avalibility('users', 'email', $email, '', '', $condition_array);
-	
-				if ($check_result == 1) {
-					$error = 1;
-					echo json_encode(array('RESULT' => array(), 'MESSAGE' => $this->lang->line('error_msg_email_exits'), 'STATUS' => 0));
-					//$this->returnData($data = array(), $message = "Email id already exits", $status = 0);
-					die();
-				}
-			}
+            if ($email != '') {
+                $condition_array = array('id !=' => $user_id);
+                $check_result = $this->common->check_unique_avalibility('users', 'email', $email, '', '', $condition_array);
+    
+                if ($check_result == 1) {
+                    $error = 1;
+                    echo json_encode(array('RESULT' => array(), 'MESSAGE' => $this->lang->line('error_msg_email_exits'), 'STATUS' => 0));
+                    //$this->returnData($data = array(), $message = "Email id already exits", $status = 0);
+                    die();
+                }
+            }
 
             $condition_array = array('id' => $user_id);
             $user_data = $this->common->select_data_by_condition('users', $condition_array, $data = 'id, name, email, gender, dob, country, photo', $short_by = '', $order_by = '', $limit = '', $offset = '', $join_str = array(), $group_by = '');
 
-			if ($gender != '') {
+            if ($gender != '') {
                 $update_data['gender'] = $gender;
             }
             if ($name != '') {
@@ -779,28 +770,28 @@ class V1 extends CI_Controller {
             if ($country != '') {
                 $update_data['country'] = $country;
             }
-			if ($dob != '') {
+            if ($dob != '') {
                 $update_data['dob'] = $dob;
             }
             
             if (isset($_FILES['image']['name']) && $_FILES['image']['name'] != '') {
                 $config['upload_path'] = $this->config->item('user_main_upload_path');
-				$config['thumb_upload_path'] = $this->config->item('user_thumb_upload_path');
+                $config['thumb_upload_path'] = $this->config->item('user_thumb_upload_path');
                 $config['allowed_types'] = 'jpg|png|jpeg|gif';
-				$config['file_name'] = time();
+                $config['file_name'] = time();
 
                 $this->load->library('upload');
                 $this->upload->initialize($config);
-				
+                
                 //Uploading Image
                 $this->upload->do_upload('image');
-				
+                
                 //Getting Uploaded Image File Data
                 $imgdata = $this->upload->data();
                 $imgerror = $this->upload->display_errors();
-				
+                
                 if ($imgerror == '') {
-					
+                    
                     //Configuring Thumbnail 
                     $config_thumb['image_library'] = 'gd2';
                     $config_thumb['source_image'] = $config['upload_path'] . $imgdata['file_name'];
@@ -814,20 +805,20 @@ class V1 extends CI_Controller {
                     //Loading Image Library
                     $this->load->library('image_lib', $config_thumb);
                     $dataimage = $imgdata['file_name'];
-					
+                    
                     //Creating Thumbnail
                     $this->image_lib->resize();
                     $thumberror = $this->image_lib->display_errors();
-					
-					// AWS S3 Upload
-					$thumb_file_path = str_replace("main", "thumbs", $imgdata['file_path']);
-					$thumb_file_name = $config['thumb_upload_path'] . $imgdata['raw_name'].$imgdata['file_ext'];
-					
-					$this->s3->putObjectFile($imgdata['full_path'], S3_BUCKET, $config_thumb['source_image'], S3::ACL_PUBLIC_READ);
-					$this->s3->putObjectFile($thumb_file_path.$dataimage, S3_BUCKET, $thumb_file_name, S3::ACL_PUBLIC_READ);
-//					echo $s3file = S3_CDN.$config_thumb['source_image'];
-//					echo "<br/>";
-//					echo $s3file = S3_CDN.$thumb_file_name; exit();
+                    
+                    // AWS S3 Upload
+                    $thumb_file_path = str_replace("main", "thumbs", $imgdata['file_path']);
+                    $thumb_file_name = $config['thumb_upload_path'] . $imgdata['raw_name'].$imgdata['file_ext'];
+                    
+                    $this->s3->putObjectFile($imgdata['full_path'], S3_BUCKET, $config_thumb['source_image'], S3::ACL_PUBLIC_READ);
+                    $this->s3->putObjectFile($thumb_file_path.$dataimage, S3_BUCKET, $thumb_file_name, S3::ACL_PUBLIC_READ);
+//                  echo $s3file = S3_CDN.$config_thumb['source_image'];
+//                  echo "<br/>";
+//                  echo $s3file = S3_CDN.$thumb_file_name; exit();
 
                     // Remove File from Local Storage
                     unlink($config_thumb['source_image']);
@@ -853,68 +844,68 @@ class V1 extends CI_Controller {
                 }
 
                 if ($error) {
-					echo json_encode(array('RESULT' => array(), 'MESSAGE' => $error[0], 'STATUS' => 0));
+                    echo json_encode(array('RESULT' => array(), 'MESSAGE' => $error[0], 'STATUS' => 0));
                     die();
                 }
                 $update_data['photo'] = $dataimage;
             }
-			
-			if(!empty($update_data)) {
-	            $this->common->update_data($update_data, 'users', 'id', $user_id);
-				if(isset($update_data['gender'])) {
-					$user_data[0]['gender'] = $update_data['gender'];
-				}
-				if(isset($update_data['name'])) {
-					$user_data[0]['name'] = $update_data['name'];
-				}
-				if(isset($update_data['email'])) {
-					$user_data[0]['email'] = $update_data['email'];
-				}
-				if(isset($update_data['country'])) {
-					$user_data[0]['country'] = $update_data['country'];
-				}
-				if(isset($update_data['dob'])) {
-					$date = date_create($user_data[0]['dob']);
-					$user_data[0]['dob'] = date_format($date, 'd-M-Y');
-				} else {
-					$user_data[0]['dob'] = "";
-				}
+            
+            if(!empty($update_data)) {
+                $this->common->update_data($update_data, 'users', 'id', $user_id);
+                if(isset($update_data['gender'])) {
+                    $user_data[0]['gender'] = $update_data['gender'];
+                }
+                if(isset($update_data['name'])) {
+                    $user_data[0]['name'] = $update_data['name'];
+                }
+                if(isset($update_data['email'])) {
+                    $user_data[0]['email'] = $update_data['email'];
+                }
+                if(isset($update_data['country'])) {
+                    $user_data[0]['country'] = $update_data['country'];
+                }
+                if(isset($update_data['dob'])) {
+                    $date = date_create($user_data[0]['dob']);
+                    $user_data[0]['dob'] = date_format($date, 'd-M-Y');
+                } else {
+                    $user_data[0]['dob'] = "";
+                }
 
-				if(isset($update_data['photo'])) {
-	                $user_data[0]['photo'] = S3_CDN . 'uploads/user/thumbs/' . $update_data['photo'];
-				} elseif(isset($user_data[0]['photo'])) {
-					$user_data[0]['photo'] = S3_CDN . 'uploads/user/thumbs/' . $user_data[0]['photo'];
-				} else {
-					$user_data[0]['photo'] = ASSETS_URL . 'images/user-avatar.png';
-				}
+                if(isset($update_data['photo'])) {
+                    $user_data[0]['photo'] = S3_CDN . 'uploads/user/thumbs/' . $update_data['photo'];
+                } elseif(isset($user_data[0]['photo'])) {
+                    $user_data[0]['photo'] = S3_CDN . 'uploads/user/thumbs/' . $user_data[0]['photo'];
+                } else {
+                    $user_data[0]['photo'] = ASSETS_URL . 'images/user-avatar.png';
+                }
 
                 array_walk_recursive($user_data, function (&$item, $key) {
                     $item = null === $item ? '' : $item;
-                });				
-												
-    	        echo json_encode(array('RESULT' => $user_data, 'MESSAGE' => $this->lang->line('success_msg_profile_saved'), 'STATUS' => 1));
-        	    die();
-			} else {
-				if(isset($user_data[0]['photo'])) {
-	                $user_data[0]['photo'] = S3_CDN . 'uploads/user/thumbs/' . $user_data[0]['photo'];
-				} else {
-					$user_data[0]['photo'] = ASSETS_URL . 'images/user-avatar.png';
-				}
-				if(isset($user_data[0]['dob'])) {
-					$date = date_create($user_data[0]['dob']);
-					$user_data[0]['dob'] = date_format($date, 'd-M-Y');
-				} else {
-					$user_data[0]['dob'] = "";
-				}
+                });             
+                                                
+                echo json_encode(array('RESULT' => $user_data, 'MESSAGE' => $this->lang->line('success_msg_profile_saved'), 'STATUS' => 1));
+                die();
+            } else {
+                if(isset($user_data[0]['photo'])) {
+                    $user_data[0]['photo'] = S3_CDN . 'uploads/user/thumbs/' . $user_data[0]['photo'];
+                } else {
+                    $user_data[0]['photo'] = ASSETS_URL . 'images/user-avatar.png';
+                }
+                if(isset($user_data[0]['dob'])) {
+                    $date = date_create($user_data[0]['dob']);
+                    $user_data[0]['dob'] = date_format($date, 'd-M-Y');
+                } else {
+                    $user_data[0]['dob'] = "";
+                }
 
                 array_walk_recursive($user_data, function (&$item, $key) {
                     $item = null === $item ? '' : $item;
                 });
-				
-				echo json_encode(array('RESULT' => $user_data, 'MESSAGE' => $this->lang->line('success_no_profile_update'), 'STATUS' => 0));
-				//$this->returnData($data = array(), $message = "Email id already exits", $status = 0);
-				die();
-			}
+                
+                echo json_encode(array('RESULT' => $user_data, 'MESSAGE' => $this->lang->line('success_no_profile_update'), 'STATUS' => 0));
+                //$this->returnData($data = array(), $message = "Email id already exits", $status = 0);
+                die();
+            }
         }
     }
 
@@ -977,15 +968,15 @@ class V1 extends CI_Controller {
 
 
         $user_id = $this->input->post('user_id');
-		$country = $this->input->post('country');
+        $country = $this->input->post('country');
         $limit = $this->input->post('limit');
-        $offset = $this->input->post('offset');		
-				
+        $offset = $this->input->post('offset');     
+                
         if ($user_id == '') {
             $error = 1;
             echo json_encode(array('RESULT' => array(), 'MESSAGE' => 'Please enter user id', 'STATUS' => 0));
             exit();
-        } else {		
+        } else {        
             // Get User name
             $join_str = array(
                 array(
@@ -1001,161 +992,161 @@ class V1 extends CI_Controller {
                     'join_type' => 'left'
                 )
             );
-			
-			$showall = false;
+            
+            $showall = false;
 
-			// Get user country
-			if($country == '') {
-				$getcountry = $this->common->select_data_by_id('users', 'id', $user_id, 'country', '');
-				$country = $getcountry[0]['country'];
-				$showall = true;
-			}
-			
-			$contition_array = array('replied_to' => NULL, 'feedback.country' => $country, 'feedback.deleted' => 0, 'feedback.status' => 1);
+            // Get user country
+            if($country == '') {
+                $getcountry = $this->common->select_data_by_id('users', 'id', $user_id, 'country', '');
+                $country = $getcountry[0]['country'];
+                $showall = true;
+            }
+            
+            $contition_array = array('replied_to' => NULL, 'feedback.country' => $country, 'feedback.deleted' => 0, 'feedback.status' => 1);
             $data = 'feedback_id, feedback.title_id, title, name, photo, feedback_cont, feedback_img, feedback_thumb, feedback_video, replied_to, location, feedback.datetime as time';
-			if ($limit != '' && $offset != '') {
-				$feedback = $this->common->select_data_by_condition('feedback', $contition_array, $data, $sortby = 'feedback.datetime', $orderby = 'DESC', $limit, $offset, $join_str, $group_by = '');
-			} else {
-            	$feedback = $this->common->select_data_by_condition('feedback', $contition_array, $data, $sortby = 'feedback.datetime', $orderby = 'DESC', $limit = '', $offset = '', $join_str, $group_by = '');
-			}
-			
-			if(count($feedback) == 0 && $showall == true) {
-				$contition_array = array('replied_to' => NULL, 'feedback.deleted' => 0, 'feedback.status' => 1);
-				$data = 'feedback_id, feedback.title_id, title, name, photo, feedback_cont, feedback_img, feedback_thumb, feedback_video, replied_to, location, feedback.datetime as time';
-				if ($limit != '' && $offset != '') {
-					$feedback = $this->common->select_data_by_condition('feedback', $contition_array, $data, $sortby = 'feedback.datetime', $orderby = 'DESC', $limit, $offset, $join_str, $group_by = '');
-				} else {
-					$feedback = $this->common->select_data_by_condition('feedback', $contition_array, $data, $sortby = 'feedback.datetime', $orderby = 'DESC', $limit = '', $offset = '', $join_str, $group_by = '');
-				}				
-			}
+            if ($limit != '' && $offset != '') {
+                $feedback = $this->common->select_data_by_condition('feedback', $contition_array, $data, $sortby = 'feedback.datetime', $orderby = 'DESC', $limit, $offset, $join_str, $group_by = '');
+            } else {
+                $feedback = $this->common->select_data_by_condition('feedback', $contition_array, $data, $sortby = 'feedback.datetime', $orderby = 'DESC', $limit = '', $offset = '', $join_str, $group_by = '');
+            }
+            
+            if(count($feedback) == 0 && $showall == true) {
+                $contition_array = array('replied_to' => NULL, 'feedback.deleted' => 0, 'feedback.status' => 1);
+                $data = 'feedback_id, feedback.title_id, title, name, photo, feedback_cont, feedback_img, feedback_thumb, feedback_video, replied_to, location, feedback.datetime as time';
+                if ($limit != '' && $offset != '') {
+                    $feedback = $this->common->select_data_by_condition('feedback', $contition_array, $data, $sortby = 'feedback.datetime', $orderby = 'DESC', $limit, $offset, $join_str, $group_by = '');
+                } else {
+                    $feedback = $this->common->select_data_by_condition('feedback', $contition_array, $data, $sortby = 'feedback.datetime', $orderby = 'DESC', $limit = '', $offset = '', $join_str, $group_by = '');
+                }               
+            }
 
-			// echo "<pre>";
-			// print_r($feedback);
-			// exit();
+            // echo "<pre>";
+            // print_r($feedback);
+            // exit();
 
             $return_array = array();
-			$total_records = count($feedback);
-			
-			if($total_records > 0) {
-				foreach ($feedback as $item) {
-					$return = array();
-					$return['id'] = $item['feedback_id'];
-					$return['title_id'] = $item['title_id'];				
-					$return['title'] = $item['title'];
-					
-					// Get likes for this feedback
-					$contition_array_lk = array('feedback_id' => $item['feedback_id']);
-					$flikes = $this->common->select_data_by_condition('feedback_likes', $contition_array_lk, $data = '*', $short_by = '', $order_by = '', $limit = '', $offset = '', $join_str = array(), $group_by = '');
-					
-					$return['likes'] = "";
-					
-					if(count($flikes) > 1000) {
-						$return['likes'] = (count($flikes)/1000)."k";
-					} else {
-						$return['likes'] = count($flikes);
-					}
-					
-					// Get followers for this title
-					$contition_array_fo = array('title_id' => $item['title_id']);
-					$followings = $this->common->select_data_by_condition('followings', $contition_array_fo, $data = '*', $short_by = '', $order_by = '', $limit = '', $offset = '', $join_str = array(), $group_by = '');
-					
-					$return['followers'] = "";
-					
-					if(count($followings) > 1000) {
-						$return['followers'] = (count($followings)/1000)."k";
-					} else {
-						$return['followers'] = count($followings);
-					}
-					
-					// Check If user liked this feedback
-					$contition_array_li = array('feedback_id' => $item['feedback_id'], 'user_id' => $user_id);
-					$likes = $this->common->select_data_by_condition('feedback_likes', $contition_array_li, $data = '*', $short_by = '', $order_by = '', $limit = '', $offset = '', $join_str = array(), $group_by = '');
-								
-					if(count($likes) > 0) {
-						$return['is_liked'] = TRUE;
-					} else {
-						$return['is_liked'] = FALSE;
-					}
-					
-					// Check If user followed this title
-					$contition_array_ti = array('title_id' => $item['title_id'], 'user_id' => $user_id);
-					$followtitles = $this->common->select_data_by_condition('followings', $contition_array_ti, $data = '*', $short_by = '', $order_by = '', $limit = '', $offset = '', $join_str = array(), $group_by = '');
-								
-					if(count($followtitles) > 0) {
-						$return['is_followed'] = TRUE;
-					} else {
-						$return['is_followed'] = FALSE;
-					}
-					
-					$return['name'] = $item['name'];
-					
-					if(isset($item['photo'])) {
-						$return['user_avatar'] = S3_CDN . 'uploads/user/thumbs/' . $item['photo'];
-					} else {
-						$return['user_avatar'] = ASSETS_URL . 'images/user-avatar.png';
-					}
-					
-					if($item['feedback_img'] !== "") {
-						$return['feedback_img'] = S3_CDN . 'uploads/feedback/main/' . $item['feedback_img'];
-					} else {
-						$return['feedback_img'] = "";
-					}
-	
-					if($item['feedback_thumb'] !== "") {
-						$return['feedback_thumb'] = S3_CDN . 'uploads/feedback/thumbs/' . $item['feedback_thumb'];
-					} elseif($item['feedback_img'] !== "") {
-						$return['feedback_thumb'] = S3_CDN . 'uploads/feedback/main/' . $item['feedback_img'];
-					} else {
-						$return['feedback_thumb'] = "";
-					}
-					
-					if($item['feedback_video'] !== "") {
-						$return['feedback_video'] = S3_CDN . 'uploads/feedback/video/' . $item['feedback_video'];
-						//$return['feedback_thumb'] = S3_CDN . 'uploads/feedback/thumbs/video_thumbnail.png';
-					} else {
-						$return['feedback_video'] = "";
-					}
-	
-					$return['location'] = $item['location'];
-					$return['feedback'] = $item['feedback_cont'];
-					$return['time'] = $this->common->timeAgo($item['time']);
-	
-					array_push($return_array, $return);
-				}
-	
-				// Null to Empty String
-				array_walk_recursive($return_array, function (&$item, $key) {
-					$item = null === $item ? '' : $item;
-				});
-	
-				echo json_encode(array('RESULT' => $return_array, 'TOTAL' => $total_records,'MESSAGE' => 'SUCCESS', 'STATUS' => 1));
-				exit();
-			} else {
-				echo json_encode(array('RESULT' => array(), 'TOTAL' => 0,'MESSAGE' => $this->lang->line('no_record_found'), 'STATUS' => 0));
-				exit();
-			}
+            $total_records = count($feedback);
+            
+            if($total_records > 0) {
+                foreach ($feedback as $item) {
+                    $return = array();
+                    $return['id'] = $item['feedback_id'];
+                    $return['title_id'] = $item['title_id'];                
+                    $return['title'] = $item['title'];
+                    
+                    // Get likes for this feedback
+                    $contition_array_lk = array('feedback_id' => $item['feedback_id']);
+                    $flikes = $this->common->select_data_by_condition('feedback_likes', $contition_array_lk, $data = '*', $short_by = '', $order_by = '', $limit = '', $offset = '', $join_str = array(), $group_by = '');
+                    
+                    $return['likes'] = "";
+                    
+                    if(count($flikes) > 1000) {
+                        $return['likes'] = (count($flikes)/1000)."k";
+                    } else {
+                        $return['likes'] = count($flikes);
+                    }
+                    
+                    // Get followers for this title
+                    $contition_array_fo = array('title_id' => $item['title_id']);
+                    $followings = $this->common->select_data_by_condition('followings', $contition_array_fo, $data = '*', $short_by = '', $order_by = '', $limit = '', $offset = '', $join_str = array(), $group_by = '');
+                    
+                    $return['followers'] = "";
+                    
+                    if(count($followings) > 1000) {
+                        $return['followers'] = (count($followings)/1000)."k";
+                    } else {
+                        $return['followers'] = count($followings);
+                    }
+                    
+                    // Check If user liked this feedback
+                    $contition_array_li = array('feedback_id' => $item['feedback_id'], 'user_id' => $user_id);
+                    $likes = $this->common->select_data_by_condition('feedback_likes', $contition_array_li, $data = '*', $short_by = '', $order_by = '', $limit = '', $offset = '', $join_str = array(), $group_by = '');
+                                
+                    if(count($likes) > 0) {
+                        $return['is_liked'] = TRUE;
+                    } else {
+                        $return['is_liked'] = FALSE;
+                    }
+                    
+                    // Check If user followed this title
+                    $contition_array_ti = array('title_id' => $item['title_id'], 'user_id' => $user_id);
+                    $followtitles = $this->common->select_data_by_condition('followings', $contition_array_ti, $data = '*', $short_by = '', $order_by = '', $limit = '', $offset = '', $join_str = array(), $group_by = '');
+                                
+                    if(count($followtitles) > 0) {
+                        $return['is_followed'] = TRUE;
+                    } else {
+                        $return['is_followed'] = FALSE;
+                    }
+                    
+                    $return['name'] = $item['name'];
+                    
+                    if(isset($item['photo'])) {
+                        $return['user_avatar'] = S3_CDN . 'uploads/user/thumbs/' . $item['photo'];
+                    } else {
+                        $return['user_avatar'] = ASSETS_URL . 'images/user-avatar.png';
+                    }
+                    
+                    if($item['feedback_img'] !== "") {
+                        $return['feedback_img'] = S3_CDN . 'uploads/feedback/main/' . $item['feedback_img'];
+                    } else {
+                        $return['feedback_img'] = "";
+                    }
+    
+                    if($item['feedback_thumb'] !== "") {
+                        $return['feedback_thumb'] = S3_CDN . 'uploads/feedback/thumbs/' . $item['feedback_thumb'];
+                    } elseif($item['feedback_img'] !== "") {
+                        $return['feedback_thumb'] = S3_CDN . 'uploads/feedback/main/' . $item['feedback_img'];
+                    } else {
+                        $return['feedback_thumb'] = "";
+                    }
+                    
+                    if($item['feedback_video'] !== "") {
+                        $return['feedback_video'] = S3_CDN . 'uploads/feedback/video/' . $item['feedback_video'];
+                        //$return['feedback_thumb'] = S3_CDN . 'uploads/feedback/thumbs/video_thumbnail.png';
+                    } else {
+                        $return['feedback_video'] = "";
+                    }
+    
+                    $return['location'] = $item['location'];
+                    $return['feedback'] = $item['feedback_cont'];
+                    $return['time'] = $this->common->timeAgo($item['time']);
+    
+                    array_push($return_array, $return);
+                }
+    
+                // Null to Empty String
+                array_walk_recursive($return_array, function (&$item, $key) {
+                    $item = null === $item ? '' : $item;
+                });
+    
+                echo json_encode(array('RESULT' => $return_array, 'TOTAL' => $total_records,'MESSAGE' => 'SUCCESS', 'STATUS' => 1));
+                exit();
+            } else {
+                echo json_encode(array('RESULT' => array(), 'TOTAL' => 0,'MESSAGE' => $this->lang->line('no_record_found'), 'STATUS' => 0));
+                exit();
+            }
         }
     }
 
     // Get All Feedbacks for selected title
     function get_feedbacks() {
         $user_id = $this->input->post('user_id');
-        $title_id = $this->input->post('title_id');		
+        $title_id = $this->input->post('title_id');     
         $limit = $this->input->post('limit');
-        $offset = $this->input->post('offset');		
-				
+        $offset = $this->input->post('offset');     
+                
         if ($user_id == '') {
             $error = 1;
             echo json_encode(array('RESULT' => array(), 'MESSAGE' => 'Please enter user id', 'STATUS' => 0));
             exit();
         } else {
-			if($title_id != '') {
-				$where = array('feedback.title_id' => $title_id, 'feedback.replied_to' => NULL, 'feedback.deleted' => 0, 'feedback.status' => 1);
-			} elseif ($user_id != '') {
-				$where = array('feedback.user_id' => $user_id, 'feedback.replied_to' => NULL, 'feedback.deleted' => 0, 'feedback.status' => 1);
-			}
-			$total_records = $this->common->get_count_of_table('feedback', $where);
-			
+            if($title_id != '') {
+                $where = array('feedback.title_id' => $title_id, 'feedback.replied_to' => NULL, 'feedback.deleted' => 0, 'feedback.status' => 1);
+            } elseif ($user_id != '') {
+                $where = array('feedback.user_id' => $user_id, 'feedback.replied_to' => NULL, 'feedback.deleted' => 0, 'feedback.status' => 1);
+            }
+            $total_records = $this->common->get_count_of_table('feedback', $where);
+            
             // Get User name
             $join_str = array(
                 array(
@@ -1172,53 +1163,53 @@ class V1 extends CI_Controller {
                 )
             );
 
-			if($title_id != '') {
-	            $contition_array = array('feedback.title_id' => $title_id, 'feedback.replied_to' => NULL, 'feedback.deleted' => 0, 'feedback.status' => 1);
-			} elseif($user_id != '') {
-	            $contition_array = array('feedback.user_id' => $user_id, 'feedback.replied_to' => NULL, 'feedback.deleted' => 0, 'feedback.status' => 1);
-			}
-			
+            if($title_id != '') {
+                $contition_array = array('feedback.title_id' => $title_id, 'feedback.replied_to' => NULL, 'feedback.deleted' => 0, 'feedback.status' => 1);
+            } elseif($user_id != '') {
+                $contition_array = array('feedback.user_id' => $user_id, 'feedback.replied_to' => NULL, 'feedback.deleted' => 0, 'feedback.status' => 1);
+            }
+            
             $data = 'feedback_id, feedback.title_id, title, name, photo, feedback_cont, feedback_img, feedback_thumb, feedback_video, replied_to, location, feedback.datetime as time';
-			if ($limit != '' && $offset != '') {
-				$feedback = $this->common->select_data_by_condition('feedback', $contition_array, $data, $sortby = 'feedback.datetime', $orderby = 'DESC', $limit, $offset, $join_str, $group_by = '');
-			} else {
-            	$feedback = $this->common->select_data_by_condition('feedback', $contition_array, $data, $sortby = 'feedback.datetime', $orderby = 'DESC', $limit = '', $offset = '', $join_str, $group_by = '');
-			}
+            if ($limit != '' && $offset != '') {
+                $feedback = $this->common->select_data_by_condition('feedback', $contition_array, $data, $sortby = 'feedback.datetime', $orderby = 'DESC', $limit, $offset, $join_str, $group_by = '');
+            } else {
+                $feedback = $this->common->select_data_by_condition('feedback', $contition_array, $data, $sortby = 'feedback.datetime', $orderby = 'DESC', $limit = '', $offset = '', $join_str, $group_by = '');
+            }
 
-//			 echo "<pre>";
-//			 print_r($feedback);
-//			 exit();
+//           echo "<pre>";
+//           print_r($feedback);
+//           exit();
 
             $return_array = array();
             foreach ($feedback as $item) {
                 $return = array();
                 $return['id'] = $item['feedback_id'];
-                $return['title_id'] = $item['title_id'];				
+                $return['title_id'] = $item['title_id'];                
                 $return['title'] = $item['title'];
-				
-				// Get likes for this feedback
-				$contition_array_lk = array('feedback_id' => $item['feedback_id']);
-				$flikes = $this->common->select_data_by_condition('feedback_likes', $contition_array_lk, $data = '*', $short_by = '', $order_by = '', $limit = '', $offset = '', $join_str = array(), $group_by = '');
-				
-				$return['likes'] = "";
-				
-				if(count($flikes) > 1000) {
-					$return['likes'] = (count($flikes)/1000)."k";
-				} else {
-					$return['likes'] = count($flikes);
-				}
-				
-				// Get followers for this title
-				$contition_array_fo = array('title_id' => $item['title_id']);
-				$followings = $this->common->select_data_by_condition('followings', $contition_array_fo, $data = '*', $short_by = '', $order_by = '', $limit = '', $offset = '', $join_str = array(), $group_by = '');
-				
-				$return['followers'] = "";
-				
-				if(count($followings) > 1000) {
-					$return['followers'] = (count($followings)/1000)."k";
-				} else {
-					$return['followers'] = count($followings);
-				}
+                
+                // Get likes for this feedback
+                $contition_array_lk = array('feedback_id' => $item['feedback_id']);
+                $flikes = $this->common->select_data_by_condition('feedback_likes', $contition_array_lk, $data = '*', $short_by = '', $order_by = '', $limit = '', $offset = '', $join_str = array(), $group_by = '');
+                
+                $return['likes'] = "";
+                
+                if(count($flikes) > 1000) {
+                    $return['likes'] = (count($flikes)/1000)."k";
+                } else {
+                    $return['likes'] = count($flikes);
+                }
+                
+                // Get followers for this title
+                $contition_array_fo = array('title_id' => $item['title_id']);
+                $followings = $this->common->select_data_by_condition('followings', $contition_array_fo, $data = '*', $short_by = '', $order_by = '', $limit = '', $offset = '', $join_str = array(), $group_by = '');
+                
+                $return['followers'] = "";
+                
+                if(count($followings) > 1000) {
+                    $return['followers'] = (count($followings)/1000)."k";
+                } else {
+                    $return['followers'] = count($followings);
+                }
 
                 // Check If user reported this feedback
                 $contition_array_rs = array('feedback_id' => $item['feedback_id'], 'user_id' => $user_id);
@@ -1229,56 +1220,56 @@ class V1 extends CI_Controller {
                 } else {
                     $return['report_spam'] = FALSE;
                 }
-				
-				// Check If user liked this feedback
-				$contition_array_li = array('feedback_id' => $item['feedback_id'], 'user_id' => $user_id);
-				$likes = $this->common->select_data_by_condition('feedback_likes', $contition_array_li, $data = '*', $short_by = '', $order_by = '', $limit = '', $offset = '', $join_str = array(), $group_by = '');
-							
-				if(count($likes) > 0) {
-					$return['is_liked'] = TRUE;
-				} else {
-					$return['is_liked'] = FALSE;
-				}
-				
-				// Check If user followed this title
-				$contition_array_ti = array('title_id' => $item['title_id'], 'user_id' => $user_id);
-				$followtitles = $this->common->select_data_by_condition('followings', $contition_array_ti, $data = '*', $short_by = '', $order_by = '', $limit = '', $offset = '', $join_str = array(), $group_by = '');
-							
-				if(count($followtitles) > 0) {
-					$return['is_followed'] = TRUE;
-				} else {
-					$return['is_followed'] = FALSE;
-				}
-				
+                
+                // Check If user liked this feedback
+                $contition_array_li = array('feedback_id' => $item['feedback_id'], 'user_id' => $user_id);
+                $likes = $this->common->select_data_by_condition('feedback_likes', $contition_array_li, $data = '*', $short_by = '', $order_by = '', $limit = '', $offset = '', $join_str = array(), $group_by = '');
+                            
+                if(count($likes) > 0) {
+                    $return['is_liked'] = TRUE;
+                } else {
+                    $return['is_liked'] = FALSE;
+                }
+                
+                // Check If user followed this title
+                $contition_array_ti = array('title_id' => $item['title_id'], 'user_id' => $user_id);
+                $followtitles = $this->common->select_data_by_condition('followings', $contition_array_ti, $data = '*', $short_by = '', $order_by = '', $limit = '', $offset = '', $join_str = array(), $group_by = '');
+                            
+                if(count($followtitles) > 0) {
+                    $return['is_followed'] = TRUE;
+                } else {
+                    $return['is_followed'] = FALSE;
+                }
+                
                 $return['name'] = $item['name'];
-				
-				if(isset($item['photo'])) {
-	                $return['user_avatar'] = S3_CDN . 'uploads/user/thumbs/' . $item['photo'];
-				} else {
-					$return['user_avatar'] = ASSETS_URL . 'images/user-avatar.png';
-				}
-				
-				if($item['feedback_img'] !== "") {
-	                $return['feedback_img'] = S3_CDN . 'uploads/feedback/main/' . $item['feedback_img'];
-				} else {
-					$return['feedback_img'] = "";
-				}
+                
+                if(isset($item['photo'])) {
+                    $return['user_avatar'] = S3_CDN . 'uploads/user/thumbs/' . $item['photo'];
+                } else {
+                    $return['user_avatar'] = ASSETS_URL . 'images/user-avatar.png';
+                }
+                
+                if($item['feedback_img'] !== "") {
+                    $return['feedback_img'] = S3_CDN . 'uploads/feedback/main/' . $item['feedback_img'];
+                } else {
+                    $return['feedback_img'] = "";
+                }
 
                 if($item['feedback_thumb'] !== "") {
                     $return['feedback_thumb'] = S3_CDN . 'uploads/feedback/thumbs/' . $item['feedback_thumb'];
                 } else {
                     $return['feedback_thumb'] = "";
                 }
-				
-				if($item['feedback_video'] !== "") {
-	                $return['feedback_video'] = S3_CDN . 'uploads/feedback/video/' . $item['feedback_video'];
-					//$return['feedback_thumb'] = S3_CDN . 'uploads/feedback/thumbs/video_thumbnail.png';
-				} else {
-					$return['feedback_video'] = "";
-				}
+                
+                if($item['feedback_video'] !== "") {
+                    $return['feedback_video'] = S3_CDN . 'uploads/feedback/video/' . $item['feedback_video'];
+                    //$return['feedback_thumb'] = S3_CDN . 'uploads/feedback/thumbs/video_thumbnail.png';
+                } else {
+                    $return['feedback_video'] = "";
+                }
 
                 $return['feedback'] = $item['feedback_cont'];
-                $return['location'] = $item['location'];				
+                $return['location'] = $item['location'];                
                 $return['time'] = $this->common->timeAgo($item['time']);
 
                 array_push($return_array, $return);
@@ -1289,19 +1280,19 @@ class V1 extends CI_Controller {
                 $item = null === $item ? '' : $item;
             });
 
-			echo json_encode(array('RESULT' => $return_array, 'TOTAL' => $total_records,'MESSAGE' => 'SUCCESS', 'STATUS' => 1));
+            echo json_encode(array('RESULT' => $return_array, 'TOTAL' => $total_records,'MESSAGE' => 'SUCCESS', 'STATUS' => 1));
             exit();
         }
     }
-	
-	// Get All Feedbacks for a Query string
+    
+    // Get All Feedbacks for a Query string
     function search_results() {
         $user_id = $this->input->post('user_id');
-        $qs = $this->input->post('qs');		
+        $qs = $this->input->post('qs');     
         $limit = $this->input->post('limit');
-        $offset = $this->input->post('offset');		
-		
-		if ($user_id == '') {
+        $offset = $this->input->post('offset');     
+        
+        if ($user_id == '') {
             $error = 1;
             echo json_encode(array('RESULT' => array(), 'MESSAGE' => 'Please enter user id', 'STATUS' => 0));
             exit();
@@ -1357,7 +1348,7 @@ class V1 extends CI_Controller {
                     $this->common->insert_data($insert_array, $tablename = 'search_log');
                 }
             }
-			
+            
             // Get User name
             $join_str = array(
                 array(
@@ -1375,139 +1366,139 @@ class V1 extends CI_Controller {
             );
 
             // Get Search Results
-			$search_condition = "(`title` LIKE '%".$qs."%' OR `feedback_cont` LIKE '%".$qs."%') AND db_feedback.deleted = 0 AND feedback.status = 1";
+            $search_condition = "(`title` LIKE '%".$qs."%' OR `feedback_cont` LIKE '%".$qs."%') AND db_feedback.deleted = 0 AND feedback.status = 1";
             $data = 'feedback_id, feedback.title_id, title, name, photo, feedback_cont, feedback_img, feedback_thumb, feedback_video, replied_to, location, feedback.datetime as time';
 
-			if ($limit != '' && $offset != '') {
-				$feedback = $this->common->select_data_by_search('feedback', $search_condition, $condition_array = array(), $data, $sortby = '', $orderby = '', $limit, $offset, $join_str);
-			} else {
-            	$feedback = $this->common->select_data_by_search('feedback', $search_condition, $condition_array = array(), $data, $sortby = '', $orderby = '', $limit = '', $offset = '', $join_str);
-			}
-			
-			if(count($feedback) > 0) {
-				
-				$return_array = array();
-				foreach ($feedback as $item) {
-					$return = array();
-					$return['id'] = $item['feedback_id'];
-					$return['title_id'] = $item['title_id'];				
-					$return['title'] = $item['title'];
-					
-					// Get likes for this feedback
-					$contition_array_lk = array('feedback_id' => $item['feedback_id']);
-					$flikes = $this->common->select_data_by_condition('feedback_likes', $contition_array_lk, $data = '*', $short_by = '', $order_by = '', $limit = '', $offset = '', $join_str = array(), $group_by = '');
-					
-					$return['likes'] = "";
-					
-					if(count($flikes) > 1000) {
-						$return['likes'] = (count($flikes)/1000)."k";
-					} else {
-						$return['likes'] = count($flikes);
-					}
-					
-					// Get followers for this title
-					$contition_array_fo = array('title_id' => $item['title_id']);
-					$followings = $this->common->select_data_by_condition('followings', $contition_array_fo, $data = '*', $short_by = '', $order_by = '', $limit = '', $offset = '', $join_str = array(), $group_by = '');
-					
-					$return['followers'] = "";
-					
-					if(count($followings) > 1000) {
-						$return['followers'] = (count($followings)/1000)."k";
-					} else {
-						$return['followers'] = count($followings);
-					}
-					
-					// Check If user liked this feedback
-					$contition_array_li = array('feedback_id' => $item['feedback_id'], 'user_id' => $user_id);
-					$likes = $this->common->select_data_by_condition('feedback_likes', $contition_array_li, $data = '*', $short_by = '', $order_by = '', $limit = '', $offset = '', $join_str = array(), $group_by = '');
-								
-					if(count($likes) > 0) {
-						$return['is_liked'] = TRUE;
-					} else {
-						$return['is_liked'] = FALSE;
-					}
-					
-					// Check If user followed this title
-					$contition_array_ti = array('title_id' => $item['title_id'], 'user_id' => $user_id);
-					$followtitles = $this->common->select_data_by_condition('followings', $contition_array_ti, $data = '*', $short_by = '', $order_by = '', $limit = '', $offset = '', $join_str = array(), $group_by = '');
-								
-					if(count($followtitles) > 0) {
-						$return['is_followed'] = TRUE;
-					} else {
-						$return['is_followed'] = FALSE;
-					}
-					
-					$return['name'] = $item['name'];
-					
-					if(isset($item['photo'])) {
-						$return['user_avatar'] = S3_CDN . 'uploads/user/thumbs/' . $item['photo'];
-					} else {
-						$return['user_avatar'] = ASSETS_URL . 'images/user-avatar.png';
-					}
-					
-					if($item['feedback_img'] !== "") {
-						$return['feedback_img'] = S3_CDN . 'uploads/feedback/main/' . $item['feedback_img'];
-					} else {
-						$return['feedback_img'] = "";
-					}
-	
-					if($item['feedback_thumb'] !== "") {
-						$return['feedback_thumb'] = S3_CDN . 'uploads/feedback/thumbs/' . $item['feedback_thumb'];
-					} else {
-						$return['feedback_thumb'] = "";
-					}
-					
-					if($item['feedback_video'] !== "") {
-						$return['feedback_video'] = S3_CDN . 'uploads/feedback/video/' . $item['feedback_video'];
-						//$return['feedback_thumb'] = S3_CDN . 'uploads/feedback/thumbs/video_thumbnail.png';
-					} else {
-						$return['feedback_video'] = "";
-					}
-	
-					$return['feedback'] = $item['feedback_cont'];
-					$return['location'] = $item['location'];				
-					$return['time'] = $this->common->timeAgo($item['time']);
-	
-					array_push($return_array, $return);
-				}
-	
-				// Null to Empty String
-				array_walk_recursive($return_array, function (&$item, $key) {
-					$item = null === $item ? '' : $item;
-				});
-				
-				$total_records = count($return_array);
-	
-				// API LOG
-				// $insert_array['post_request'] = json_encode(array('RESULT' => $this->input->post(), 'MESSAGE' => '', 'STATUS' => 0));
-				// $insert_array['json_response'] = json_encode(array('RESULT' => $return_array, 'MESSAGE' => '', 'STATUS' => 0));
-				// $insert_array['log_time'] = date('Y-m-d H:i:s');
-				
-				// $insert_result = $this->common->insert_data($insert_array, $tablename = 'api_log');
-			
-				echo json_encode(array('RESULT' => $return_array, 'TOTAL' => $total_records,'MESSAGE' => 'SUCCESS', 'STATUS' => 1));
-				exit();
-			} else {
-				echo json_encode(array('RESULT' => array(), 'TOTAL' => 0,'MESSAGE' => $this->lang->line('no_record_found'), 'STATUS' => 0));
-				exit();
-			}
+            if ($limit != '' && $offset != '') {
+                $feedback = $this->common->select_data_by_search('feedback', $search_condition, $condition_array = array(), $data, $sortby = '', $orderby = '', $limit, $offset, $join_str);
+            } else {
+                $feedback = $this->common->select_data_by_search('feedback', $search_condition, $condition_array = array(), $data, $sortby = '', $orderby = '', $limit = '', $offset = '', $join_str);
+            }
+            
+            if(count($feedback) > 0) {
+                
+                $return_array = array();
+                foreach ($feedback as $item) {
+                    $return = array();
+                    $return['id'] = $item['feedback_id'];
+                    $return['title_id'] = $item['title_id'];                
+                    $return['title'] = $item['title'];
+                    
+                    // Get likes for this feedback
+                    $contition_array_lk = array('feedback_id' => $item['feedback_id']);
+                    $flikes = $this->common->select_data_by_condition('feedback_likes', $contition_array_lk, $data = '*', $short_by = '', $order_by = '', $limit = '', $offset = '', $join_str = array(), $group_by = '');
+                    
+                    $return['likes'] = "";
+                    
+                    if(count($flikes) > 1000) {
+                        $return['likes'] = (count($flikes)/1000)."k";
+                    } else {
+                        $return['likes'] = count($flikes);
+                    }
+                    
+                    // Get followers for this title
+                    $contition_array_fo = array('title_id' => $item['title_id']);
+                    $followings = $this->common->select_data_by_condition('followings', $contition_array_fo, $data = '*', $short_by = '', $order_by = '', $limit = '', $offset = '', $join_str = array(), $group_by = '');
+                    
+                    $return['followers'] = "";
+                    
+                    if(count($followings) > 1000) {
+                        $return['followers'] = (count($followings)/1000)."k";
+                    } else {
+                        $return['followers'] = count($followings);
+                    }
+                    
+                    // Check If user liked this feedback
+                    $contition_array_li = array('feedback_id' => $item['feedback_id'], 'user_id' => $user_id);
+                    $likes = $this->common->select_data_by_condition('feedback_likes', $contition_array_li, $data = '*', $short_by = '', $order_by = '', $limit = '', $offset = '', $join_str = array(), $group_by = '');
+                                
+                    if(count($likes) > 0) {
+                        $return['is_liked'] = TRUE;
+                    } else {
+                        $return['is_liked'] = FALSE;
+                    }
+                    
+                    // Check If user followed this title
+                    $contition_array_ti = array('title_id' => $item['title_id'], 'user_id' => $user_id);
+                    $followtitles = $this->common->select_data_by_condition('followings', $contition_array_ti, $data = '*', $short_by = '', $order_by = '', $limit = '', $offset = '', $join_str = array(), $group_by = '');
+                                
+                    if(count($followtitles) > 0) {
+                        $return['is_followed'] = TRUE;
+                    } else {
+                        $return['is_followed'] = FALSE;
+                    }
+                    
+                    $return['name'] = $item['name'];
+                    
+                    if(isset($item['photo'])) {
+                        $return['user_avatar'] = S3_CDN . 'uploads/user/thumbs/' . $item['photo'];
+                    } else {
+                        $return['user_avatar'] = ASSETS_URL . 'images/user-avatar.png';
+                    }
+                    
+                    if($item['feedback_img'] !== "") {
+                        $return['feedback_img'] = S3_CDN . 'uploads/feedback/main/' . $item['feedback_img'];
+                    } else {
+                        $return['feedback_img'] = "";
+                    }
+    
+                    if($item['feedback_thumb'] !== "") {
+                        $return['feedback_thumb'] = S3_CDN . 'uploads/feedback/thumbs/' . $item['feedback_thumb'];
+                    } else {
+                        $return['feedback_thumb'] = "";
+                    }
+                    
+                    if($item['feedback_video'] !== "") {
+                        $return['feedback_video'] = S3_CDN . 'uploads/feedback/video/' . $item['feedback_video'];
+                        //$return['feedback_thumb'] = S3_CDN . 'uploads/feedback/thumbs/video_thumbnail.png';
+                    } else {
+                        $return['feedback_video'] = "";
+                    }
+    
+                    $return['feedback'] = $item['feedback_cont'];
+                    $return['location'] = $item['location'];                
+                    $return['time'] = $this->common->timeAgo($item['time']);
+    
+                    array_push($return_array, $return);
+                }
+    
+                // Null to Empty String
+                array_walk_recursive($return_array, function (&$item, $key) {
+                    $item = null === $item ? '' : $item;
+                });
+                
+                $total_records = count($return_array);
+    
+                // API LOG
+                // $insert_array['post_request'] = json_encode(array('RESULT' => $this->input->post(), 'MESSAGE' => '', 'STATUS' => 0));
+                // $insert_array['json_response'] = json_encode(array('RESULT' => $return_array, 'MESSAGE' => '', 'STATUS' => 0));
+                // $insert_array['log_time'] = date('Y-m-d H:i:s');
+                
+                // $insert_result = $this->common->insert_data($insert_array, $tablename = 'api_log');
+            
+                echo json_encode(array('RESULT' => $return_array, 'TOTAL' => $total_records,'MESSAGE' => 'SUCCESS', 'STATUS' => 1));
+                exit();
+            } else {
+                echo json_encode(array('RESULT' => array(), 'TOTAL' => 0,'MESSAGE' => $this->lang->line('no_record_found'), 'STATUS' => 0));
+                exit();
+            }
         }
     }
-	
-	// Get All Followings for selected user
+    
+    // Get All Followings for selected user
     function get_followings() {
         $user_id = $this->input->post('user_id');
         $limit = $this->input->post('limit');
-        $offset = $this->input->post('offset');				
-				
+        $offset = $this->input->post('offset');             
+                
         if ($user_id == '') {
             $error = 1;
             echo json_encode(array('RESULT' => array(), 'MESSAGE' => 'Please enter user id', 'STATUS' => 0));
             exit();
         } else {
-//			$where = array('followings.user_id' => $user_id, 'feedback.title_id' => 'followings.title_id');
-//			$total_records = $this->common->get_count_of_table('feedback', $where);
-			
+//          $where = array('followings.user_id' => $user_id, 'feedback.title_id' => 'followings.title_id');
+//          $total_records = $this->common->get_count_of_table('feedback', $where);
+            
             // Get User name
             $join_str = array(
                 array(
@@ -1530,101 +1521,101 @@ class V1 extends CI_Controller {
                 )
             );
 
-			$contition_array = array('followings.user_id' => $user_id, 'feedback.replied_to' => NULL, 'feedback.deleted' => 0, 'feedback.status' => 1);
-			$data = 'feedback_id, feedback.title_id, title, name, photo, feedback_cont, feedback_img, feedback_thumb, feedback_video, replied_to, location, feedback.datetime as time';
-			
-			if ($limit != '' && $offset != '') {
-				$feedback = $this->common->select_data_by_condition('feedback', $contition_array, $data, $sortby = 'feedback.datetime', $orderby = 'DESC', $limit, $offset, $join_str, $group_by = '');
-			} else {
-            	$feedback = $this->common->select_data_by_condition('feedback', $contition_array, $data, $sortby = 'feedback.datetime', $orderby = 'DESC', $limit = '', $offset = '', $join_str, $group_by = '');
-			}
-			
-			$total_records = count($feedback);
+            $contition_array = array('followings.user_id' => $user_id, 'feedback.replied_to' => NULL, 'feedback.deleted' => 0, 'feedback.status' => 1);
+            $data = 'feedback_id, feedback.title_id, title, name, photo, feedback_cont, feedback_img, feedback_thumb, feedback_video, replied_to, location, feedback.datetime as time';
+            
+            if ($limit != '' && $offset != '') {
+                $feedback = $this->common->select_data_by_condition('feedback', $contition_array, $data, $sortby = 'feedback.datetime', $orderby = 'DESC', $limit, $offset, $join_str, $group_by = '');
+            } else {
+                $feedback = $this->common->select_data_by_condition('feedback', $contition_array, $data, $sortby = 'feedback.datetime', $orderby = 'DESC', $limit = '', $offset = '', $join_str, $group_by = '');
+            }
+            
+            $total_records = count($feedback);
 
-//			 echo "<pre>";
-//			 print_r($feedback);
-//			 exit();
+//           echo "<pre>";
+//           print_r($feedback);
+//           exit();
 
             $return_array = array();
             foreach ($feedback as $item) {
                 $return = array();
                 $return['id'] = $item['feedback_id'];
-                $return['title_id'] = $item['title_id'];				
+                $return['title_id'] = $item['title_id'];                
                 $return['title'] = $item['title'];
-				
-				// Get likes for this feedback
-				$contition_array_lk = array('feedback_id' => $item['feedback_id']);
-				$flikes = $this->common->select_data_by_condition('feedback_likes', $contition_array_lk, $data = '*', $short_by = '', $order_by = '', $limit = '', $offset = '', $join_str = array(), $group_by = '');
-				
-				$return['likes'] = "";
-				
-				if(count($flikes) > 1000) {
-					$return['likes'] = (count($flikes)/1000)."k";
-				} else {
-					$return['likes'] = count($flikes);
-				}
-				
-				// Get followers for this title
-				$contition_array_fo = array('title_id' => $item['title_id']);
-				$followings = $this->common->select_data_by_condition('followings', $contition_array_fo, $data = '*', $short_by = '', $order_by = '', $limit = '', $offset = '', $join_str = array(), $group_by = '');
-				
-				$return['followers'] = "";
-				
-				if(count($followings) > 1000) {
-					$return['followers'] = (count($followings)/1000)."k";
-				} else {
-					$return['followers'] = count($followings);
-				}
-				
-				// Check If user liked this feedback
-				$contition_array_li = array('feedback_id' => $item['feedback_id'], 'user_id' => $user_id);
-				$likes = $this->common->select_data_by_condition('feedback_likes', $contition_array_li, $data = '*', $short_by = '', $order_by = '', $limit = '', $offset = '', $join_str = array(), $group_by = '');
-							
-				if(count($likes) > 0) {
-					$return['is_liked'] = TRUE;
-				} else {
-					$return['is_liked'] = FALSE;
-				}
-				
-				// Check If user followed this title
-				$contition_array_ti = array('title_id' => $item['title_id'], 'user_id' => $user_id);
-				$followtitles = $this->common->select_data_by_condition('followings', $contition_array_ti, $data = '*', $short_by = '', $order_by = '', $limit = '', $offset = '', $join_str = array(), $group_by = '');
-							
-				if(count($followtitles) > 0) {
-					$return['is_followed'] = TRUE;
-				} else {
-					$return['is_followed'] = FALSE;
-				}
-				
+                
+                // Get likes for this feedback
+                $contition_array_lk = array('feedback_id' => $item['feedback_id']);
+                $flikes = $this->common->select_data_by_condition('feedback_likes', $contition_array_lk, $data = '*', $short_by = '', $order_by = '', $limit = '', $offset = '', $join_str = array(), $group_by = '');
+                
+                $return['likes'] = "";
+                
+                if(count($flikes) > 1000) {
+                    $return['likes'] = (count($flikes)/1000)."k";
+                } else {
+                    $return['likes'] = count($flikes);
+                }
+                
+                // Get followers for this title
+                $contition_array_fo = array('title_id' => $item['title_id']);
+                $followings = $this->common->select_data_by_condition('followings', $contition_array_fo, $data = '*', $short_by = '', $order_by = '', $limit = '', $offset = '', $join_str = array(), $group_by = '');
+                
+                $return['followers'] = "";
+                
+                if(count($followings) > 1000) {
+                    $return['followers'] = (count($followings)/1000)."k";
+                } else {
+                    $return['followers'] = count($followings);
+                }
+                
+                // Check If user liked this feedback
+                $contition_array_li = array('feedback_id' => $item['feedback_id'], 'user_id' => $user_id);
+                $likes = $this->common->select_data_by_condition('feedback_likes', $contition_array_li, $data = '*', $short_by = '', $order_by = '', $limit = '', $offset = '', $join_str = array(), $group_by = '');
+                            
+                if(count($likes) > 0) {
+                    $return['is_liked'] = TRUE;
+                } else {
+                    $return['is_liked'] = FALSE;
+                }
+                
+                // Check If user followed this title
+                $contition_array_ti = array('title_id' => $item['title_id'], 'user_id' => $user_id);
+                $followtitles = $this->common->select_data_by_condition('followings', $contition_array_ti, $data = '*', $short_by = '', $order_by = '', $limit = '', $offset = '', $join_str = array(), $group_by = '');
+                            
+                if(count($followtitles) > 0) {
+                    $return['is_followed'] = TRUE;
+                } else {
+                    $return['is_followed'] = FALSE;
+                }
+                
                 $return['name'] = $item['name'];
-				
-				if(isset($item['photo'])) {
-	                $return['user_avatar'] = S3_CDN . 'uploads/user/thumbs/' . $item['photo'];
-				} else {
-					$return['user_avatar'] = ASSETS_URL . 'images/user-avatar.png';
-				}
-				
-				if($item['feedback_img'] !== "") {
-	                $return['feedback_img'] = S3_CDN . 'uploads/feedback/main/' . $item['feedback_img'];
-				} else {
-					$return['feedback_img'] = "";
-				}
+                
+                if(isset($item['photo'])) {
+                    $return['user_avatar'] = S3_CDN . 'uploads/user/thumbs/' . $item['photo'];
+                } else {
+                    $return['user_avatar'] = ASSETS_URL . 'images/user-avatar.png';
+                }
+                
+                if($item['feedback_img'] !== "") {
+                    $return['feedback_img'] = S3_CDN . 'uploads/feedback/main/' . $item['feedback_img'];
+                } else {
+                    $return['feedback_img'] = "";
+                }
 
                 if($item['feedback_thumb'] !== "") {
                     $return['feedback_thumb'] = S3_CDN . 'uploads/feedback/thumbs/' . $item['feedback_thumb'];
                 } else {
                     $return['feedback_thumb'] = "";
                 }
-				
-				if($item['feedback_video'] !== "") {
-	                $return['feedback_video'] = S3_CDN . 'uploads/feedback/video/' . $item['feedback_video'];
-					//$return['feedback_thumb'] = S3_CDN . 'uploads/feedback/thumbs/video_thumbnail.png';
-				} else {
-					$return['feedback_video'] = "";
-				}
+                
+                if($item['feedback_video'] !== "") {
+                    $return['feedback_video'] = S3_CDN . 'uploads/feedback/video/' . $item['feedback_video'];
+                    //$return['feedback_thumb'] = S3_CDN . 'uploads/feedback/thumbs/video_thumbnail.png';
+                } else {
+                    $return['feedback_video'] = "";
+                }
 
                 $return['feedback'] = $item['feedback_cont'];
-				$return['location'] = $item['location'];
+                $return['location'] = $item['location'];
                 $return['time'] = $this->common->timeAgo($item['time']);
 
                 array_push($return_array, $return);
@@ -1635,16 +1626,16 @@ class V1 extends CI_Controller {
                 $item = null === $item ? '' : $item;
             });
 
-			echo json_encode(array('RESULT' => $return_array, 'TOTAL' => $total_records,'MESSAGE' => 'SUCCESS', 'STATUS' => 1));
+            echo json_encode(array('RESULT' => $return_array, 'TOTAL' => $total_records,'MESSAGE' => 'SUCCESS', 'STATUS' => 1));
             exit();
         }
     }
-	
-	// Like / Unlike Feedback
+    
+    // Like / Unlike Feedback
     function like() {
         $user_id = $this->input->post('user_id');
-		$feedback_id = $this->input->post('feedback_id');
-		
+        $feedback_id = $this->input->post('feedback_id');
+        
         $error = '';
         if ($user_id == '') {
             $error = 1;
@@ -1658,38 +1649,38 @@ class V1 extends CI_Controller {
             die();
         }
 
-		$condition_array = array('user_id' => $user_id, 'feedback_id' => $feedback_id);
-		$likes = $this->common->select_data_by_condition('feedback_likes', $condition_array, $data = '*', $short_by = '', $order_by = '', $limit = '1', $offset = '', $join_str = array(), $group_by = '');
-		
-		if(count($likes) > 0) {
-			// Unlike Feedback
-			$this->common->delete_data('feedback_likes', 'like_id', $likes[0]['like_id']);
+        $condition_array = array('user_id' => $user_id, 'feedback_id' => $feedback_id);
+        $likes = $this->common->select_data_by_condition('feedback_likes', $condition_array, $data = '*', $short_by = '', $order_by = '', $limit = '1', $offset = '', $join_str = array(), $group_by = '');
+        
+        if(count($likes) > 0) {
+            // Unlike Feedback
+            $this->common->delete_data('feedback_likes', 'like_id', $likes[0]['like_id']);
 
             // Check / Add Notification for users
             $this->common->notification('', $user_id, $title_id = '', $feedback_id, $replied_to = '', 3);
 
-			echo json_encode(array('RESULT' => array(), 'MESSAGE' => $this->lang->line('success_unlike_feedback'), 'STATUS' => 1));
-			die();
-		} else {
-			// Like Feedback
-			$insert_array['user_id'] = $user_id;
-			$insert_array['feedback_id'] = $feedback_id;
-			
-			$insert_result = $this->common->insert_data($insert_array, $tablename = 'feedback_likes');
+            echo json_encode(array('RESULT' => array(), 'MESSAGE' => $this->lang->line('success_unlike_feedback'), 'STATUS' => 1));
+            die();
+        } else {
+            // Like Feedback
+            $insert_array['user_id'] = $user_id;
+            $insert_array['feedback_id'] = $feedback_id;
+            
+            $insert_result = $this->common->insert_data($insert_array, $tablename = 'feedback_likes');
 
             // Check / Add Notification for users
             $this->common->notification('', $user_id, $title_id = '', $feedback_id, $replied_to = '', 3);
 
-			echo json_encode(array('RESULT' => array(), 'MESSAGE' => $this->lang->line('success_like_feedback'), 'STATUS' => 1));
-			die();
-		}
+            echo json_encode(array('RESULT' => array(), 'MESSAGE' => $this->lang->line('success_like_feedback'), 'STATUS' => 1));
+            die();
+        }
     }
-	
-	// Follow / Unfollow Title
+    
+    // Follow / Unfollow Title
     function follow() {
         $user_id = $this->input->post('user_id');
-		$title_id = $this->input->post('title_id');
-		
+        $title_id = $this->input->post('title_id');
+        
         $error = '';
         if ($user_id == '') {
             $error = 1;
@@ -1703,30 +1694,30 @@ class V1 extends CI_Controller {
             die();
         }
 
-		$condition_array = array('user_id' => $user_id, 'title_id' => $title_id);
-		$followings = $this->common->select_data_by_condition('followings', $condition_array, $data = '*', $short_by = '', $order_by = '', $limit = '1', $offset = '', $join_str = array(), $group_by = '');
-		
-		if(count($followings) > 0) {
-			// Unfollow Title
-			$this->common->delete_data('followings', 'follow_id', $followings[0]['follow_id']);
-			echo json_encode(array('RESULT' => array(), 'MESSAGE' => $this->lang->line('success_unfollow_title'), 'STATUS' => 1));
-			die();
-		} else {
-			// Follow Title
-			$insert_array['user_id'] = $user_id;
-			$insert_array['title_id'] = $title_id;
-			
-			$insert_result = $this->common->insert_data($insert_array, $tablename = 'followings');
-			echo json_encode(array('RESULT' => array(), 'MESSAGE' => $this->lang->line('success_follow_title'), 'STATUS' => 1));
-			die();
-		}
+        $condition_array = array('user_id' => $user_id, 'title_id' => $title_id);
+        $followings = $this->common->select_data_by_condition('followings', $condition_array, $data = '*', $short_by = '', $order_by = '', $limit = '1', $offset = '', $join_str = array(), $group_by = '');
+        
+        if(count($followings) > 0) {
+            // Unfollow Title
+            $this->common->delete_data('followings', 'follow_id', $followings[0]['follow_id']);
+            echo json_encode(array('RESULT' => array(), 'MESSAGE' => $this->lang->line('success_unfollow_title'), 'STATUS' => 1));
+            die();
+        } else {
+            // Follow Title
+            $insert_array['user_id'] = $user_id;
+            $insert_array['title_id'] = $title_id;
+            
+            $insert_result = $this->common->insert_data($insert_array, $tablename = 'followings');
+            echo json_encode(array('RESULT' => array(), 'MESSAGE' => $this->lang->line('success_follow_title'), 'STATUS' => 1));
+            die();
+        }
     }
-	
-	// Report Spam / Undo
+    
+    // Report Spam / Undo
     function report() {
         $user_id = $this->input->post('user_id');
-		$feedback_id = $this->input->post('feedback_id');
-		
+        $feedback_id = $this->input->post('feedback_id');
+        
         $error = '';
         if ($user_id == '') {
             $error = 1;
@@ -1739,65 +1730,29 @@ class V1 extends CI_Controller {
             die();
         }
 
-		$condition_array = array('user_id' => $user_id, 'feedback_id' => $feedback_id);
-		$spams = $this->common->select_data_by_condition('spam', $condition_array, $data = '*', $short_by = '', $order_by = '', $limit = '1', $offset = '', $join_str = array(), $group_by = '');
-		
-		if(count($spams) > 0) {
-			// Undo Report
-			$this->common->delete_data('spam', 'spam_id', $spams[0]['spam_id']);
-			echo json_encode(array('RESULT' => array('report_spam' => FALSE), 'MESSAGE' => $this->lang->line('success_undo_report'), 'STATUS' => 1));
-			die();
-		} else {
-			// Report Spam
-			$insert_array['user_id'] = $user_id;
-			$insert_array['feedback_id'] = $feedback_id;
-			
-			$insert_result = $this->common->insert_data($insert_array, $tablename = 'spam');
-			echo json_encode(array('RESULT' => array('report_spam' => TRUE), 'MESSAGE' => $this->lang->line('success_report_spam'), 'STATUS' => 1));
-			die();
-		}
+        $condition_array = array('user_id' => $user_id, 'feedback_id' => $feedback_id);
+        $spams = $this->common->select_data_by_condition('spam', $condition_array, $data = '*', $short_by = '', $order_by = '', $limit = '1', $offset = '', $join_str = array(), $group_by = '');
+        
+        if(count($spams) > 0) {
+            // Undo Report
+            $this->common->delete_data('spam', 'spam_id', $spams[0]['spam_id']);
+            echo json_encode(array('RESULT' => array('report_spam' => FALSE), 'MESSAGE' => $this->lang->line('success_undo_report'), 'STATUS' => 1));
+            die();
+        } else {
+            // Report Spam
+            $insert_array['user_id'] = $user_id;
+            $insert_array['feedback_id'] = $feedback_id;
+            
+            $insert_result = $this->common->insert_data($insert_array, $tablename = 'spam');
+            echo json_encode(array('RESULT' => array('report_spam' => TRUE), 'MESSAGE' => $this->lang->line('success_report_spam'), 'STATUS' => 1));
+            die();
+        }
     }
 
     // Get Titles/Suggestions
     function titles() {
         $search_string = $this->input->post('search');
-        //$titles = $this->common->getTitles($search_string, $order=null, $order_type='ASC', $offset='', $limit='');
-
-        $params = ['index' => 'title'];
-        $response = $this->aws_client->indices()->exists($params);
-
-        if(!$response){
-            $indexParams = [
-                'index' => 'title',
-                'body' => [
-                    'settings' => [
-                        'number_of_shards' => 5,
-                        'number_of_replicas' => 1
-                    ]
-                ]
-            ];
-
-            $response = $this->aws_client->indices()->create($indexParams);
-        }
-
-
-        $params = [
-            'index' => 'title',
-            'body' => [
-                'query' => [
-                    'query_string' => [
-                        'query' => 'title:'.$search_string.'*'
-                    ],
-                ]
-            ]
-        ];
-
-        $title = $this->aws_client->search($params);
-
-        $titles = [];
-        foreach ($title['hits']['hits'] as $key => $value) {
-            $titles[] = $value['_source'];
-        }
+        $titles = $this->common->getTitles($search_string, $order=null, $order_type='ASC', $offset='', $limit='');
 
         echo json_encode(array('RESULT' => $titles, 'MESSAGE' => 'SUCCESS', 'STATUS' => 1));
         die();
@@ -1805,66 +1760,38 @@ class V1 extends CI_Controller {
 
     // Create a title
     function addtitle() {
-		$user_id = $this->input->post('user_id');
+        $user_id = $this->input->post('user_id');
         $title = trim($this->input->post('title'));
-        //$user_id = 1;
-        //$title = 'test1';
-
-        $params = ['index' => 'title'];
-        $response = $this->aws_client->indices()->exists($params);
-
-        if(!$response){
-            $indexParams = [
-                'index' => 'title',
-                'body' => [
-                    'settings' => [
-                        'number_of_shards' => 5,
-                        'number_of_replicas' => 1
-                    ]
-                ]
-            ];
-
-            $response = $this->aws_client->indices()->create($indexParams);
-        } 
 
         if ($title == '') {
             echo json_encode(array('RESULT' => array(), 'MESSAGE' => $this->lang->line('error_msg_title_blank'), 'STATUS' => 0));
             die();
         }
-		
-		// Check If title exists
-		$contition_array = array('title' => $title);
-		$check_title = $this->common->select_data_by_condition('titles', $contition_array, $data = '*', $sortby = '', $orderby = '', $limit = '', $offset = '', $join_str = array(), $group_by='');
-		
-		if(count($check_title) > 0) {
+        
+        // Check If title exists
+        $contition_array = array('title' => $title);
+        $check_title = $this->common->select_data_by_condition('titles', $contition_array, $data = '*', $sortby = '', $orderby = '', $limit = '', $offset = '', $join_str = array(), $group_by='');
+        
+        if(count($check_title) > 0) {
             $update_data = array('deleted' => 0);
             $update_result = $this->common->update_data($update_data, 'titles', 'title_id', $check_title[0]['title_id']);
 
             $return_array['id'] = $check_title[0]['title_id'];
             $return_array['title'] = $check_title[0]['title'];
 
-			echo json_encode(array('RESULT' => $return_array, 'MESSAGE' => $this->lang->line('error_title_exist'), 'STATUS' => 0));
+            echo json_encode(array('RESULT' => $return_array, 'MESSAGE' => $this->lang->line('error_title_exist'), 'STATUS' => 0));
             die();
-		}
+        }
 
         $insert_array['title'] = $title;
         $insert_result = $this->common->insert_data_getid($insert_array, $tablename = 'titles');
-
-        $docParams = [
-            'index' => 'title',
-            'type' => 'title_type',
-            'id' => $insert_result,
-            'body' => ['title' => $title,'title_id' => $insert_result]
-        ]; 
-
-        $response = $this->aws_client->index($docParams);
-		
-		// Auto Follow Title
+        
+        // Auto Follow Title
         if ($user_id != '') {
-    		$follow_array['user_id'] = $user_id;
-    		$follow_array['title_id'] = $insert_result;
-    		
-    		$auto_follow = $this->common->insert_data($follow_array, $tablename = 'followings');
+            $follow_array['user_id'] = $user_id;
+            $follow_array['title_id'] = $insert_result;
+            
+            $auto_follow = $this->common->insert_data($follow_array, $tablename = 'followings');
         }
 
         $return_array['id'] = $insert_result;
@@ -1882,9 +1809,9 @@ class V1 extends CI_Controller {
         $latitude = $this->input->post('latitude');
         $longitude = $this->input->post('longitude');
         $location = $this->input->post('location');
-        $country = $this->input->post('country');		
-		
-		$error = 0;
+        $country = $this->input->post('country');       
+        
+        $error = 0;
         if ($title_id == '') {
             $error = 1;
             echo json_encode(array('RESULT' => array(), 'MESSAGE' => 'Please select your title', 'STATUS' => 0));
@@ -1900,36 +1827,36 @@ class V1 extends CI_Controller {
             echo json_encode(array('RESULT' => array(), 'MESSAGE' => 'Please enter your feedback', 'STATUS' => 0));
             exit();
         }
-		
-		if ($error == 1) {
+        
+        if ($error == 1) {
             echo json_encode(array('RESULT' => array(), 'MESSAGE' => $this->lang->line('error_something_wrong'), 'STATUS' => 0));
             die();
         } else {
-			$feedback_img = '';
+            $feedback_img = '';
             $feedback_thumb = '';
-			$feedback_video = '';
-			
-			// Image Upload Start
-			if (isset($_FILES['image']['name']) && $_FILES['image']['name'] != '') {
-				$config['upload_path'] = $this->config->item('feedback_main_upload_path');
-				$config['thumb_upload_path'] = $this->config->item('feedback_thumb_upload_path');
-				$config['allowed_types'] = $this->config->item('feedback_allowed_types');
-				$config['max_size'] = $this->config->item('feedback_main_max_size');
-				$config['max_width'] = $this->config->item('feedback_main_max_width');
-				$config['max_height'] = $this->config->item('feedback_main_max_height');
-				$config['file_name'] = time();
-	
-				$this->load->library('upload', $config);
-	
-				// Uploading Image
-				if (!$this->upload->do_upload('image')) {
-					$error = array('error' => $this->upload->display_errors());
-					echo json_encode(array('RESULT' => $error, 'MESSAGE' => 'ERROR', 'STATUS' => 0));
-					exit();
-				} else {
-					// Getting Uploaded Image File Data
-					$imgdata = $this->upload->data();					
-					$feedback_img = $imgdata['file_name'];
+            $feedback_video = '';
+            
+            // Image Upload Start
+            if (isset($_FILES['image']['name']) && $_FILES['image']['name'] != '') {
+                $config['upload_path'] = $this->config->item('feedback_main_upload_path');
+                $config['thumb_upload_path'] = $this->config->item('feedback_thumb_upload_path');
+                $config['allowed_types'] = $this->config->item('feedback_allowed_types');
+                $config['max_size'] = $this->config->item('feedback_main_max_size');
+                $config['max_width'] = $this->config->item('feedback_main_max_width');
+                $config['max_height'] = $this->config->item('feedback_main_max_height');
+                $config['file_name'] = time();
+    
+                $this->load->library('upload', $config);
+    
+                // Uploading Image
+                if (!$this->upload->do_upload('image')) {
+                    $error = array('error' => $this->upload->display_errors());
+                    echo json_encode(array('RESULT' => $error, 'MESSAGE' => 'ERROR', 'STATUS' => 0));
+                    exit();
+                } else {
+                    // Getting Uploaded Image File Data
+                    $imgdata = $this->upload->data();                   
+                    $feedback_img = $imgdata['file_name'];
 
                     // Configuring Thumbnail 
                     $config_thumb['image_library'] = 'gd2';
@@ -1952,132 +1879,132 @@ class V1 extends CI_Controller {
                     } else {
                         $feedback_thumb = $imgdata['raw_name'].'_thumb'.$imgdata['file_ext'];
                     }
-					
-					// AWS S3 Upload
-					$thumb_file_path = str_replace("main", "thumbs", $imgdata['file_path']);
-					$thumb_file_name = $config['thumb_upload_path'] . $imgdata['raw_name'].'_thumb'.$imgdata['file_ext'];
-					
-					$this->s3->putObjectFile($imgdata['full_path'], S3_BUCKET, $config_thumb['source_image'], S3::ACL_PUBLIC_READ);
-					$this->s3->putObjectFile($thumb_file_path.$feedback_thumb, S3_BUCKET, $thumb_file_name, S3::ACL_PUBLIC_READ);
-//					echo $s3file = S3_CDN.$config_thumb['source_image'];
-//					echo "<br/>";
-//					echo $s3file = S3_CDN.$thumb_file_name; exit();
+                    
+                    // AWS S3 Upload
+                    $thumb_file_path = str_replace("main", "thumbs", $imgdata['file_path']);
+                    $thumb_file_name = $config['thumb_upload_path'] . $imgdata['raw_name'].'_thumb'.$imgdata['file_ext'];
+                    
+                    $this->s3->putObjectFile($imgdata['full_path'], S3_BUCKET, $config_thumb['source_image'], S3::ACL_PUBLIC_READ);
+                    $this->s3->putObjectFile($thumb_file_path.$feedback_thumb, S3_BUCKET, $thumb_file_name, S3::ACL_PUBLIC_READ);
+//                  echo $s3file = S3_CDN.$config_thumb['source_image'];
+//                  echo "<br/>";
+//                  echo $s3file = S3_CDN.$thumb_file_name; exit();
 
                     // Remove File from Local Storage
                     unlink($config_thumb['source_image']);
                     unlink($thumb_file_name);
-				}
-			}
-			// Image Upload End
-			
-			// Video Upload Start
-			if (isset($_FILES['video']['name']) && $_FILES['video']['name'] != '') {
-				$config_video['upload_path'] = $this->config->item('feedback_video_upload_path');
-				$config_video['thumb_upload_path'] = $this->config->item('feedback_thumb_upload_path');
-				$config_video['max_size'] = $this->config->item('feedback_video_max_size');
-				$config_video['allowed_types'] = $this->config->item('feedback_allowed_video_types');
-				$config_video['overwrite'] = FALSE;
-				$config_video['remove_spaces'] = TRUE;
-				$config_video['file_name'] = time();	
-					
-				$this->load->library('upload', $config_video);
-				$this->upload->initialize($config_video);
-				
-				if (!$this->upload->do_upload('video')) {
-					$error = $this->upload->display_errors();
-					echo json_encode(array('RESULT' => array(), 'MESSAGE' => strip_tags($error), 'STATUS' => 0));
-					exit();
-				} else {
-					$video_details = $this->upload->data();
+                }
+            }
+            // Image Upload End
+            
+            // Video Upload Start
+            if (isset($_FILES['video']['name']) && $_FILES['video']['name'] != '') {
+                $config_video['upload_path'] = $this->config->item('feedback_video_upload_path');
+                $config_video['thumb_upload_path'] = $this->config->item('feedback_thumb_upload_path');
+                $config_video['max_size'] = $this->config->item('feedback_video_max_size');
+                $config_video['allowed_types'] = $this->config->item('feedback_allowed_video_types');
+                $config_video['overwrite'] = FALSE;
+                $config_video['remove_spaces'] = TRUE;
+                $config_video['file_name'] = time();    
+                    
+                $this->load->library('upload', $config_video);
+                $this->upload->initialize($config_video);
+                
+                if (!$this->upload->do_upload('video')) {
+                    $error = $this->upload->display_errors();
+                    echo json_encode(array('RESULT' => array(), 'MESSAGE' => strip_tags($error), 'STATUS' => 0));
+                    exit();
+                } else {
+                    $video_details = $this->upload->data();
 
-					if($this->input->post('debug') == 'true') {
-						echo json_encode(array('RESULT' => $video_details, 'MESSAGE' => '', 'STATUS' => 0));
-						exit();
-					}		
-								
-					$feedback_video = $video_details['file_name'];
+                    if($this->input->post('debug') == 'true') {
+                        echo json_encode(array('RESULT' => $video_details, 'MESSAGE' => '', 'STATUS' => 0));
+                        exit();
+                    }       
+                                
+                    $feedback_video = $video_details['file_name'];
         
-/*					if($video_details['file_ext'] == ".mov" || $video_details['file_ext'] == ".MOV") {
-						// ffmpeg command to convert video
-						shell_exec("ffmpeg -i ".$video_details['full_path']." ".$video_details['file_path'].$video_details['raw_name'].".mp4");
-					
-						/// In the end update video name in DB
-						$feedback_video = $video_details['raw_name'].'.'.'mp4';
-					}*/
-					
-					// Generate video thumbnail
-					$video_path = $video_details['full_path'];
-					$thumb_name = $video_details['raw_name']."_video.jpg";
-					$thumb_path = $config_video['thumb_upload_path'].$thumb_name;
+/*                  if($video_details['file_ext'] == ".mov" || $video_details['file_ext'] == ".MOV") {
+                        // ffmpeg command to convert video
+                        shell_exec("ffmpeg -i ".$video_details['full_path']." ".$video_details['file_path'].$video_details['raw_name'].".mp4");
+                    
+                        /// In the end update video name in DB
+                        $feedback_video = $video_details['raw_name'].'.'.'mp4';
+                    }*/
+                    
+                    // Generate video thumbnail
+                    $video_path = $video_details['full_path'];
+                    $thumb_name = $video_details['raw_name']."_video.jpg";
+                    $thumb_path = $config_video['thumb_upload_path'].$thumb_name;
 
-					shell_exec("ffmpeg -itsoffset -3 -i ".$video_path."  -y -an -f image2 -s 400x270 ".$thumb_path."");
-					$feedback_thumb = $thumb_name;
-					
-					// AWS S3 Upload
-					$thumb_file_path = str_replace("video", "thumbs", $video_details['file_path']);
-					
-					$this->s3->putObjectFile($video_details['full_path'], S3_BUCKET, $config_video['upload_path'].$video_details['file_name'], S3::ACL_PUBLIC_READ);
-					$this->s3->putObjectFile($thumb_file_path.$feedback_thumb, S3_BUCKET, $thumb_path, S3::ACL_PUBLIC_READ);
-//					echo $s3file = S3_CDN.$config_video['upload_path'].$video_details['file_name'];
-//					echo "<br/>";
-//					echo $s3file = S3_CDN.$thumb_path; exit();
+                    shell_exec("ffmpeg -itsoffset -3 -i ".$video_path."  -y -an -f image2 -s 400x270 ".$thumb_path."");
+                    $feedback_thumb = $thumb_name;
+                    
+                    // AWS S3 Upload
+                    $thumb_file_path = str_replace("video", "thumbs", $video_details['file_path']);
+                    
+                    $this->s3->putObjectFile($video_details['full_path'], S3_BUCKET, $config_video['upload_path'].$video_details['file_name'], S3::ACL_PUBLIC_READ);
+                    $this->s3->putObjectFile($thumb_file_path.$feedback_thumb, S3_BUCKET, $thumb_path, S3::ACL_PUBLIC_READ);
+//                  echo $s3file = S3_CDN.$config_video['upload_path'].$video_details['file_name'];
+//                  echo "<br/>";
+//                  echo $s3file = S3_CDN.$thumb_path; exit();
 
                     // Remove File from Local Storage
                     unlink($config_video['upload_path'].$video_details['file_name']);
                     unlink($thumb_path);
-				}
-			}
-			// Video Upload End
+                }
+            }
+            // Video Upload End
 
             $insert_array['title_id'] = $title_id;
             $insert_array['user_id'] = $user_id;
             $insert_array['feedback_cont'] = $feedback;
-			if($feedback_img != '') {
-            	$insert_array['feedback_img'] = $feedback_img;
-			}
+            if($feedback_img != '') {
+                $insert_array['feedback_img'] = $feedback_img;
+            }
             if($feedback_thumb != '') {
                 $insert_array['feedback_thumb'] = $feedback_thumb;
             }
-			if($feedback_video != '') {
+            if($feedback_video != '') {
                 $insert_array['feedback_video'] = $feedback_video;
             }
             $insert_array['latitude'] = $latitude;
             $insert_array['longitude'] = $longitude;
             $insert_array['location'] = $location;
-			
-			if($country != '') {
-				$insert_array['country'] = $country;
-			} else {
-				$getcountry = $this->common->select_data_by_id('users', 'id', $user_id, 'country', '');
-				$insert_array['country'] = $getcountry[0]['country'];
-			}
-			
-			$insert_array['datetime'] = date('Y-m-d H:i:s');
+            
+            if($country != '') {
+                $insert_array['country'] = $country;
+            } else {
+                $getcountry = $this->common->select_data_by_id('users', 'id', $user_id, 'country', '');
+                $insert_array['country'] = $getcountry[0]['country'];
+            }
+            
+            $insert_array['datetime'] = date('Y-m-d H:i:s');
 
             $insert_result = $this->common->insert_data_getid($insert_array, $tablename = 'feedback');
 
             if ($insert_result) {
                 $return_array['id'] = $insert_result;
                 $return_array['feedback'] = $feedback;
-				$return_array['latitude'] = $latitude;
-				$return_array['longitude'] = $longitude;
-				$return_array['location'] = $location;
+                $return_array['latitude'] = $latitude;
+                $return_array['longitude'] = $longitude;
+                $return_array['location'] = $location;
 
-				if($feedback_img != '') {
-					$return_array['image'] = S3_CDN . 'uploads/feedback/main/' . $feedback_img;
-				}
+                if($feedback_img != '') {
+                    $return_array['image'] = S3_CDN . 'uploads/feedback/main/' . $feedback_img;
+                }
 
                 if($feedback_thumb != '') {
                     $return_array['thumb'] = S3_CDN . 'uploads/feedback/thumbs/' . $feedback_thumb;
                 }
-				
-				if($feedback_video != '') {
+                
+                if($feedback_video != '') {
                     $return_array['video'] = S3_CDN . 'uploads/feedback/video/' . $feedback_video;
                 }
-				
-				if($country != '') {
-					$return_array['country'] = $country;
-				}
+                
+                if($country != '') {
+                    $return_array['country'] = $country;
+                }
 
                 // Null to Empty String
                 array_walk_recursive($return_array, function (&$item, $key) {
@@ -2101,8 +2028,8 @@ class V1 extends CI_Controller {
         $user_id = $this->input->post('user_id');
         $replied_to = $this->input->post('feedback_id');
         $feedback = $this->input->post('feedback');
-		$location = $this->input->post('location');
-        $country = $this->input->post('country');		
+        $location = $this->input->post('location');
+        $country = $this->input->post('country');       
 
         if ($user_id == '') {
             $error = 1;
@@ -2121,29 +2048,29 @@ class V1 extends CI_Controller {
         } else {
             $feedback_img = '';
             $feedback_thumb = '';
-			$feedback_video = '';
-			
-			// Image Upload Start
-			if (isset($_FILES['image']['name']) && $_FILES['image']['name'] != '') {
-				$config['upload_path'] = $this->config->item('feedback_main_upload_path');
-				$config['thumb_upload_path'] = $this->config->item('feedback_thumb_upload_path');
-				$config['allowed_types'] = $this->config->item('feedback_allowed_types');
-				$config['max_size'] = $this->config->item('feedback_main_max_size');
-				$config['max_width'] = $this->config->item('feedback_main_max_width');
-				$config['max_height'] = $this->config->item('feedback_main_max_height');
-				$config['file_name'] = time();
-	
-				$this->load->library('upload', $config);
-	
-				//Uploading Image
-				if (!$this->upload->do_upload('image')) {
-					$error = array('error' => $this->upload->display_errors());
-					echo json_encode(array('RESULT' => $error, 'MESSAGE' => 'ERROR', 'STATUS' => 0));
-					exit();
-				} else {
-					//Getting Uploaded Image File Data
-					$imgdata = $this->upload->data();
-					$feedback_img = $imgdata['file_name'];
+            $feedback_video = '';
+            
+            // Image Upload Start
+            if (isset($_FILES['image']['name']) && $_FILES['image']['name'] != '') {
+                $config['upload_path'] = $this->config->item('feedback_main_upload_path');
+                $config['thumb_upload_path'] = $this->config->item('feedback_thumb_upload_path');
+                $config['allowed_types'] = $this->config->item('feedback_allowed_types');
+                $config['max_size'] = $this->config->item('feedback_main_max_size');
+                $config['max_width'] = $this->config->item('feedback_main_max_width');
+                $config['max_height'] = $this->config->item('feedback_main_max_height');
+                $config['file_name'] = time();
+    
+                $this->load->library('upload', $config);
+    
+                //Uploading Image
+                if (!$this->upload->do_upload('image')) {
+                    $error = array('error' => $this->upload->display_errors());
+                    echo json_encode(array('RESULT' => $error, 'MESSAGE' => 'ERROR', 'STATUS' => 0));
+                    exit();
+                } else {
+                    //Getting Uploaded Image File Data
+                    $imgdata = $this->upload->data();
+                    $feedback_img = $imgdata['file_name'];
 
                     //Configuring Thumbnail 
                     $config_thumb['image_library'] = 'gd2';
@@ -2166,67 +2093,67 @@ class V1 extends CI_Controller {
                     } else {
                         $feedback_thumb = $imgdata['raw_name'].'_thumb'.$imgdata['file_ext'];
                     }
-					
-					// AWS S3 Upload
-					$thumb_file_path = str_replace("main", "thumbs", $imgdata['file_path']);
-					$thumb_file_name = $config['thumb_upload_path'] . $imgdata['raw_name'].'_thumb'.$imgdata['file_ext'];
-					
-					$this->s3->putObjectFile($imgdata['full_path'], S3_BUCKET, $config_thumb['source_image'], S3::ACL_PUBLIC_READ);
-					$this->s3->putObjectFile($thumb_file_path.$feedback_thumb, S3_BUCKET, $thumb_file_name, S3::ACL_PUBLIC_READ);
-//					echo $s3file = S3_CDN.$config_thumb['source_image'];
-//					echo "<br/>";
-//					echo $s3file = S3_CDN.$thumb_file_name; exit();
+                    
+                    // AWS S3 Upload
+                    $thumb_file_path = str_replace("main", "thumbs", $imgdata['file_path']);
+                    $thumb_file_name = $config['thumb_upload_path'] . $imgdata['raw_name'].'_thumb'.$imgdata['file_ext'];
+                    
+                    $this->s3->putObjectFile($imgdata['full_path'], S3_BUCKET, $config_thumb['source_image'], S3::ACL_PUBLIC_READ);
+                    $this->s3->putObjectFile($thumb_file_path.$feedback_thumb, S3_BUCKET, $thumb_file_name, S3::ACL_PUBLIC_READ);
+//                  echo $s3file = S3_CDN.$config_thumb['source_image'];
+//                  echo "<br/>";
+//                  echo $s3file = S3_CDN.$thumb_file_name; exit();
 
                     // Remove File from Local Storage
                     unlink($config_thumb['source_image']);
                     unlink($thumb_file_name);
-				}
-			}
-			
-			// Video Upload Start
-			if (isset($_FILES['video']['name']) && $_FILES['video']['name'] != '') {
-				$config_video['upload_path'] = $this->config->item('feedback_video_upload_path');
-				$config_video['thumb_upload_path'] = $this->config->item('feedback_thumb_upload_path');
-				$config_video['max_size'] = $this->config->item('feedback_video_max_size');
-				$config_video['allowed_types'] = $this->config->item('feedback_allowed_video_types');
-				$config_video['overwrite'] = FALSE;
-				$config_video['remove_spaces'] = TRUE;
-				$config_video['file_name'] = time();	
-					
-				$this->load->library('upload', $config_video);
-				$this->upload->initialize($config_video);
-				
-				if (!$this->upload->do_upload('video')) {
-					$error = array('error' => $this->upload->display_errors());
-					echo json_encode(array('RESULT' => $error, 'MESSAGE' => 'ERROR', 'STATUS' => 0));
-					exit();
-				} else {
-					$video_details = $this->upload->data();
-					$feedback_video = $video_details['file_name'];
-					
-					// Generate video thumbnail
-					$video_path = $video_details['full_path'];
-					$thumb_name = $video_details['raw_name']."_video.jpg";
-					$thumb_path = $config_video['thumb_upload_path'].$thumb_name;
+                }
+            }
+            
+            // Video Upload Start
+            if (isset($_FILES['video']['name']) && $_FILES['video']['name'] != '') {
+                $config_video['upload_path'] = $this->config->item('feedback_video_upload_path');
+                $config_video['thumb_upload_path'] = $this->config->item('feedback_thumb_upload_path');
+                $config_video['max_size'] = $this->config->item('feedback_video_max_size');
+                $config_video['allowed_types'] = $this->config->item('feedback_allowed_video_types');
+                $config_video['overwrite'] = FALSE;
+                $config_video['remove_spaces'] = TRUE;
+                $config_video['file_name'] = time();    
+                    
+                $this->load->library('upload', $config_video);
+                $this->upload->initialize($config_video);
+                
+                if (!$this->upload->do_upload('video')) {
+                    $error = array('error' => $this->upload->display_errors());
+                    echo json_encode(array('RESULT' => $error, 'MESSAGE' => 'ERROR', 'STATUS' => 0));
+                    exit();
+                } else {
+                    $video_details = $this->upload->data();
+                    $feedback_video = $video_details['file_name'];
+                    
+                    // Generate video thumbnail
+                    $video_path = $video_details['full_path'];
+                    $thumb_name = $video_details['raw_name']."_video.jpg";
+                    $thumb_path = $config_video['thumb_upload_path'].$thumb_name;
 
-					shell_exec("ffmpeg -itsoffset -3 -i ".$video_path."  -y -an -sameq -f image2 -s 400x270 ".$thumb_path."");
-					$feedback_thumb = $thumb_name;
-					
-					// AWS S3 Upload
-					$thumb_file_path = str_replace("video", "thumbs", $video_details['file_path']);
-					
-					$this->s3->putObjectFile($video_details['full_path'], S3_BUCKET, $config_video['upload_path'].$video_details['file_name'], S3::ACL_PUBLIC_READ);
-					$this->s3->putObjectFile($thumb_file_path.$feedback_thumb, S3_BUCKET, $thumb_path, S3::ACL_PUBLIC_READ);
-//					echo $s3file = S3_CDN.$config_video['upload_path'].$video_details['file_name'];
-//					echo "<br/>";
-//					echo $s3file = S3_CDN.$thumb_path; exit();
+                    shell_exec("ffmpeg -itsoffset -3 -i ".$video_path."  -y -an -sameq -f image2 -s 400x270 ".$thumb_path."");
+                    $feedback_thumb = $thumb_name;
+                    
+                    // AWS S3 Upload
+                    $thumb_file_path = str_replace("video", "thumbs", $video_details['file_path']);
+                    
+                    $this->s3->putObjectFile($video_details['full_path'], S3_BUCKET, $config_video['upload_path'].$video_details['file_name'], S3::ACL_PUBLIC_READ);
+                    $this->s3->putObjectFile($thumb_file_path.$feedback_thumb, S3_BUCKET, $thumb_path, S3::ACL_PUBLIC_READ);
+//                  echo $s3file = S3_CDN.$config_video['upload_path'].$video_details['file_name'];
+//                  echo "<br/>";
+//                  echo $s3file = S3_CDN.$thumb_path; exit();
 
                     // Remove File from Local Storage
                     unlink($config_video['upload_path'].$video_details['file_name']);
                     unlink($thumb_path);
-				}
-			}
-			// Video Upload End
+                }
+            }
+            // Video Upload End
 
             $gettitle = $this->common->select_data_by_id('feedback', 'feedback_id', $replied_to, 'title_id', '');
             if (count($gettitle) > 0) {
@@ -2235,47 +2162,47 @@ class V1 extends CI_Controller {
 
             $insert_array['user_id'] = $user_id;
             $insert_array['feedback_cont'] = $feedback;
-			if($feedback_img != '') {
-            	$insert_array['feedback_img'] = $feedback_img;
-			}
+            if($feedback_img != '') {
+                $insert_array['feedback_img'] = $feedback_img;
+            }
             if($feedback_thumb != '') {
                 $insert_array['feedback_thumb'] = $feedback_thumb;
             }
-			if($feedback_video != '') {
+            if($feedback_video != '') {
                 $insert_array['feedback_video'] = $feedback_video;
             }
-			$insert_array['location'] = $location;
+            $insert_array['location'] = $location;
             $insert_array['replied_to'] = $replied_to;
-			$insert_array['datetime'] = date('Y-m-d H:i:s');
-			
-			if($country != '') {
-				$insert_array['country'] = $country;
-			} else {
-				$getcountry = $this->common->select_data_by_id('users', 'id', $user_id, 'country', '');
-				$insert_array['country'] = $getcountry[0]['country'];
-			}
+            $insert_array['datetime'] = date('Y-m-d H:i:s');
+            
+            if($country != '') {
+                $insert_array['country'] = $country;
+            } else {
+                $getcountry = $this->common->select_data_by_id('users', 'id', $user_id, 'country', '');
+                $insert_array['country'] = $getcountry[0]['country'];
+            }
 
             $insert_result = $this->common->insert_data_getid($insert_array, $tablename = 'feedback');
 
             if ($insert_result) {
                 $return_array['id'] = $insert_result;
                 $return_array['feedback'] = $feedback;
-				$return_array['location'] = $location;
-				if($feedback_img != '') {
-					$return_array['image'] = S3_CDN . 'uploads/feedback/main/' . $feedback_img;
-				}
+                $return_array['location'] = $location;
+                if($feedback_img != '') {
+                    $return_array['image'] = S3_CDN . 'uploads/feedback/main/' . $feedback_img;
+                }
 
                 if($feedback_thumb != '') {
                     $return_array['thumb'] = S3_CDN . 'uploads/feedback/thumbs/' . $feedback_thumb;
                 }
-				
-				if($feedback_video != '') {
+                
+                if($feedback_video != '') {
                     $return_array['video'] = S3_CDN . 'uploads/feedback/video/' . $feedback_video;
                 }
-				
-				if($country != '') {
-					$return_array['country'] = $country;
-				}
+                
+                if($country != '') {
+                    $return_array['country'] = $country;
+                }
 
                 // Null to Empty String
                 array_walk_recursive($return_array, function (&$item, $key) {
@@ -2293,7 +2220,7 @@ class V1 extends CI_Controller {
             }
         }
     }
-	
+    
     // Feedback Detail
     function feedback_detail() {
         $user_id = $this->input->post('user_id');
@@ -2309,28 +2236,28 @@ class V1 extends CI_Controller {
             echo json_encode(array('RESULT' => array(), 'MESSAGE' => 'Please enter feedback id', 'STATUS' => 0));
             exit();
         }
-		
-		// Get Feedback Details
-		$return_array = $this->common->getFeedbackDetail($user_id, $feedback_id);
+        
+        // Get Feedback Details
+        $return_array = $this->common->getFeedbackDetail($user_id, $feedback_id);
 
-		// Get all replies for this feedback
-		$contition_array = array('status' => 1, 'replied_to' => $feedback_id, 'feedback.deleted' => 0, 'feedback.status' => 1);
-		$replies = $this->common->select_data_by_condition('feedback', $contition_array, 'feedback_id', $sortby = 'feedback.datetime', $orderby = 'DESC', $limit = '', $offset = '', $join_str = array(), $group_by = '');
-		
-		$return_array['replies'] = array();
-		foreach($replies as $reply) {
-			$feedback = $this->common->getFeedbackDetail($user_id, $reply['feedback_id']);
-			array_push($return_array['replies'], $feedback);
-		}
+        // Get all replies for this feedback
+        $contition_array = array('status' => 1, 'replied_to' => $feedback_id, 'feedback.deleted' => 0, 'feedback.status' => 1);
+        $replies = $this->common->select_data_by_condition('feedback', $contition_array, 'feedback_id', $sortby = 'feedback.datetime', $orderby = 'DESC', $limit = '', $offset = '', $join_str = array(), $group_by = '');
+        
+        $return_array['replies'] = array();
+        foreach($replies as $reply) {
+            $feedback = $this->common->getFeedbackDetail($user_id, $reply['feedback_id']);
+            array_push($return_array['replies'], $feedback);
+        }
 
         // Null to Empty String
         array_walk_recursive($return_array, function (&$item, $key) {
             $item = null === $item ? '' : $item;
         });
-		
-		echo json_encode(array('RESULT' => $return_array, 'MESSAGE' => 'SUCCESS', 'STATUS' => 1));
+        
+        echo json_encode(array('RESULT' => $return_array, 'MESSAGE' => 'SUCCESS', 'STATUS' => 1));
         exit();
-	}
+    }
 
     // Get Languages (Languages Screen)
     function languages() {
@@ -2344,26 +2271,26 @@ class V1 extends CI_Controller {
             $languages = $this->common->select_data_by_condition('languages', $contition_array, $data = 'lang_id, lang_name');
 
             if(!empty($languages)) {
-				$return_array = array();
-				foreach($languages as $lang) {  
-					$return = array();
-					$return['lang_id'] = $lang['lang_id'];
-					$return['lang_name'] = $lang['lang_name'];
-				
-					// Check for user preferred language
-					$contition_array = array('id' => $user_id);       
-					$user_lang = $this->common->select_data_by_condition('users', $contition_array, $data = 'lang_id');
-					if($user_lang[0]['lang_id'] == $lang['lang_id']) {
-						$return['selected'] = true;
-					} else {
-						$return['selected'] = false;	
-					}
-					
-					array_push($return_array, $return);
-				}
-				
-				echo json_encode(array('RESULT' => $return_array, 'MESSAGE' => 'SUCCESS', 'STATUS' => 1));
-	            die();
+                $return_array = array();
+                foreach($languages as $lang) {  
+                    $return = array();
+                    $return['lang_id'] = $lang['lang_id'];
+                    $return['lang_name'] = $lang['lang_name'];
+                
+                    // Check for user preferred language
+                    $contition_array = array('id' => $user_id);       
+                    $user_lang = $this->common->select_data_by_condition('users', $contition_array, $data = 'lang_id');
+                    if($user_lang[0]['lang_id'] == $lang['lang_id']) {
+                        $return['selected'] = true;
+                    } else {
+                        $return['selected'] = false;    
+                    }
+                    
+                    array_push($return_array, $return);
+                }
+                
+                echo json_encode(array('RESULT' => $return_array, 'MESSAGE' => 'SUCCESS', 'STATUS' => 1));
+                die();
             } else {
                 echo json_encode(array('RESULT' => array(), 'MESSAGE' => $this->lang->line('error_something_wrong'), 'STATUS' => 0));
                 die();
@@ -2400,72 +2327,72 @@ class V1 extends CI_Controller {
             die();
         }
     }
-	
-	// Push Notification
-	function push_notification() {
-		
-		// Message payload
-		$msg_payload = array (
-			'mtitle' => 'Feedbacker',
-			'mdesc' => 'This is test push notification',
-			'title_id' => '',
-			'feedback_id' => 568
-		);
-		
-		// For Android
-		$regId = array('dDwjvBi6qqk:APA91bFFpFpWYz19ZzWy78XxApchKu17Ht1Vf4tAlHoJURMIje6ofkTXtBt0SY1TFqbtggXxDk5yu2m6GHZhCSudlITlwG2M0rUz1cxNqpsTgvujVYnhzdILmHHRqPKYLhITfPELYsQR');
-		
-		// For iOS
-		// $deviceToken = 'b77db4458b084daacdec602865cd274114affc24995a4d612dd9f4cda8f6c13a'; // This will be dynamic
-		$deviceToken = '21063305a31fc6f9d66bf33558636bae850e31f68cb2ff64afd78015d3442b20';
-		// For WP8
-		// $uri = 'http://s.notify.live.net/u/1/sin/HmQAAAD1XJMXfQ8SR0b580NcxIoD6G7hIYP9oHvjjpMC2etA7U_xy_xtSAh8tWx7Dul2AZlHqoYzsSQ8jQRQ-pQLAtKW/d2luZG93c3Bob25lZGVmYXVsdA/EKTs2gmt5BG_GB8lKdN_Rg/WuhpYBv02fAmB7tjUfF7DG9aUL4';
-		
-		// Replace the above variable values
-		// $responseText = $this->pushNotifications->android($msg_payload, $regId);
-		//$this->pushNotifications->WP8($msg_payload, $uri);
-		$responseText = $this->pushNotifications->iOS($msg_payload, $deviceToken);	
-		echo json_encode(array('RESULT' => array(), 'MESSAGE' => $responseText, 'STATUS' => 1));
+    
+    // Push Notification
+    function push_notification() {
+        
+        // Message payload
+        $msg_payload = array (
+            'mtitle' => 'Feedbacker',
+            'mdesc' => 'This is test push notification',
+            'title_id' => '',
+            'feedback_id' => 568
+        );
+        
+        // For Android
+        $regId = array('dDwjvBi6qqk:APA91bFFpFpWYz19ZzWy78XxApchKu17Ht1Vf4tAlHoJURMIje6ofkTXtBt0SY1TFqbtggXxDk5yu2m6GHZhCSudlITlwG2M0rUz1cxNqpsTgvujVYnhzdILmHHRqPKYLhITfPELYsQR');
+        
+        // For iOS
+        // $deviceToken = 'b77db4458b084daacdec602865cd274114affc24995a4d612dd9f4cda8f6c13a'; // This will be dynamic
+        $deviceToken = '21063305a31fc6f9d66bf33558636bae850e31f68cb2ff64afd78015d3442b20';
+        // For WP8
+        // $uri = 'http://s.notify.live.net/u/1/sin/HmQAAAD1XJMXfQ8SR0b580NcxIoD6G7hIYP9oHvjjpMC2etA7U_xy_xtSAh8tWx7Dul2AZlHqoYzsSQ8jQRQ-pQLAtKW/d2luZG93c3Bob25lZGVmYXVsdA/EKTs2gmt5BG_GB8lKdN_Rg/WuhpYBv02fAmB7tjUfF7DG9aUL4';
+        
+        // Replace the above variable values
+        // $responseText = $this->pushNotifications->android($msg_payload, $regId);
+        //$this->pushNotifications->WP8($msg_payload, $uri);
+        $responseText = $this->pushNotifications->iOS($msg_payload, $deviceToken);  
+        echo json_encode(array('RESULT' => array(), 'MESSAGE' => $responseText, 'STATUS' => 1));
         die();
-	}
-	
-	function aws_s3() {
-		// List Buckets
-		// var_dump($this->s3->listBuckets());
-		
-		$name = $_FILES['file']['name'];
-		$size = $_FILES['file']['size'];
-		$tmp = $_FILES['file']['tmp_name'];
+    }
+    
+    function aws_s3() {
+        // List Buckets
+        // var_dump($this->s3->listBuckets());
+        
+        $name = $_FILES['file']['name'];
+        $size = $_FILES['file']['size'];
+        $tmp = $_FILES['file']['tmp_name'];
 
-		$i = strrpos($name,".");
-		if (!$i) { return ""; } 
-		
-		$l = strlen($name) - $i;
-		$ext = substr($name,$i+1,$l);
-		
-		if(strlen($name) > 0) {
-		 
-		if($size<(1024*1024))
-		{
-		//Rename image name. 
-		$actual_image_name = "uploads/feedback/thumbs/".time().".".$ext;
-		if($this->s3->putObjectFile($tmp, S3_BUCKET, $actual_image_name, S3::ACL_PUBLIC_READ) )
-		{
-		$msg = "S3 Upload Successful.";	
-		$s3file= S3_CDN.$actual_image_name;
-		//echo "<img src='$s3file' style='max-width:400px'/><br/>";
-		echo '<b>S3 File URL:</b>'.$s3file;
-		
-		}
-		else
-		$msg = "S3 Upload Fail.";
-		
-		
-		}
-		else
-		$msg = "Image size Max 1 MB";
-		
-		}
-	}
+        $i = strrpos($name,".");
+        if (!$i) { return ""; } 
+        
+        $l = strlen($name) - $i;
+        $ext = substr($name,$i+1,$l);
+        
+        if(strlen($name) > 0) {
+         
+        if($size<(1024*1024))
+        {
+        //Rename image name. 
+        $actual_image_name = "uploads/feedback/thumbs/".time().".".$ext;
+        if($this->s3->putObjectFile($tmp, S3_BUCKET, $actual_image_name, S3::ACL_PUBLIC_READ) )
+        {
+        $msg = "S3 Upload Successful."; 
+        $s3file= S3_CDN.$actual_image_name;
+        //echo "<img src='$s3file' style='max-width:400px'/><br/>";
+        echo '<b>S3 File URL:</b>'.$s3file;
+        
+        }
+        else
+        $msg = "S3 Upload Fail.";
+        
+        
+        }
+        else
+        $msg = "Image size Max 1 MB";
+        
+        }
+    }
 
 }

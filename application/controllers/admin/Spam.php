@@ -49,7 +49,7 @@ class Spam extends MY_Controller {
 		);
 		
 		$search_condition = "(feedback_id IN (select feedback_id from db_spam)) AND db_feedback.deleted = 0 AND feedback.status = 1";
-		$data = 'feedback_id, feedback.title_id, title, name, photo, feedback_cont, feedback_img, feedback_thumb, feedback_video, replied_to, location, feedback.status, feedback.datetime as time';
+		$data = 'feedback_id, feedback.title_id, title, email, name, photo, feedback_cont, feedback_img, feedback_thumb, feedback_video, replied_to, location, feedback.status, feedback.datetime as time';
 		
 		$this->data['spam_list'] = $this->common->select_data_by_search('feedback', $search_condition, $condition_array = array(), $data, $sortby = '', $orderby = '', $limit = '', $offset = '', $join_str);
 

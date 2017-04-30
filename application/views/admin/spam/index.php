@@ -54,6 +54,7 @@
                                     <th>Feedback</th>
                                     <th>Visibility</th>
                                     <th>User</th>
+                                    <th>Email</th>
                                     <th>Time</th>
                                 </tr>
                             </thead>
@@ -73,6 +74,7 @@
                                         <?php ?><td><a href="<?php echo base_url('admin/spam/visibility/' . $spam['feedback_id'] . '/' . $spam['status']); ?>" id="edit_btn">
                                                 <?php echo $spam_status ?> </a></td><?php ?>
                                         <td><?php echo $spam['name'] ?></td>
+                                        <td><?php echo $spam['email'] ?></td>
                                         <td><?php echo $spam['time'] ?></td>
                                     </tr>
                                     <?php

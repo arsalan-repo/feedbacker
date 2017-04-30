@@ -51,7 +51,7 @@ class Feedbacks extends MY_Controller {
 		// $contition_array = array('replied_to' => NULL, 'deleted' => 0);
         $contition_array = array('feedback.deleted' => 0);
 		
-		$data = 'feedback_id, feedback.title_id, title, name, photo, feedback_cont, feedback_img, feedback_thumb, feedback_video, replied_to, location, feedback.status, feedback.datetime as time';
+		$data = 'feedback_id, feedback.title_id, title, name, email, photo, feedback_cont, feedback_img, feedback_thumb, feedback_video, replied_to, location, feedback.status, feedback.datetime as time';
 		
 		$this->data['feedback_list'] = $this->common->select_data_by_condition('feedback', $contition_array, $data, $sortby = 'feedback.datetime', $orderby = 'DESC', $limit = '', $offset = '', $join_str, $group_by = '');
 

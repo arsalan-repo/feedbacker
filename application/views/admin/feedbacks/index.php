@@ -54,6 +54,7 @@
                                     <th>Feedback</th>
                                     <th>Visibility</th>
                                     <th>User</th>
+                                    <th>Email</th>
                                     <th>Time</th>
                                     <th>Action</th>
                                 </tr>
@@ -74,6 +75,7 @@
                                         <?php ?><td><a href="<?php echo base_url('admin/feedbacks/visibility/' . $feedback['feedback_id'] . '/' . $feedback['status']); ?>" id="edit_btn">
                                                 <?php echo $feedback_status ?> </a></td><?php ?>
                                         <td><?php echo $feedback['name'] ?></td>
+                                        <td><?php echo $feedback['email'] ?></td>
                                         <td><?php echo $feedback['time'] ?></td>
                                         <td>
                                             <a href="<?php echo base_url('admin/feedbacks/edit/' . $feedback['feedback_id']); ?>" id="edit_btn" title="Edit Feedback">
