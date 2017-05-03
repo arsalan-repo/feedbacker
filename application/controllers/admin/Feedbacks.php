@@ -177,31 +177,7 @@ class Feedbacks extends MY_Controller {
                 
                 $insert_result = $this->common->insert_data($insert_array, 'users');
                 
-                if ($insert_result) {
-                    // Send Welcome Mail
-                    //$this->load->library('email');
-//                    $config['protocol'] = "smtp";
-//                    $config['smtp_host'] = "ssl://smtp.gmail.com";
-//                    $config['smtp_port'] = "465";
-//                    $config['smtp_user'] = "viral.kanz@gmail.com"; 
-//                    $config['smtp_pass'] = "Gmail#369";
-//                    $config['charset'] = "utf-8";
-//                    $config['mailtype'] = "html";
-//                    $config['newline'] = "\r\n";
-//
-//                    $this->email->initialize($config);
-//
-//                    $this->email->from('noreply@feedbacker.com', 'MEC');
-//                    $this->email->to($this->input->post('email'));
-//                    $this->email->subject('Welcome to Feedbacker');
-//
-//                    $data['site_url'] = $this->config->item('MAIN_SITE_URL');
-//                    $data['logo'] = $this->config->item('MAIN_SITE_URL').'images/footer-logo.png';
-//                    $data['name'] = ucfirst($this->input->post('name'));
-//                    $body = $this->load->view('emails/welcome_user.php',$data,TRUE);
-//                    $this->email->message($body);
-//                    $this->email->send();
-                    
+                if ($insert_result) {                    
                     $this->session->set_flashdata('success', 'User successfully inserted.');
                     redirect('admin/feedbacks', 'refresh');
                 } else {
