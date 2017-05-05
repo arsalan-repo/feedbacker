@@ -1296,11 +1296,16 @@ class V1 extends CI_Controller {
 	
 	// Get All Feedbacks for a Query string
     function search_results() {
-        $user_id = $this->input->post('user_id');
+        /*$user_id = $this->input->post('user_id');
         $qs = $this->input->post('qs');		
         $limit = $this->input->post('limit');
         $offset = $this->input->post('offset');		
-		
+		*/
+        $user_id = 27;
+        $qs = 'Millennium';
+        $limit = '';
+        $offset = '';
+
 		if ($user_id == '') {
             $error = 1;
             echo json_encode(array('RESULT' => array(), 'MESSAGE' => 'Please enter user id', 'STATUS' => 0));
@@ -1374,8 +1379,105 @@ class V1 extends CI_Controller {
                 )
             );
 
+            //Get All Ids
+
+            $params = ['index' => 'title'];
+            $response = $this->aws_client->indices()->exists($params);
+
+            if(!$response){
+                $indexParams = [
+                    'index' => 'title',
+                    'body' => [
+                        'settings' => [
+                            'number_of_shards' => 5,
+                            'number_of_replicas' => 1
+                        ]
+                    ]
+                ];
+
+                $response = $this->aws_client->indices()->create($indexParams);
+            } 
+
+            $params = [
+                'index' => 'title',
+                'body' => [
+                    'query' => [
+                        'query_string' => [
+                            'query' => 'title:*'.$qs.'*'
+                        ],
+                    ]
+                ]
+            ];
+
+            $title = $this->aws_client->search($params);
+
+            $title_id = [];
+            foreach ($title['hits']['hits'] as $key => $value) {
+                $title_id[] = $value['_source']['title_id'];
+            }
+
+
+            $params = ['index' => 'feedback'];
+            $response = $this->aws_client->indices()->exists($params);
+
+            if(!$response){
+            $indexParams = [
+                'index' => 'feedback',
+                'body' => [
+                    'settings' => [
+                        'number_of_shards' => 5,
+                        'number_of_replicas' => 1
+                    ]
+                ]
+            ];
+
+            $response = $this->aws_client->indices()->create($indexParams);
+            }
+
+
+            $params = [
+                'index' => 'feedback',
+                'body' => [
+                    'query' => [
+                        'query_string' => [
+                            'query' => 'feedback_cont:*'.$qs.'*'
+                        ],
+                    ]
+                ]
+            ];
+
+            $feedback = $this->aws_client->search($params);
+
+            $feedback_id = [];
+            foreach ($feedback['hits']['hits'] as $key => $value) {
+                $feedback_id[] = $value['_source']['feedback_id'];
+            }
+
+
+            $title_comma = implode(',', $title_id);
+
+            $feedback_comma = implode(',', $feedback_id);
+
             // Get Search Results
-			$search_condition = "(`title` LIKE '%".$qs."%' OR `feedback_cont` LIKE '%".$qs."%') AND db_feedback.deleted = 0 AND feedback.status = 1";
+
+            $custom_in_sql = '';
+            $custom_in_arr = [];
+            if(!empty($title_comma)){
+                $custom_in_arr[] = "db_titles.title_id IN (".$title_comma.")";
+            } else {
+                $custom_in_arr[] = "db_titles.title_id IN (0)";
+            }
+
+            if(!empty($feedback_comma)){
+                $custom_in_arr[] = "db_feedback.feedback_id IN (".$feedback_comma.")";
+            } else {
+                $custom_in_arr[] = "db_feedback.feedback_id IN (0)";
+            }
+
+            $custom_in_sql = implode(' OR ', $custom_in_arr);
+
+            $search_condition = "(".$custom_in_sql.") AND db_feedback.deleted = 0 AND feedback.status = 1";
+			
             $data = 'feedback_id, feedback.title_id, title, name, photo, feedback_cont, feedback_img, feedback_thumb, feedback_video, replied_to, location, feedback.datetime as time';
 
 			if ($limit != '' && $offset != '') {
@@ -2056,6 +2158,37 @@ class V1 extends CI_Controller {
 
             $insert_result = $this->common->insert_data_getid($insert_array, $tablename = 'feedback');
 
+            //AWS Elastic Search
+            $params = ['index' => 'feedback'];
+            $response = $this->aws_client->indices()->exists($params);
+
+            if(!$response){
+                $indexParams = [
+                    'index' => 'feedback',
+                    'body' => [
+                        'settings' => [
+                            'number_of_shards' => 5,
+                            'number_of_replicas' => 1
+                        ]
+                    ]
+                ];
+
+                $response = $this->aws_client->indices()->create($indexParams);
+            } 
+            $insert_array['feedback_id'] = $insert_result;
+
+            $docParams = [
+                'index' => 'feedback',
+                'type' => 'feedback_type',
+                'id' => $insert_result,
+                'body' => $insert_array
+            ]; 
+
+
+            $response = $this->aws_client->index($docParams);
+
+
+
             if ($insert_result) {
                 $return_array['id'] = $insert_result;
                 $return_array['feedback'] = $feedback;
@@ -2256,6 +2389,38 @@ class V1 extends CI_Controller {
 			}
 
             $insert_result = $this->common->insert_data_getid($insert_array, $tablename = 'feedback');
+
+
+            //AWS Elastic Search
+            $params = ['index' => 'feedback'];
+            $response = $this->aws_client->indices()->exists($params);
+
+            if(!$response){
+                $indexParams = [
+                    'index' => 'feedback',
+                    'body' => [
+                        'settings' => [
+                            'number_of_shards' => 5,
+                            'number_of_replicas' => 1
+                        ]
+                    ]
+                ];
+
+                $response = $this->aws_client->indices()->create($indexParams);
+            } 
+
+            $insert_array['feedback_id'] = $insert_result;
+            $docParams = [
+                'index' => 'feedback',
+                'type' => 'feedback_type',
+                'id' => $insert_result,
+                'body' => $insert_array
+            ]; 
+
+            $response = $this->aws_client->index($docParams);
+
+
+
 
             if ($insert_result) {
                 $return_array['id'] = $insert_result;

@@ -3,6 +3,9 @@
 if (!defined('BASEPATH'))
     exit('No direct script access allowed');
 
+require 'vendor/autoload.php';
+use Elasticsearch\ClientBuilder;
+
 class Feedbacks extends MY_Controller {
 
     public $data;
@@ -19,6 +22,9 @@ class Feedbacks extends MY_Controller {
         $this->data['site_name'] = $site_name = $site_name_values[0]['setting_value'];
         //set header, footer and leftmenu
         $this->data['title'] = 'Feedbacks | ' . $site_name;
+
+        $this->aws_client = ClientBuilder::create()->setHosts(["search-feedbacker-q3gdcfwrt27ulaeee5gz3zbezm.eu-west-1.es.amazonaws.com:80"])->build(); 
+
 
         //remove catch so after logout cannot view last visited page if that page is this
         $this->output->set_header('Last-Modified:' . gmdate('D, d M Y H:i:s') . 'GMT');
@@ -229,6 +235,38 @@ class Feedbacks extends MY_Controller {
             );
 
 			$update_result = $this->common->update_data($update_array, 'feedback', 'feedback_id', $this->input->post('feedback_id'));
+
+
+            $params = ['index' => 'feedback'];
+            $response = $this->aws_client->indices()->exists($params);
+
+            if(!$response){
+                $indexParams = [
+                    'index' => 'feedback',
+                    'body' => [
+                        'settings' => [
+                            'number_of_shards' => 5,
+                            'number_of_replicas' => 1
+                        ]
+                    ]
+                ];
+
+                $response = $this->aws_client->indices()->create($indexParams);
+            }
+
+            $feedback_detail = $this->common->select_data_by_id('feedback', 'feedback_id', $this->input->post('feedback_id'), '*');
+
+            $docParams = [
+                'index' => 'feedback',
+                'type' => 'feedback_type',
+                'id' => $this->input->post('feedback_id'),
+                'body' => $feedback_detail[0]
+            ];
+
+            $response = $this->aws_client->index($docParams);
+
+
+
            
             if ($update_result) {
                 $this->session->set_flashdata('success', 'Feedback successfully updated.');
@@ -260,6 +298,13 @@ class Feedbacks extends MY_Controller {
         $update_result = $this->common->update_data($update_data, 'feedback', 'feedback_id', $id);
 
         if ($update_result) {
+            $docParams = [
+                'index' => 'feedback',
+                'type' => 'feedback_type',
+                'id' => $id
+            ]; 
+
+            $response = $this->aws_client->delete($docParams);
             $this->session->set_flashdata('success', 'Feedback successfully deleted');
             redirect('admin/feedbacks', 'refresh');
         } else {
@@ -344,6 +389,40 @@ class Feedbacks extends MY_Controller {
                 redirect('admin/feedbacks', 'refresh');
             }
         }
+    }
+
+
+    public function make_aws_index() {
+        $title_detail = $this->common->select_data_by_condition('feedback',['deleted' => 0]);
+
+        foreach ($title_detail as $key => $value) {
+            $params = ['index' => 'feedback'];
+            $response = $this->aws_client->indices()->exists($params);
+
+            if(!$response){
+                $indexParams = [
+                    'index' => 'feedback',
+                    'body' => [
+                        'settings' => [
+                            'number_of_shards' => 5,
+                            'number_of_replicas' => 1
+                        ]
+                    ]
+                ];
+
+                $response = $this->aws_client->indices()->create($indexParams);
+            }
+
+            $docParams = [
+                'index' => 'feedback',
+                'type' => 'feedback_type',
+                'id' => $value['feedback_id'],
+                'body' => $value
+            ]; 
+
+            $response = $this->aws_client->index($docParams);
+        }
+        echo "Done all feedback indexing";die;
     }
 
 }
