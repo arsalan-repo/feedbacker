@@ -56,7 +56,9 @@
                                     <th>Status</th>
                                     <th>Gender</th>
                                     <th>Country</th>
+                                    <th>Total Feedbacks</th>
                                     <th>Birth Date</th>
+                                    <th>Last Login</th>
                                     <th>Action</th>
                                 </tr>
                             </thead>
@@ -82,7 +84,9 @@
                                                 <?php echo $user_status ?> </a></td>
                                         <td><?php echo $user['gender'] ?></td>
                                         <td><?php echo $user['country'] ?></td>
+                                        <td><?php echo $user['total_feedback']; ?></td>
                                         <td><?php echo ($user['dob']) ? $user['dob'] : 'N/A' ?></td>
+                                        <td><?php echo $user['last_login']; ?></td>
                                         <td>
                                             <a href="<?php echo base_url('admin/users/edit/' . $user['id']); ?>" id="edit_btn" title="Edit User">
                                                 <button type="button" class="btn btn-primary" style="margin-top: 3px;"><i class="icon-pencil"></i> <i class="fa fa-pencil-square-o"></i></button>

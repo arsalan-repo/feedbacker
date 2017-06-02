@@ -486,29 +486,21 @@ cos((`lat`*pi()/180)) * cos(((" . $longitude . "- `lng`)
     }
 
     function sendMail ($to = '', $cc = '', $subject = '', $mail_body = '') {
-        // Load Library
         $this->load->library('email');
 
-        $config['protocol'] = "smtp";
-        $config['smtp_host'] = "ssl://smtp.gmail.com";
-        $config['smtp_port'] = "465";
-        $config['smtp_user'] = "smtp.feedbacker@gmail.com"; 
-        $config['smtp_pass'] = "Mach@Kit#$";
-        $config['charset'] = "utf-8";
-        $config['mailtype'] = "html";
-        $config['newline'] = "\r\n";
+        if($subject == '') {
+            $subject = 'Feedbacker - New Notification';
+        }
 
-        $this->email->initialize($config);
+        $result = $this->email
+                ->from('smtp.feedbacker@gmail.com', 'Feedbacker')
+                // ->reply_to('yoursecondemail@somedomain.com')    // Optional, an account where a human being reads.
+                ->to($to)
+                ->subject($subject)
+                ->message($mail_body)
+                ->send();
 
-        $this->email->from('noreply@feedbacker.me', 'Feedbacker');
-        $this->email->to($to);
-        $this->email->cc($cc);
-        $this->email->subject($subject);
-
-        $this->email->set_mailtype("html");
-        $this->email->message(html_entity_decode($mail_body));
-
-        if($this->email->send()) {
+        if($result) {
             return true;
         } else {
             return false;

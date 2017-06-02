@@ -36,9 +36,18 @@ class Users extends MY_Controller {
 
         $this->data['module_name'] = 'Users';
         $this->data['section_title'] = 'Users';
+		
+		$join_str = array(
+			array(
+				'table' => 'feedback',
+				'join_table_id' => 'feedback.user_id',
+				'from_table_id' => 'users.id',
+				'join_type' => 'left'
+			)
+		);
 
-        $contition_array = array('deleted' => 0);
-        $this->data['user_list'] = $this->common->select_data_by_condition('users', $contition_array, '*', $short_by = 'id', $order_by = 'ASC', $limit = '', $offset = '');
+        $contition_array = array('users.deleted' => 0);
+        $this->data['user_list'] = $this->common->select_data_by_condition('users', $contition_array, 'users.id, users.name, users.email, users.photo, users.gender, users.dob, users.country, users.status, users.last_login, count(feedback_id) as total_feedback', $short_by = 'id', $order_by = 'ASC', $limit = '', $offset = '', $join_str, $group_by = 'users.id');
 
         /* Load Template */
         $this->template->admin_render('admin/users/index', $this->data);

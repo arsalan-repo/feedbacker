@@ -18,8 +18,7 @@ class MY_Controller extends CI_Controller {
         $this->data['plugins_dir']    = $this->config->item('plugins_dir');
         $this->data['avatar_dir']     = $this->config->item('avatar_dir');
         
-        // //date_default_timezone_get();
-        // date_default_timezone_set('Asia/Kolkata');
+        // date_default_timezone_set('Africa/Cairo');
     }
 
     public function last_query() {
