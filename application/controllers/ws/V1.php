@@ -1265,12 +1265,7 @@ class V1 extends CI_Controller {
         $qs = $this->input->post('qs');     
         $limit = $this->input->post('limit');
         $offset = $this->input->post('offset');     
-        /*
-        $user_id = 27;
-        $qs = 'Millennium';
-        $limit = '';
-        $offset = '';
-		*/
+
         if ($user_id == '') {
             $error = 1;
             echo json_encode(array('RESULT' => array(), 'MESSAGE' => 'Please enter user id', 'STATUS' => 0));
@@ -1367,8 +1362,8 @@ class V1 extends CI_Controller {
                 'index' => 'title',
                 'body' => [
                     'query' => [
-                        'match_phrase' => [
-                            'title' => '*'.$qs.'*'
+                        'query_string' => [
+                            'query' => 'title:*'.$qs.'*'
                         ],
                     ]
                 ]
@@ -1404,10 +1399,9 @@ class V1 extends CI_Controller {
                 'index' => 'feedback',
                 'body' => [
                     'query' => [
-                        'match_phrase' => [
-                            'feedback_cont' => '*'.$qs.'*'
+                        'query_string' => [
+                            'query' => 'feedback_cont:*'.$qs.'*'
                         ],
-                        
                     ]
                 ]
             ];
@@ -1443,7 +1437,6 @@ class V1 extends CI_Controller {
             $custom_in_sql = implode(' OR ', $custom_in_arr);
 
             $search_condition = "(".$custom_in_sql.") AND db_feedback.deleted = 0 AND feedback.status = 1";
-            
             $data = 'feedback_id, feedback.title_id, title, name, photo, feedback_cont, feedback_img, feedback_thumb, feedback_video, replied_to, location, feedback.datetime as time';
 
             if ($limit != '' && $offset != '') {
