@@ -14,46 +14,47 @@
 </head>
 
 <body>
-<div class="login-page">
-<span class="login-img"><img src="<?php echo base_url().'assets/images/login-img.png'; ?>" alt="" /></span> <span class="login-bg"><img src="<?php echo base_url().'assets/images/form-bg.png'; ?>" /></span>
-  <div class="login-form">
+<div class="login-page"> 
+	<span class="login-img">
+    	<img src="<?php echo base_url().'assets/images/login-img.png'; ?>" alt="" />
+    </span> 
+    <span class="login-bg">
+    	<img src="<?php echo base_url().'assets/images/form-bg.png'; ?>" />
+    </span>
+	<div class="login-form">
     <div class="login-form-block">
-    <?php if ($this->session->flashdata('success')) { ?>
-    <div class="callout callout-success">
-        <p><?php echo $this->session->flashdata('success'); ?></p>
-    </div>
-	<?php } ?>
-    <?php if ($this->session->flashdata('error')) { ?>  
-        <div class="callout callout-danger">
-            <p><?php echo $this->session->flashdata('error'); ?></p>
-        </div>
-    <?php } ?>
       <div class="login-form-fields">
-        <div class="logo"><img src="<?php echo base_url().'assets/images/logo.png'; ?>" alt="" /></div>
+        <div class="logo">
+        	<a href="<?php echo site_url(); ?>">
+            	<img src="<?php echo base_url().'assets/images/logo.png'; ?>" alt="" />
+            </a>
+        </div>
         <?php
-$attributes = array('class' => '', 'id' => 'login-form');
-// $hidden = array('username' => 'Joe', 'member_id' => '234');
-echo form_open('login/auth', $attributes);
-// echo form_open('login/auth', '', $hidden);
-?>
-        <ul>
-          <li>
+		$attributes = array('class' => '', 'id' => 'signup-form');
+		echo form_open('signup/submit', $attributes);
+		?>
+          <ul>
+            <li>
+              <label>Name</label>
+              <input type="text" placeholder="" name="name" id="name" />
+            </li>
             <label>Email</label>
             <input type="text" placeholder="" name="email" id="email" />
-          </li>
-          <li>
-            <label>Password</label>
-            <input type="password" name="password" placeholder="" id="password" />
-          </li>
-          <li>
-            <input type="submit" name="button" id="button" value="Login" />
-          </li>
-          <li> <span class="forgot-text">Forgot Password?</span> <span class="signup-text">New User? Sign Up</span>
-            <div class="login-with"><span>or login with</span></div>
-            <div class="login-social-icons"> <span class="facebook-icon"><a href="#"><i class="fa fa-facebook" aria-hidden="true"></i></a></span> <span class="twitter-icon"><a href="#"><i class="fa fa-twitter" aria-hidden="true"></i></a></span> </div>
-          </li>
-        </ul>
-        <?php echo form_close(); ?> </div>
+            </li>
+            <li>
+              <label>Password</label>
+              <input type="password" name="password" placeholder="" id="password" />
+            </li>
+            <label>Confirm Password</label>
+            <input type="password" name="confirm_password" placeholder="" id="confirm_password" />
+            </li>
+            <li>
+              <input type="submit" name="signup" id="signup" value="Sign Up" />
+            </li>
+            <li> <span class="have-an-account-text">Have an account? <a href="<?php echo site_url(); ?>">Sign In</a></span> </li>
+          </ul>
+        <?php echo form_close(); ?>
+      </div>
     </div>
   </div>
 </div>
@@ -64,10 +65,11 @@ echo form_open('login/auth', $attributes);
 // When the browser is ready...
 $(function() {
 	// Setup form validation on the #register-form element
-	$("#login-form").validate({
+	$("#signup-form").validate({
 	
 		// Specify the validation rules
 		rules: {
+			name: "required",
 			email: {
 				required: true,
 				email: true
@@ -75,16 +77,21 @@ $(function() {
 			password: {
 				required: true,
 				minlength: 5
+			},
+			confirm_password: {
+				equalTo: "#password"
 			}
 		},
 		
 		// Specify the validation error messages
 		messages: {
+			name: "Please enter your name",
 			email: "Please enter a valid email address",
 			password: {
 				required: "Please provide a password",
 				minlength: "Your password must be at least 5 characters long"
-			}
+			},
+			confirm_password: "Enter Confirm Password Same as Password"
 		},
 		
 		submitHandler: function(form) {
