@@ -44,7 +44,7 @@ class Signin extends CI_Controller {
 			redirect();
 		}
 		
-		//Check User Is valid or not
+		// Check User Is valid or not
 		$userinfo = $this->common->check_login($email, $password);
 
 		if (count($userinfo) > 0) {

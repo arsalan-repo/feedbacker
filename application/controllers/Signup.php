@@ -38,54 +38,80 @@ class Signup extends CI_Controller {
 		
 		$this->load->library('form_validation');
 		
-		$this->form_validation->set_rules('name', 'Name', 'trim|required');
-		$this->form_validation->set_rules('email', 'Email', 'trim|required');
+		$this->form_validation->set_rules('name', 'Name', 'trim|required|min_length[3]');
+		$this->form_validation->set_rules('email', 'Email', 'trim|required|valid_email|is_unique[users.email]');
 		$this->form_validation->set_rules('password', 'Password', 'trim|required');
+		$this->form_validation->set_rules('confirm_password', 'Confirm Password', 'trim|required|matches[password]');
 		
 		if ($this->form_validation->run() == FALSE) {
-			redirect();
+			redirect('signup');
 		}
 		
-		//Check User Is valid or not
-		$userinfo = $this->common->check_login($email, $password);
+		// Add User in database
+		$md5_password = md5($password);
 
-		if (count($userinfo) > 0) {
-			if ($userinfo[0]['status'] == "0") {
-				echo json_encode(array('RESULT' => array(), 'MESSAGE' => $this->lang->line('error_account_blocked'), 'STATUS' => 0));
-				exit();
-			} else {
-				$userinfo[0]['username'] = $this->input->post('user_name');
-				unset($userinfo[0]['username']);
-				unset($userinfo[0]['password']);
-				
-				if(isset($userinfo[0]['photo'])) {
-					$userinfo[0]['user_avatar'] = S3_CDN . 'uploads/user/thumbs/' . $userinfo[0]['photo'];
-				} else {
-					$userinfo[0]['user_avatar'] = ASSETS_URL . 'images/user-avatar.png';
-				}
-				
-				$languages = $this->common->select_data_by_id('languages', 'lang_id', $userinfo[0]['lang_id'], $data = 'lang_code', $join_str = array());
-				$userinfo[0]['language'] = $languages[0]['lang_code'];
-				
-				if($languages[0]['lang_code'] == 'ar') {
-					$this->lang->load('message','arabic');
-				}
-				
-				// Update last login
-				$data = array(
-					'last_login' => date('Y-m-d h:i:s')
-				);
-				$this->common->update_data($data, 'users', 'id', $userinfo[0]['id']);
-				
-				// Add user data in session
-				$this->session->set_userdata('mec_user', $userinfo[0]);
-				
-				$this->session->set_flashdata('success', $this->lang->line('msg_login_success'));
-	            redirect('dashboard');
-			}
-		} else {
-			$this->session->set_flashdata('error', $this->lang->line('error_msg_login'));
-			redirect();
+		$insert_array['name'] = $name;
+		$insert_array['email'] = trim($email);
+		$insert_array['password'] = trim($md5_password);
+		//$insert_array['country'] = $country;
+		$insert_array['status'] = 1;
+		$insert_array['create_date'] = date('Y-m-d h:i:s');
+		$insert_array['modify_date'] = date('Y-m-d h:i:s');
+
+		$insert_result = $this->common->insert_data_getid($insert_array, $tablename = 'users');
+		
+		if (!$insert_result) {
+			$this->session->set_flashdata('error', $this->lang->line('error_something_wrong'));
+			redirect('signup');
 		}
+		
+		// Add User Notifications Preferences
+		$insert_pref_1['user_id'] = $insert_result;
+		$insert_pref_1['notification_id'] = 1;
+		$insert_pref_1['status'] = 'on';
+		$insert_pref_1['updated_on'] = date('Y-m-d h:i:s');
+		
+		$pref_result_1 = $this->common->insert_data($insert_pref_1, $tablename = 'user_preferences');
+		
+		$insert_pref_2['user_id'] = $insert_result;
+		$insert_pref_2['notification_id'] = 2;
+		$insert_pref_2['status'] = 'on';
+		$insert_pref_2['updated_on'] = date('Y-m-d h:i:s');
+		
+		$pref_result_2 = $this->common->insert_data($insert_pref_2, $tablename = 'user_preferences');
+		
+		$insert_pref_3['user_id'] = $insert_result;
+		$insert_pref_3['notification_id'] = 3;
+		$insert_pref_3['status'] = 'on';
+		$insert_pref_3['updated_on'] = date('Y-m-d h:i:s');
+		
+		$pref_result_3 = $this->common->insert_data($insert_pref_3, $tablename = 'user_preferences');
+		
+		$insert_pref_4['user_id'] = $insert_result;
+		$insert_pref_4['notification_id'] = 4;
+		$insert_pref_4['status'] = 'on';
+		$insert_pref_4['updated_on'] = date('Y-m-d h:i:s');
+		
+		$pref_result_4 = $this->common->insert_data($insert_pref_4, $tablename = 'user_preferences');
+		
+		// Add user data in session
+		$user_info = array(
+			'id'	=>	$insert_result,
+			'name'	=>	$name,
+			'email' =>	$email,
+			'user_avatar'	=> ASSETS_URL . 'images/user-avatar.png',
+			//'country'		=> $user_result[0]['country'],
+		);
+		
+		/*if($language != '') {
+			$return_array['language'] = $language;
+		} else {
+			$return_array['language'] = 'en';
+		}*/
+		
+		$this->session->set_userdata('mec_user', $user_info);
+		
+		$this->session->set_flashdata('success', $this->lang->line('success_msg_sinup_done'));
+		redirect('dashboard');
     }
 }
