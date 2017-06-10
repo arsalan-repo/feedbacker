@@ -117,7 +117,7 @@
             rules: {
                 name: {
                     required: true,
-                    nospecialchar: true,
+                    //nospecialchar: true,
                     minlength: 3,
                     maxlength: 50
                 },

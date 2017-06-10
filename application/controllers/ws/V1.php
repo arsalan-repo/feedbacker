@@ -206,6 +206,7 @@ class V1 extends CI_Controller {
             $insert_array['status'] = 1;
             $insert_array['create_date'] = date('Y-m-d h:i:s');
             $insert_array['modify_date'] = date('Y-m-d h:i:s');
+			$insert_array['last_login'] = date('Y-m-d h:i:s');
 
             $insert_result = $this->common->insert_data_getid($insert_array, $tablename = 'users');
 
