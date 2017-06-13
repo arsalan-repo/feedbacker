@@ -23,6 +23,16 @@
     </span>
 	<div class="login-form">
     <div class="login-form-block">
+    <?php if ($this->session->flashdata('success')) { ?>
+    <div class="callout callout-success">
+        <p><?php echo $this->session->flashdata('success'); ?></p>
+    </div>
+	<?php } ?>
+    <?php if ($this->session->flashdata('error')) { ?>  
+        <div class="callout callout-danger">
+            <p><?php echo $this->session->flashdata('error'); ?></p>
+        </div>
+    <?php } ?>
       <div class="login-form-fields">
         <div class="logo">
         	<a href="<?php echo site_url(); ?>">
@@ -36,17 +46,17 @@
           <ul>
             <li>
               <label>Name</label>
-              <input type="text" placeholder="" name="name" id="name" />
+              <input type="text" autocomplete="off" placeholder="" name="name" id="name" />
             </li>
             <label>Email</label>
-            <input type="text" placeholder="" name="email" id="email" />
+            <input type="text" autocomplete="off" placeholder="" name="email" id="email" />
             </li>
             <li>
               <label>Password</label>
-              <input type="password" name="password" placeholder="" id="password" />
+              <input type="password" autocomplete="off" name="password" placeholder="" id="password" />
             </li>
             <label>Confirm Password</label>
-            <input type="password" name="confirm_password" placeholder="" id="confirm_password" />
+            <input type="password" autocomplete="off" name="confirm_password" placeholder="" id="confirm_password" />
             </li>
             <li>
               <input type="submit" name="signup" id="signup" value="Sign Up" />
@@ -64,6 +74,9 @@
 <script type="application/javascript">
 // When the browser is ready...
 $(function() {
+	// Set Autocomplete Off
+	$("#signup-form").attr('autocomplete', 'off');
+	
 	// Setup form validation on the #register-form element
 	$("#signup-form").validate({
 	

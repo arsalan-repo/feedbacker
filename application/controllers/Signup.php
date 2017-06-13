@@ -28,7 +28,7 @@ class Signup extends CI_Controller {
     }
 
 	public function index() {
-		$this->load->view('signup');
+		$this->load->view('user/signup');
 	}
 	
 	public function submit() {
@@ -36,14 +36,13 @@ class Signup extends CI_Controller {
 		$email = $this->input->post('email');
         $password = $this->input->post('password');
 		
-		$this->load->library('form_validation');
-		
 		$this->form_validation->set_rules('name', 'Name', 'trim|required|min_length[3]');
 		$this->form_validation->set_rules('email', 'Email', 'trim|required|valid_email|is_unique[users.email]');
 		$this->form_validation->set_rules('password', 'Password', 'trim|required');
 		$this->form_validation->set_rules('confirm_password', 'Confirm Password', 'trim|required|matches[password]');
 		
 		if ($this->form_validation->run() == FALSE) {
+			$this->session->set_flashdata('error', validation_errors());
 			redirect('signup');
 		}
 		

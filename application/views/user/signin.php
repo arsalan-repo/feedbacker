@@ -43,22 +43,35 @@
         <ul>
           <li>
             <label>Email</label>
-            <input type="text" placeholder="" name="email" id="email" />
+            <input type="text" autocomplete="off" placeholder="" name="email" id="email" />
           </li>
           <li>
             <label>Password</label>
-            <input type="password" name="password" placeholder="" id="password" />
+            <input type="password" autocomplete="off" name="password" placeholder="" id="password" />
           </li>
           <li>
             <input type="submit" name="button" id="button" value="Login" />
           </li>
           <li> 
-          	<span class="forgot-text">Forgot Password?</span> 
+          	<span class="forgot-text">
+            	<a href="<?php echo site_url('signin/forgot_password'); ?>">Forgot Password?</a>
+            </span> 
             <span class="signup-text">
             	<a href="<?php echo site_url('signup'); ?>">New User? Sign Up</a>
             </span>
             <div class="login-with"><span>or login with</span></div>
-            <div class="login-social-icons"> <span class="facebook-icon"><a href="#"><i class="fa fa-facebook" aria-hidden="true"></i></a></span> <span class="twitter-icon"><a href="#"><i class="fa fa-twitter" aria-hidden="true"></i></a></span> </div>
+            <div class="login-social-icons">
+	            <?php if(!empty($authUrl)) { ?>
+            	<span class="facebook-icon">
+                	<a href="<?php echo $authUrl; ?>"><i class="fa fa-facebook" aria-hidden="true"></i></a>
+                </span>
+                <?php } ?>
+                <?php if(!empty($authUrl)) { ?>
+                <span class="twitter-icon">
+                	<a href="<?php echo $oauthURL; ?>"><i class="fa fa-twitter" aria-hidden="true"></i></a>
+                </span>
+                <?php } ?>
+            </div>
           </li>
         </ul>
         <?php echo form_close(); ?> 
@@ -72,6 +85,9 @@
 <script type="application/javascript">
 // When the browser is ready...
 $(function() {
+	// Set Autocomplete Off
+	$("#signin-form").attr('autocomplete', 'off');
+	
 	// Setup form validation on the #register-form element
 	$("#signin-form").validate({
 	

@@ -17,8 +17,8 @@ class Dashboard extends CI_Controller {
 		}
 		
 		// Load library
-		$this->load->library('template');
-
+		$this->load->library('template', 'pagination');
+		
         //site setting details
         $this->load->model('common');
         $site_name_values = $this->common->select_data_by_id('settings', 'setting_id', '1', '*');
@@ -37,140 +37,187 @@ class Dashboard extends CI_Controller {
 
     //display dashboard
     public function index() {
+		// Session data
+		$user_info = $this->session->userdata['mec_user'];
+		$this->data['user_info'] = $user_info;
+		
+		$this->data['module_name'] = 'User';
         $this->data['section_title'] = 'Dashboard';
 		
-		//echo "<pre>";
-		//print_r($this->session->userdata['mec_user']);
-        //exit();
+		// Get user country
+		$country = $this->input->post('country');
+		
+		if($country == '') {
+			$getcountry = $this->common->select_data_by_id('users', 'id', $user_info['id'], 'country', '');
+			$country = $getcountry[0]['country'];
+		}
+		
+		if(!empty($country)) {
+			$contition_array = array('replied_to' => NULL, 'feedback.deleted' => 0, 'feedback.status' => 1, 'feedback.country' => $country);
+		} else {
+			$contition_array = array('replied_to' => NULL, 'feedback.deleted' => 0, 'feedback.status' => 1);
+		}
+		
+		// Get all feedbacks
+		$join_str = array(
+			array(
+				'table' => 'users',
+				'join_table_id' => 'users.id',
+				'from_table_id' => 'feedback.user_id',
+				'join_type' => 'left'
+			),
+			array(
+				'table' => 'titles',
+				'join_table_id' => 'titles.title_id',
+				'from_table_id' => 'feedback.title_id',
+				'join_type' => 'left'
+			)
+		);
+		
+		$data = 'feedback_id, feedback.title_id, title, name, photo, feedback_cont, feedback_img, feedback_thumb, feedback_video, replied_to, location, feedback.datetime as time';
+		
+		$feedback = $this->common->select_data_by_condition('feedback', $contition_array, $data, $sortby = 'feedback.datetime', $orderby = 'DESC', $limit = '', $offset = '', $join_str, $group_by = '');
+		
+		// echo "<pre>";
+		// print_r($feedback);
+		// exit();
+		
+		$return_array = array();
+		$total_records = count($feedback);
+		
+		// Pagination
+		$config = array();
+		$config["base_url"] = base_url('dashboard/index');
+		$config["total_rows"] = $total_records;
+		$config["per_page"] = 15;
+		$config['uri_segment'] = 3;
+		$config['use_page_numbers'] = TRUE;
+		$config['num_links'] = $total_records;
+		$config['cur_tag_open'] = '&nbsp;<a class="current">';
+		$config['cur_tag_close'] = '</a>';
+		$config['next_link'] = 'Next';
+		$config['prev_link'] = 'Previous';
+		
+		$this->pagination->initialize($config);
+
+		if ($this->uri->segment(3)) {
+			$page = ($this->uri->segment(3)) ;
+		} else {
+			$page = 0;
+		}
+		
+		$page > 0 ? $offset = ($page - 1) * $config["per_page"] + 1 : 0;
+		$str_links = $this->pagination->create_links();
+		$this->data['links'] = explode('&nbsp;',$str_links);
+		
+		$feedback = $this->common->select_data_by_condition('feedback', $contition_array, $data, $sortby = 'feedback.datetime', $orderby = 'DESC', $config["per_page"], $offset, $join_str, $group_by = '');
+		
+		//echo $this->db->last_query();
+		
+		if($total_records > 0) {
+			foreach ($feedback as $item) {
+				$return = array();
+				$return['id'] = $item['feedback_id'];
+				$return['title_id'] = $item['title_id'];                
+				$return['title'] = $item['title'];
+				
+				// Get likes for this feedback
+				$contition_array_lk = array('feedback_id' => $item['feedback_id']);
+				$flikes = $this->common->select_data_by_condition('feedback_likes', $contition_array_lk, $data = '*', $short_by = '', $order_by = '', $limit = '', $offset = '', $join_str = array(), $group_by = '');
+				
+				$return['likes'] = "";
+				
+				if(count($flikes) > 1000) {
+					$return['likes'] = (count($flikes)/1000)."k";
+				} else {
+					$return['likes'] = count($flikes);
+				}
+				
+				// Get followers for this title
+				$contition_array_fo = array('title_id' => $item['title_id']);
+				$followings = $this->common->select_data_by_condition('followings', $contition_array_fo, $data = '*', $short_by = '', $order_by = '', $limit = '', $offset = '', $join_str = array(), $group_by = '');
+				
+				$return['followers'] = "";
+				
+				if(count($followings) > 1000) {
+					$return['followers'] = (count($followings)/1000)."k";
+				} else {
+					$return['followers'] = count($followings);
+				}
+				
+				// Check If user liked this feedback
+				$contition_array_li = array('feedback_id' => $item['feedback_id'], 'user_id' => $user_info['id']);
+				$likes = $this->common->select_data_by_condition('feedback_likes', $contition_array_li, $data = '*', $short_by = '', $order_by = '', $limit = '', $offset = '', $join_str = array(), $group_by = '');
+							
+				if(count($likes) > 0) {
+					$return['is_liked'] = TRUE;
+				} else {
+					$return['is_liked'] = FALSE;
+				}
+				
+				// Check If user followed this title
+				$contition_array_ti = array('title_id' => $item['title_id'], 'user_id' => $user_info['id']);
+				$followtitles = $this->common->select_data_by_condition('followings', $contition_array_ti, $data = '*', $short_by = '', $order_by = '', $limit = '', $offset = '', $join_str = array(), $group_by = '');
+							
+				if(count($followtitles) > 0) {
+					$return['is_followed'] = TRUE;
+				} else {
+					$return['is_followed'] = FALSE;
+				}
+				
+				$return['name'] = $item['name'];
+				
+				if(isset($item['photo'])) {
+					$return['user_avatar'] = S3_CDN . 'uploads/user/thumbs/' . $item['photo'];
+				} else {
+					$return['user_avatar'] = ASSETS_URL . 'images/user-avatar.png';
+				}
+				
+				if($item['feedback_img'] !== "") {
+					$return['feedback_img'] = S3_CDN . 'uploads/feedback/main/' . $item['feedback_img'];
+				} else {
+					$return['feedback_img'] = "";
+				}
+
+				if($item['feedback_thumb'] !== "") {
+					$return['feedback_thumb'] = S3_CDN . 'uploads/feedback/thumbs/' . $item['feedback_thumb'];
+				} elseif($item['feedback_img'] !== "") {
+					$return['feedback_thumb'] = S3_CDN . 'uploads/feedback/main/' . $item['feedback_img'];
+				} else {
+					$return['feedback_thumb'] = "";
+				}
+				
+				if($item['feedback_video'] !== "") {
+					$return['feedback_video'] = S3_CDN . 'uploads/feedback/video/' . $item['feedback_video'];
+					//$return['feedback_thumb'] = S3_CDN . 'uploads/feedback/thumbs/video_thumbnail.png';
+				} else {
+					$return['feedback_video'] = "";
+				}
+
+				$return['location'] = $item['location'];
+				$return['feedback'] = $item['feedback_cont'];
+				$return['time'] = $this->common->timeAgo($item['time']);
+
+				array_push($return_array, $return);
+			}
+
+			// Null to Empty String
+			array_walk_recursive($return_array, function (&$item, $key) {
+				$item = null === $item ? '' : $item;
+			});
+			
+			$this->data['feedbacks'] = $return_array;
+			
+			//echo "<pre>";
+			//print_r($return_array);
+			
+		} else {
+			$this->data['feedbacks'] = array();
+			$this->data['no_record_found'] = $this->lang->line('no_record_found');
+		}
 		
         /* Load Template */
-		$this->template->front_render('dashboard');
-    }
-
-    //logout user
-    public function logout() {
-        if ($this->session->userdata('mec_user')) {
-            $this->session->unset_userdata('mec_user');
-        }
-        redirect();
-    }
-
-    public function edit_profile() {
-        
-        if($this->data['loged_in_user'][0]['level'] != '1'){
-            $this->session->set_flashdata('error','You are not authorized.');
-            redirect('dashboard','refresh');
-        }
-        
-        if($this->input->post('email')){
-            $email=$this->input->post('email');
-            $user_name=$this->input->post('user_name');
-            $name=$this->input->post('name');
-            $user_id=$this->session->userdata('mec_admin');
-            
-            $update_result=  $this->common->update_data($this->input->post(),'user','user_id',$user_id);
-            if($update_result){
-                $this->session->set_flashdata('success','Profile detail successfully updated.');
-                redirect('dashboard','refresh');
-            }
-            else{
-                $this->session->set_flashdata('error','Error Occurred. Try Again!');
-                redirect('dashboard','refresh');
-            }
-        }
-        
-        $this->data['module_name'] = 'Dashboard';
-        $this->data['section_title'] = 'Edit Profile';
-        $this->template->admin_render('admin/dashboard/edit_profile', $this->data);
-    }
-
-    
-
-    public function change_password() {
-
- 
-        if($this->input->post('old_pass')){
-            
-            $user_id = ($this->session->userdata('mec_admin'));
-            $old_password=$this->input->post('old_pass');
-            $new_password=  $this->input->post('new_pass');
-          
-            $admin_old_password = $this->common->select_data_by_id('admin','id',1,'password');
-            $admin_password = $admin_old_password[0]['password'];
-
-            if($admin_password == md5($old_password)){
-                $update_array=array('password'=> md5($new_password));
-                $update_result=  $this->common->update_data($update_array,'admin','id',1);
-                if($update_result){
-                    $this->session->set_flashdata('success','Your password is successfully changed.');
-                    redirect('admin/dashboard/change_password','refresh');
-                }
-                else{
-                    $this->session->set_flashdata('error','Error Occurred. Try Again!');
-                    redirect('admin/dashboard/change_password','refresh');
-                }
-            }
-            else{
-                $this->session->set_flashdata('error','Old password does not match');
-                redirect('admin/dashboard/change_password','refresh');
-            }
-        }
-        
-        $this->data['module_name'] = 'Dashboard';
-        $this->data['section_title'] = 'Change Password';
-        $this->template->admin_render('admin/dashboard/change_password', $this->data);
-    }
-
-    
-    //check old password
-    public function check_old_pass() {
-        if ($this->input->is_ajax_request() && $this->input->post('old_pass')) {
-            $user_id = ($this->session->userdata('mec_admin'));
-
-            $old_pass = $this->input->post('old_pass');
-            $check_result = $this->common->select_data_by_id('user','user_id',$user_id,'password');
-            if ($check_result[0]['password'] === md5($old_pass)) {
-                echo 'true';
-                die();
-            } else {
-                echo 'false';
-                die();
-            }
-        }
-    }
-    
-    public function check_email() {
-        if ($this->input->is_ajax_request() && $this->input->post('email')) {
-            $user_id = ($this->session->userdata('mec_admin'));
-
-            $email = $this->input->post('email');
-            $check_result = $this->common->check_unique_avalibility('user','email',$email,'user_id',$user_id);
-            if ($check_result) {
-                echo 'true';
-                die();
-            } else {
-                echo 'false';
-                die();
-            }
-        }
-    }
-    
-    public function check_username() {
-        if ($this->input->is_ajax_request() && $this->input->post('user_name')) {
-            $user_id = ($this->session->userdata('mec_admin'));
-
-            $user_name = $this->input->post('user_name');
-            $check_result = $this->common->check_unique_avalibility('user','user_name',$user_name,'user_id',$user_id);
-            if ($check_result) {
-                echo 'true';
-                die();
-            } else {
-                echo 'false';
-                die();
-            }
-        }
+		$this->template->front_render('user/dashboard', $this->data);
     }
 
 }
-
-?>
