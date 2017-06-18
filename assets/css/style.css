@@ -495,7 +495,7 @@ ul.tsc_pagination {
 ul.tsc_pagination li a{border:solid 1px;border-radius:3px;-moz-border-radius:3px;-webkit-border-radius:3px;padding:6px 9px 6px 9px;}
 ul.tsc_pagination li {
   display: inline-block;
-  margin: 0 0 0 5px;
+  margin: 0;
   padding: 0;
   text-align: center;
 }
@@ -513,7 +513,7 @@ ul.tsc_pagination li a {
   color: #000000;
   display: inline-block;
   float: none;
-  margin: 10px 10px 30px;
+  margin: 10px 5px 30px;
   padding: 7px 10px;
   text-decoration: none;
   width: auto;
