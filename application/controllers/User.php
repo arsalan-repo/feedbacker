@@ -66,6 +66,40 @@ class User extends CI_Controller {
 		$this->data['module_name'] = 'User';
         $this->data['section_title'] = 'Notifications';
 		
+		$user_info = $this->session->userdata['mec_user'];
+		
+		$n_array = array();
+		
+		/* Titles I Follow */
+		$n_follow = $this->common->get_notification($user_info['id'], 2);
+		if(count($n_follow) > 0) {
+			$n_array = array_merge($n_array, $n_follow);
+		}
+
+		/* Likes on the Feedbacks */
+		$n_likes = $this->common->get_notification($user_info['id'], 3);
+		if(count($n_likes) > 0) {
+			$n_array = array_merge($n_array, $n_likes);
+		}
+
+		/* Feedbacks on my Titles */
+		$n_reply = $this->common->get_notification($user_info['id'], 4);
+		if(count($n_reply) > 0) {
+			$n_array = array_merge($n_array, $n_reply);
+		}
+		
+		// Sort array by id
+		usort($n_array, function($a, $b) {
+			return $b['id'] - $a['id'];
+		});
+		
+		if(!empty($n_array)) {
+			$this->data['notifications'] = $n_array;
+		} else {
+			$this->data['notifications'] = array();
+			$this->data['no_record_found'] = $this->lang->line('no_record_found');
+		}
+		
 		/* Load Template */
 		$this->template->front_render('user/notifications', $this->data);
 	}

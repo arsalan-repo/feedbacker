@@ -124,7 +124,7 @@ class Dashboard extends CI_Controller {
 		$config["per_page"] = 15;
 		$config['uri_segment'] = 3;
 		$config['use_page_numbers'] = TRUE;
-		$config['num_links'] = $total_records;
+		$config['num_links'] = 2;
 		$config['cur_tag_open'] = '&nbsp;<a class="current">';
 		$config['cur_tag_close'] = '</a>';
 		$config['next_link'] = 'Next';
@@ -138,7 +138,7 @@ class Dashboard extends CI_Controller {
 			$page = 0;
 		}
 		
-		$page > 0 ? $offset = ($page - 1) * $config["per_page"] + 1 : 0;
+		$page > 0 ? $offset = ($page - 1) * $config['per_page'] + 1 : 0;
 		$str_links = $this->pagination->create_links();
 		$this->data['links'] = explode('&nbsp;',$str_links);
 		

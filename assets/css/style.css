@@ -129,7 +129,7 @@ float: left;
 padding:15px;}
 .home-left-profile {background: #005db9;border-radius: 10px;float: left;overflow:hidden;padding: 88px 0 0;width: 100%;}
 .home-left-section {background: #fff;float:left;padding: 0px 20px 25px;}
-.home-left-profile-thumb {border: 3px solid #fff;border-radius: 3px;float: left;margin-right: 15px;margin-top: -25px; width:63px;}
+.home-left-profile-thumb {border: 3px solid #fff;border-radius: 3px;float: left;margin-right: 15px;margin-top: -25px;}
 .home-left-profile-name {color: #31323e;font-size: 18px;font-weight: 600;}
 .home-left-profile-designation {font-size: 14px;color: #878893;}
 .home-left-followers-block {padding: 20px 0;color:#005db9;font-size:16px;}
@@ -137,6 +137,7 @@ padding:15px;}
 .home-left-wishlist {float: right;font-size:16px;font-weight:700;color:#00b7b9;}
 .home-left-text-block {background: #fff;border: 1px solid #d3d6d9;border-radius: 10px;float: left;margin: 20px 0;padding:10px 20px;width: 100%;}
 .home-left-text-block h2, .home-left-text-block h3{color:#00b7b9; font-size:14px; font-weight:600; padding:0 0 5px; margin:0;}
+.home-left-text-block h2 a, .home-left-text-block h3 a{color:#00b7b9;}
 .home-left-text-block h2 span{color:#131315; font-size:18px;}
 .home-left-text-block h3{font-size:14px;}
 .home-left-text-block p{margin:0; padding:0 0 5px; font-weight:400;}
@@ -258,7 +259,7 @@ color: #434b57;}
 .edit-profile-form .login-form-fields {padding: 0;}
 .login-form-fields h3 {background: #181a53;border-radius: 10px 10px 0 0;color: #eef6fc;font-size: 20px;font-weight: 400;height: 80px;line-height: 80px;position:relative;margin: 0 0 20px;padding: 0 15px;}
 .close-edit-popup {top: 25px;cursor:pointer;padding:5px;right: 25px;position: absolute;}
-.post-btn{background:#181a53; padding:10px 40px; text-align:center; font-size:16px; color:#eef6fc; font-weight:600; border-radius:20px; float:right;}
+.post-btn{background:#181a53; padding:10px 40px; text-align:center; font-size:16px; color:#eef6fc; font-weight:600; border-radius:20px; float:right; cursor: pointer; }
 .camera-map-icon {
   float: left;
   position:relative;
@@ -559,6 +560,7 @@ ul.tsc_pagination li a:hover,ul.tsc_pagination li a.current{color:#ffffff;text-s
   padding: 0 0 10px;
   width: 100%;
 }
+.notification-title a{color: #7d7d88;}
 .notification-sub-title {
   float: left;
   font-size: 16px;

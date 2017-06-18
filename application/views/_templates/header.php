@@ -9,7 +9,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Welcome to Feedbacker</title>
 <link href="<?php echo base_url().'assets/css/font-awesome.min.css'; ?>" rel="stylesheet" type="text/css" />
-<script src="<?php echo base_url().'assets/js/jquery-1.12.1.min.js'; ?>"></script>
+<!-- jQuery 1.12.1 -->
+<script src="<?php echo base_url().'assets/js/jquery-1.12.1.min.js';?>"></script>
+<!-- jQuery Validate -->
+<script src="<?php echo base_url().'assets/js/jquery.validate.min.js';?>"></script>
 
 <!-- Country Flags -->
 <link rel="stylesheet" type="text/css" href="<?php echo base_url().'assets/css/dd.css'; ?>" />

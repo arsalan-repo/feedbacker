@@ -100,16 +100,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
           </div>
           <?php } ?>
           <!-- Loop Ends Here -->
-          <div id="pagination">
-            <ul class="tsc_pagination">
-            	<!-- Show pagination links -->
-            	<?php 
-				foreach ($links as $link) {
-            		echo "<li>". $link."</li>";
-            	} 
-				?>
-            </ul>
-          </div>
           <?php } else { ?>
           <?php echo $no_record_found; ?>
           <?php } ?>
