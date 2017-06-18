@@ -16,6 +16,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 <link rel="stylesheet" type="text/css" href="<?php echo base_url().'assets/css/sprite.css'; ?>" />
 <link rel="stylesheet" type="text/css" href="<?php echo base_url().'assets/css/flags.css'; ?>" />
 
+<script src="<?php echo base_url().'assets/js/custom.js'; ?>"></script>
 <script src="<?php echo base_url().'assets/js/jquery.dd.js'; ?>"></script>
 <script type="application/javascript">
 $(document).ready(function(e) {		
@@ -39,12 +40,9 @@ $(document).ready(function(e) {
 		
 	//convert
 	$("select").msDropdown({roundedBorder:false});
-	createByJson();
 	$("#tech").data("dd");
 });
 </script>
-
-<script src="<?php echo base_url().'assets/js/custom.js'; ?>"></script>
 <link href="<?php echo base_url().'assets/css/style.css'; ?>" rel="stylesheet" type="text/css" />
 <link href="<?php echo base_url().'assets/css/responsive.css'; ?>" rel="stylesheet" type="text/css" />
 </head>

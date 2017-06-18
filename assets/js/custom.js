@@ -19,7 +19,7 @@ $('ul.tabs li').click(function(){
 		$("#"+tab_id).addClass('current');
 	})
 
-$(".header-profile i").click(function(){
+$(".header-profile").click(function(){
 		$(".header-profile ul").slideToggle("300");
 	})
 
