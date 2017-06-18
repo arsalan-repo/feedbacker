@@ -50,7 +50,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
           <?php if (!empty($feedbacks)) { ?>
           <!-- Loop Starts Here -->
           <?php foreach($feedbacks as $row) { ?>
-          <div class="post-profile-block"> <span class="post-right-arrow"><i class="fa fa-angle-down" aria-hidden="true"></i></span>
+          <div class="post-profile-block">
+		   <div class="post-right-arrow">
+		   <!--<i class="fa fa-angle-down" aria-hidden="true"></i>-->
+		   <span class="post-followers-text">1.2k Followers</span>
+		   <span class="post-profile-time-text">1 hr</span>
+		   </div>
             <div class="post-img">
             	<?php
 				if(isset($row['user_avatar'])) {
@@ -76,7 +81,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                 	<span class="post-follow-back-arrow">
                     	<img src="<?php echo ASSETS_URL.'images/reply-arrow.png'; ?>" alt="" />
                     </span>
-                    <span class="post-follow-text">
+                    <span class="follow-btn-default">
                     	<?php if ($row['is_followed']) { ?>
                         	Unfollow
                         <?php } else { ?>    
@@ -88,6 +93,23 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						<?php echo $row['likes']; ?>
                     </span>
                 </div>
+				<div class="post-detail-comment-form">
+              <h2>Write a comment</h2>
+              <form id="form1" name="form1" method="post" action="">
+                <label>Comment</label>
+                <input type="text" name="textfield1" placeholder="Write comment here" />
+              </form>
+              <div class="post-btn-block">
+                <div class="camera-map-icon"> 
+				<div class="camera-icon-block">
+					<span>Choose File</span>
+					<input name="Select File" type="file" />
+				</div>
+				<?php /*?><img src="<?php echo base_url().'assets/images/camera-icon.png'; ?>" alt="" /> <?php */?>
+				
+				<img src="<?php echo base_url().'assets/images/map-icon.png'; ?>" alt="" /> </div>
+                <span class="post-btn">Post</span> </div>
+            </div>
             </div>
           </div>
           <?php } ?>

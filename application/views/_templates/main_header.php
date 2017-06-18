@@ -14,7 +14,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
       <?php echo form_close(); ?>
       </div>
       <div class="header-create-post"><a href="<?php echo site_url('post/create'); ?>">Create Post</a></div>
-      <div class="header-notification"><span class="notification-count"></span><img src="<?php echo base_url().'assets/images/notification-icon.png'; ?>" alt="" /></div>
+      <div class="header-notification">
+	  	<span class="notification-count"></span>
+		<a href="<?php echo site_url('user/notifications'); ?>"><img src="<?php echo base_url().'assets/images/notification-icon.png'; ?>" alt="" /></a>
+	  </div>
       <div class="header-flag"> <img src="<?php echo base_url().'assets/images/english-flag.png'; ?>" alt="" /> <i class="fa fa-caret-down" aria-hidden="true"></i> </div>
       <?php $user_info = $this->session->userdata['mec_user']; ?>
       <div class="header-profile">

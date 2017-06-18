@@ -17,12 +17,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
           <form id="form1" name="form1" method="post" action="">
             <ul>
               <li>
-                <input type="checkbox" name="checkboxG3" id="checkboxG3" class="css-checkbox" />
-                <label for="checkboxG3" class="css-label">English</label>
+              
+				 <input type="radio" name="radiog_dark" id="radio4" class="css-checkbox" />
+                 <label for="radio4" class="css-label radGroup2">English</label>
               </li>
               <li>
-                <input type="checkbox" name="checkboxG4" id="checkboxG4" class="css-checkbox" />
-                <label for="checkboxG4" class="css-label">Arabic</label>
+				 <input type="radio" name="radiog_dark" id="radio5" class="css-checkbox" checked="checked"/>
+                 <label for="radio5" class="css-label radGroup2">Arabic</label>
               </li>
               <li>
                 <input type="submit" name="button" id="button" value="Save" />

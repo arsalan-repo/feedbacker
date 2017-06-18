@@ -23,5 +23,8 @@ $(".header-profile i").click(function(){
 		$(".header-profile ul").slideToggle("300");
 	})
 
+$(".post-follow-back-arrow").click(function(){
+	$(".post-profile-block").toggleClass("show-comment-box");
+});
 
 });

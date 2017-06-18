@@ -38,7 +38,14 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                 <input type="text" name="textfield1" placeholder="Write comment here" />
               </form>
               <div class="post-btn-block">
-                <div class="camera-map-icon"> <img src="<?php echo base_url().'assets/images/camera-icon.png'; ?>" alt="" /> <img src="<?php echo base_url().'assets/images/map-icon.png'; ?>" alt="" /> </div>
+                <div class="camera-map-icon"> 
+				<div class="camera-icon-block">
+					<span>Choose File</span>
+					<input name="Select File" type="file" />
+				</div>
+				<?php /*?><img src="<?php echo base_url().'assets/images/camera-icon.png'; ?>" alt="" /> <?php */?>
+				
+				<img src="<?php echo base_url().'assets/images/map-icon.png'; ?>" alt="" /> </div>
                 <span class="post-btn">Post</span> </div>
             </div>
           </div>

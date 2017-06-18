@@ -35,6 +35,8 @@ width: 130px;}
 .post-detail-left {width: 60%;}
 .post-detail-rgt{width:40%;}
 
+
+.post-right-arrow{position:static; padding:0 0 10px;}
 }
 
 @media screen and (max-width:767px){
@@ -84,5 +86,10 @@ header{height:auto;}
 ul.tabs li{width:100%;}
 .language-tab input.css-checkbox[type="checkbox"]:checked + label.css-label{background-position:85% -40px;}
 .language-tab input.css-checkbox[type="checkbox"] + label.css-label{background-position:85% 22px;}
+
+/*notification*/
+.notification-description {
+  width: 70%;
+}
 
 }

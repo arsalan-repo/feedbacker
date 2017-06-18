@@ -62,6 +62,13 @@ class User extends CI_Controller {
 		$this->template->front_render('user/settings', $this->data);
 	}
 	
+	public function notifications() {
+		$this->data['module_name'] = 'User';
+        $this->data['section_title'] = 'Notifications';
+		
+		/* Load Template */
+		$this->template->front_render('user/notifications', $this->data);
+	}
 	
     //logout user
     public function logout() {
