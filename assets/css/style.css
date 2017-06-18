@@ -570,3 +570,9 @@ ul.tsc_pagination li a:hover,ul.tsc_pagination li a.current{color:#ffffff;text-s
   width: 100%;
 }
 
+/*flag*/
+.header-flag .ddlabel{display:none;}
+.ddcommon .divider{display:none;}
+.dd .ddTitle{background:none;}
+.dd{border:none;}
+.header-flag .fa-caret-down::before{content:none;}

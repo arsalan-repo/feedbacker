@@ -9,10 +9,44 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Welcome to Feedbacker</title>
 <link href="<?php echo base_url().'assets/css/font-awesome.min.css'; ?>" rel="stylesheet" type="text/css" />
+<script src="<?php echo base_url().'assets/js/jquery-1.12.1.min.js'; ?>"></script>
+
+<!-- Country Flags -->
+<link rel="stylesheet" type="text/css" href="<?php echo base_url().'assets/css/dd.css'; ?>" />
+<link rel="stylesheet" type="text/css" href="<?php echo base_url().'assets/css/sprite.css'; ?>" />
+<link rel="stylesheet" type="text/css" href="<?php echo base_url().'assets/css/flags.css'; ?>" />
+
+<script src="<?php echo base_url().'assets/js/jquery.dd.js'; ?>"></script>
+<script type="application/javascript">
+$(document).ready(function(e) {		
+	//no use
+	try {
+		var pages = $("#pages").msDropdown({on:{change:function(data, ui) {
+			var val = data.value;
+			if(val!="")
+				window.location = val;
+		}}}).data("dd");
+
+		var pagename = document.location.pathname.toString();
+		pagename = pagename.split("/");
+		pages.setIndexByValue(pagename[pagename.length-1]);
+		$("#ver").html(msBeautify.version.msDropdown);
+	} catch(e) {
+		//console.log(e);	
+	}
+	
+	$("#ver").html(msBeautify.version.msDropdown);
+		
+	//convert
+	$("select").msDropdown({roundedBorder:false});
+	createByJson();
+	$("#tech").data("dd");
+});
+</script>
+
+<script src="<?php echo base_url().'assets/js/custom.js'; ?>"></script>
 <link href="<?php echo base_url().'assets/css/style.css'; ?>" rel="stylesheet" type="text/css" />
 <link href="<?php echo base_url().'assets/css/responsive.css'; ?>" rel="stylesheet" type="text/css" />
-<script src="<?php echo base_url().'assets/js/jquery-1.12.1.min.js'; ?>"></script>
-<script src="<?php echo base_url().'assets/js/custom.js'; ?>"></script>
 </head>
 
 <body>
