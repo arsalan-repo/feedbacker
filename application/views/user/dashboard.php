@@ -25,24 +25,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
         </div>
         <div class="home-left-text-block">
           <h2><span>Trends</span><!-- Change--></h2>
-          <h3>#TigorStyleback</h3>
-          <p>It is a long established fact that a reader will be distracted by the readable content of a page when lo</p>
-          <h3>#TigorStyleback</h3>
-          <p>It is a long established fact that a reader will be distracted by the readable content of a page when lo</p>
-          <h3>#TigorStyleback</h3>
-          <p>It is a long established fact that a reader will be distracted by the readable content of a page when lo</p>
-          <h3>#TigorStyleback</h3>
-          <p>It is a long established fact that a reader will be distracted by the readable content of a page when lo</p>
-          <h3>#TigorStyleback</h3>
-          <p>It is a long established fact that a reader will be distracted by the readable content of a page when lo</p>
-          <h3>#TigorStyleback</h3>
-          <p>It is a long established fact that a reader will be distracted by the readable content of a page when lo</p>
-          <h3>#TigorStyleback</h3>
-          <p>It is a long established fact that a reader will be distracted by the readable content of a page when lo</p>
-          <h3>#TigorStyleback</h3>
-          <p>It is a long established fact that a reader will be distracted by the readable content of a page when lo</p>
-          <h3>#TigorStyleback</h3>
-          <p>It is a long established fact that a reader will be distracted by the readable content of a page when lo</p>
+          <?php foreach($trends as $row) {
+              echo '<h3>'.$row['title'].'</h3>';
+              echo '<p>'.$this->common->limitText($row['feedback_cont'], 20).'</p>';
+          } ?>
         </div>
       </div>
       <div class="middle-content">
@@ -131,30 +117,23 @@ defined('BASEPATH') OR exit('No direct script access allowed');
       </div>
       <div class="right-content">
         <h3>What to Follow <!--<a href="#">View All</a>--></h3>
-        <div class="who-follow-block"> <span><img src="<?php echo ASSETS_URL.'images/follow-person-thumb.png'; ?>" alt="" /></span>
-          <div class="who-follow-text"> <span>Sachin Tendulkar</span> @AmitabhBa...</div>
-          <div class="who-follow-add"> Follow <i class="fa fa-plus" aria-hidden="true"></i> </div>
+        <?php foreach($to_follow as $row) { ?>
+        <div class="who-follow-block">
+        	<span>
+            	<?php
+				if(isset($row['user_avatar'])) {
+					echo '<img src="'.$row['user_avatar'].'" alt="" />';
+				} else {
+					echo '<img src="'.ASSETS_URL . 'images/user-avatar.png" alt="" />';
+				}
+				?>
+            </span>
+            <div class="who-follow-text">
+            	<span><?php echo $row['title']; ?></span> <?php echo $row['name']; ?>
+            </div>
+            <div class="who-follow-add"> Follow <i class="fa fa-plus" aria-hidden="true"></i></div>
         </div>
-        <div class="who-follow-block"> <span><img src="<?php echo ASSETS_URL.'images/follow-person-thumb.png'; ?>" alt="" /></span>
-          <div class="who-follow-text"> <span>Sachin Tendulkar</span> @AmitabhBa...</div>
-          <div class="who-follow-add"> Follow <i class="fa fa-plus" aria-hidden="true"></i> </div>
-        </div>
-        <div class="who-follow-block"> <span><img src="<?php echo ASSETS_URL.'images/follow-person-thumb.png'; ?>" alt="" /></span>
-          <div class="who-follow-text"> <span>Sachin Tendulkar</span> @AmitabhBa...</div>
-          <div class="who-follow-add"> Follow <i class="fa fa-plus" aria-hidden="true"></i> </div>
-        </div>
-        <div class="who-follow-block"> <span><img src="<?php echo ASSETS_URL.'images/follow-person-thumb.png'; ?>" alt="" /></span>
-          <div class="who-follow-text"> <span>Sachin Tendulkar</span> @AmitabhBa...</div>
-          <div class="who-follow-add"> Follow <i class="fa fa-plus" aria-hidden="true"></i> </div>
-        </div>
-        <div class="who-follow-block"> <span><img src="<?php echo ASSETS_URL.'images/follow-person-thumb.png'; ?>" alt="" /></span>
-          <div class="who-follow-text"> <span>Sachin Tendulkar</span> @AmitabhBa...</div>
-          <div class="who-follow-add"> Follow <i class="fa fa-plus" aria-hidden="true"></i> </div>
-        </div>
-        <div class="who-follow-block"> <span><img src="<?php echo ASSETS_URL.'images/follow-person-thumb.png'; ?>" alt="" /></span>
-          <div class="who-follow-text"> <span>Sachin Tendulkar</span> @AmitabhBa...</div>
-          <div class="who-follow-add"> Follow <i class="fa fa-plus" aria-hidden="true"></i> </div>
-        </div>
+        <?php } ?>
       </div>
     </div>
 </div>

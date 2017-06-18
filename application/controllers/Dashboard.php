@@ -78,9 +78,41 @@ class Dashboard extends CI_Controller {
 		
 		$feedback = $this->common->select_data_by_condition('feedback', $contition_array, $data, $sortby = 'feedback.datetime', $orderby = 'DESC', $limit = '', $offset = '', $join_str, $group_by = '');
 		
-		// echo "<pre>";
-		// print_r($feedback);
-		// exit();
+		// Trends
+		$join_str_tr = array(
+			array(
+				'table' => 'titles',
+				'join_table_id' => 'titles.title_id',
+				'from_table_id' => 'feedback.title_id',
+				'join_type' => 'inner'
+			)
+		);
+		
+		if(!empty($country)) {
+			$contition_array = array('feedback.deleted' => 0, 'feedback.status' => 1, 'feedback.country' => $country);
+		} else {
+			$contition_array = array('feedback.deleted' => 0, 'feedback.status' => 1);
+		}
+		
+		$this->data['trends'] = $this->common->select_data_by_condition('feedback', $contition_array, 'feedback_id, feedback.title_id, title, feedback_cont, feedback_img, feedback_thumb, feedback_video, replied_to, location, feedback.datetime as time', $sortby = 'count(db_feedback.title_id)', $orderby = 'DESC', $limit = '10', $offset = '', $join_str_tr, $group_by = 'feedback.title_id');
+		
+		// What to Follow
+		$join_str_wt = array(
+			array(
+				'table' => 'users',
+				'join_table_id' => 'users.id',
+				'from_table_id' => 'feedback.user_id',
+				'join_type' => 'left'
+			),
+			array(
+				'table' => 'titles',
+				'join_table_id' => 'titles.title_id',
+				'from_table_id' => 'feedback.title_id',
+				'join_type' => 'left'
+			)
+		);
+		
+		$this->data['to_follow'] = $this->common->select_data_by_condition('feedback', $contition_array, 'feedback_id, feedback.title_id, title, name, photo, feedback_cont, feedback_img, feedback_thumb, feedback_video, replied_to, location, feedback.datetime as time', $sortby = 'feedback.datetime', $orderby = 'DESC', $limit = '10', $offset = '', $join_str_wt, $group_by = 'feedback.title_id');
 		
 		$return_array = array();
 		$total_records = count($feedback);

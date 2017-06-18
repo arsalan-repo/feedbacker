@@ -25,6 +25,15 @@ class Common extends CI_Model {
             return array();
         }
     }
+	
+	function limitText($text, $limit) {
+      if (str_word_count($text, 0) > $limit) {
+          $words = str_word_count($text, 2);
+          $pos = array_keys($words);
+          $text = substr($text, 0, $pos[$limit]) . '...';
+      }
+      return $text;
+    }
 
     //get user country
     function user_country($user_id) {
@@ -793,7 +802,7 @@ cos((`lat`*pi()/180)) * cos(((" . $longitude . "- `lng`)
 			)
 		);
 		
-		$data = 'feedback_id, feedback.title_id, title, name, photo, feedback_cont, feedback_img, feedback_thumb, feedback_video, location, feedback.datetime as time';
+		$data = 'feedback_id, feedback.title_id, title, users.id, name, photo, feedback_cont, feedback_img, feedback_thumb, feedback_video, location, feedback.datetime as time';
 		$feedback = $this->select_data_by_id('feedback', 'feedback_id', $feedback_id, $data, $join_str);
 		
 //		print_r($feedback);
@@ -802,6 +811,7 @@ cos((`lat`*pi()/180)) * cos(((" . $longitude . "- `lng`)
 		$return_array = array();
 		
 		$return_array['id'] = $feedback_id;
+		$return_array['user_id'] = $feedback[0]['id'];
 		$return_array['title_id'] = $feedback[0]['title_id'];				
 		$return_array['title'] = $feedback[0]['title'];
 		
