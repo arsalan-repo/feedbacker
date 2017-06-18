@@ -531,6 +531,8 @@ ul.tsc_pagination li a:hover,ul.tsc_pagination li a.current{color:#ffffff;text-s
 .notification-block {
   background: #ffffff;
   float: left;
+  border-radius:10px;
+  border: 1px solid #d3d6d9;
   margin: 0 0 15px;
   padding: 20px;
   width: 100%;
