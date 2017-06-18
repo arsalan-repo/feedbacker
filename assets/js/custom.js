@@ -9,7 +9,7 @@ $(document).ready(function(){
 	})
 	
 	//Tab Menu
-$('ul.tabs li').click(function(){
+	$('ul.tabs li').click(function(){
 		var tab_id = $(this).attr('data-tab');
 
 		$('ul.tabs li').removeClass('current');
@@ -19,12 +19,12 @@ $('ul.tabs li').click(function(){
 		$("#"+tab_id).addClass('current');
 	})
 
-$(".header-profile").click(function(){
+	$(".header-profile").click(function(){
 		$(".header-profile ul").slideToggle("300");
 	})
 
-$(".post-follow-back-arrow").click(function(){
-	$(".post-profile-block").toggleClass("show-comment-box");
-});
+	$(".post-follow-back-arrow").click(function(){
+		$(".post-profile-block").toggleClass("show-comment-box");
+	});
 
 });
