@@ -24,7 +24,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
           </div>
         </div>
         <div class="home-left-text-block">
-          <h2><span>Trends</span> Change</h2>
+          <h2><span>Trends</span><!-- Change--></h2>
           <h3>#TigorStyleback</h3>
           <p>It is a long established fact that a reader will be distracted by the readable content of a page when lo</p>
           <h3>#TigorStyleback</h3>
@@ -108,7 +108,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
         </div>
       </div>
       <div class="right-content">
-        <h3>What to Follow <a href="#">View All</a></h3>
+        <h3>What to Follow <!--<a href="#">View All</a>--></h3>
         <div class="who-follow-block"> <span><img src="<?php echo ASSETS_URL.'images/follow-person-thumb.png'; ?>" alt="" /></span>
           <div class="who-follow-text"> <span>Sachin Tendulkar</span> @AmitabhBa...</div>
           <div class="who-follow-add"> Follow <i class="fa fa-plus" aria-hidden="true"></i> </div>
