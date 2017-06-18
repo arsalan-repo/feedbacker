@@ -1,6 +1,7 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
-
+//echo "<pre>";
+//print_r($feedback);
 ?>
 
 <!-- Content Wrapper. Contains page content -->
@@ -8,29 +9,64 @@ defined('BASEPATH') OR exit('No direct script access allowed');
     <div class="container">
       <div class="post-detail-left">
         <div class="profile-listing">
-          <div class="listing-post-name-block"> <span class="listing-post-name">Trump speaks at unveiling of Boeing 787 Dreamliner</span> <span class="listing-post-followers">1.2k Followers</span> </div>
+          <div class="listing-post-name-block">
+          	<span class="listing-post-name"><?php echo $feedback['title']; ?></span> 
+            <span class="listing-post-followers"><?php echo $feedback['followers']; ?> Follower(s)</span> </div>
           <div class="profile-listing-img-thumb-block">
-            <div class="profile-listing-img-thumb"><img src="<?php echo base_url().'assets/images/user-pic.png'; ?>" alt="" /></div>
-            <span class="listing-post-profile-name">Jassica Doe</span> <span class="listing-post-profile-time">1 hr</span> </div>
-          <div class="listing-post-img"><img src="<?php echo base_url().'assets/images/post-detail-img.png'; ?>" alt="" /></div>
-          <p>I think <a href="#">#boeing</a> should step a head of a few changes n their new planes. Nullam id dolor id nibh ultricies vehicula ut id elit. Nulla vitae elit libero, a pharetra augue. I think Boeing should step a head of a few changes n their new planes. Nullam id dolor id nibh ultricies vehicula ut id elit. Nulla vitae elit libero, a pharetra augue. I think Boeing should step a head of a few changes n their new planes. Nullam id dolor id nibh ultricies vehicula ut id elit. Nulla vitae elit libero, a pharetra augue.</p>
-          <p>I think Boeing should step a head of a few changes n their new planes. Nullam id dolor id nibh ultricies vehicula ut id elit. Nulla vitae elit libero, a pharetra augue. I think Boeing should step a head of a few changes n their new planes. Nullam id dolor id nibh ultricies vehicula ut id elit. Nulla vitae elit libero, a pharetra augue.</p>
-          <p>I think Boeing should step a head of a few changes n their new planes. Nullam id dolor id nibh ultricies vehicula ut id elit. Nulla vitae elit libero, a pharetra augue.</p>
-          <div class="post-listing-follow-btn"> <span class="back-arrow"><img src="<?php echo base_url().'assets/images/reply-arrow.png'; ?>" alt="" /></span> <span class="follow-btn fill">Follow <i class="fa fa-plus" aria-hidden="true"></i></span> <span class="wishlist"><i class="fa fa-heart" aria-hidden="true"></i> 21</span> </div>
+            <div class="profile-listing-img-thumb">
+            	<?php
+				if(isset($feedback['user_avatar'])) {
+					echo '<img src="'.$feedback['user_avatar'].'" alt="" />';
+				} else {
+					echo '<img src="'.ASSETS_URL . 'images/user-avatar.png" alt="" />';
+				}
+				?>
+            </div>
+            <span class="listing-post-profile-name"><?php echo $feedback['name']; ?></span> <span class="listing-post-profile-time"><?php echo $feedback['time']; ?></span> </div>
+          	<?php if($feedback['feedback_img'] != "") { ?>
+            <div class="listing-post-img">
+				<img src="<?php echo $feedback['feedback_img']; ?>" alt="" />
+            </div>
+			<?php } ?>
+          <p><?php echo $feedback['feedback']; ?></p>
+          <div class="post-listing-follow-btn">
+          	<span class="back-arrow">
+            	<img src="<?php echo base_url().'assets/images/reply-arrow.png'; ?>" alt="" />
+            </span> 
+            <?php if($feedback['is_followed'] == "") { ?>
+            	<span class="follow-btn fill">Follow <i class="fa fa-plus" aria-hidden="true"></i></span>	
+            <?php } else { ?>
+            	<span class="follow-btn fill">Unfollow</span>
+			<?php } ?>
+            <?php if($feedback['is_liked'] == "") { ?>
+                <span class="wishlist empty">
+                    <i class="fa fa-heart-o" aria-hidden="true"></i> <?php echo $feedback['likes']; ?>
+                </span>
+			<?php } else { ?>
+                <span class="wishlist">
+                    <i class="fa fa-heart" aria-hidden="true"></i> <?php echo $feedback['likes']; ?>
+                </span>
+            <?php } ?>
+          </div>
           <div class="post-detail-comments-block">
             <h3>Comments</h3>
+            <?php foreach($feedback['replies'] as $row) { ?>
             <div class="profile-listing-img-thumb-block">
-              <div class="profile-listing-img-thumb"><img src="<?php echo base_url().'assets/images/user-pic.png'; ?>" alt="" /></div>
-              <span class="listing-post-profile-name">Hamza</span> <span class="listing-post-profile-time">19 Feb 2017</span> </div>
+              <div class="profile-listing-img-thumb">
+              	<?php
+				if(isset($row['user_avatar'])) {
+					echo '<img src="'.$row['user_avatar'].'" alt="" />';
+				} else {
+					echo '<img src="'.ASSETS_URL . 'images/user-avatar.png" alt="" />';
+				}
+				?>
+              </div>
+              <span class="listing-post-profile-name"><?php echo $row['name']; ?></span> <span class="listing-post-profile-time"><?php echo $row['time']; ?></span> </div>
             <div class="comment-description">
-              <p>I think Boeing should step a head of a few changes n their new planes. Nullam id dolor id nibh ultricies vehicula ut id elit. Nulla vitae elit libero, a pharetra augue.</p>
+              <p><?php echo $row['feedback']; ?></p>
             </div>
-            <div class="profile-listing-img-thumb-block">
-              <div class="profile-listing-img-thumb"><img src="<?php echo base_url().'assets/images/user-pic.png'; ?>" alt="" /></div>
-              <span class="listing-post-profile-name">Hamza</span> <span class="listing-post-profile-time">19 Feb 2017</span> </div>
-            <div class="comment-description">
-              <p>I think Boeing should step a head of a few changes n their new planes. Nullam id dolor id nibh ultricies vehicula ut id elit. Nulla vitae elit libero, a pharetra augue.</p>
-            </div>
+            <?php } ?>
+            
             <div class="post-detail-comment-form">
               <h2>Write a comment</h2>
               <form id="form1" name="form1" method="post" action="">
@@ -45,24 +81,49 @@ defined('BASEPATH') OR exit('No direct script access allowed');
         </div>
       </div>
       <div class="post-detail-rgt">
-        <div class="profile-listing">
-          <div class="listing-post-name-block"> <span class="listing-post-name">Boeing 787.</span> <span class="listing-post-followers">1.2k Followers</span> </div>
-          <div class="profile-listing-img-thumb-block">
-            <div class="profile-listing-img-thumb"><img src="<?php echo base_url().'assets/images/user-pic.png'; ?>" alt="" /></div>
-            <span class="listing-post-profile-name">Jassica Doe</span> <span class="listing-post-profile-time">1 hr</span> </div>
-          <div class="listing-post-img"><img src="<?php echo base_url().'assets/images/post-detail-rgt-img.png'; ?>" alt="" /></div>
-          <p>I think <a href="#">#boeing</a> should step a head of a few changes n their new planes. Nullam id dolor id nibh ultricies vehicula ut id elit. Nulla vitae elit libero, a pharetra augue.</p>
-          <div class="post-listing-follow-btn"> <span class="back-arrow"><img src="<?php echo base_url().'assets/images/reply-arrow.png'; ?>" alt="" /></span> <span class="follow-btn fill">Follow <i class="fa fa-plus" aria-hidden="true"></i></span> <span class="wishlist empty"><i class="fa fa-heart-o" aria-hidden="true"></i> 37</span> </div>
-        </div>
-        <div class="profile-listing">
-          <div class="listing-post-name-block"> <span class="listing-post-name">Boeing 787.</span> <span class="listing-post-followers">1.2k Followers</span> </div>
-          <div class="profile-listing-img-thumb-block">
-            <div class="profile-listing-img-thumb"><img src="<?php echo base_url().'assets/images/user-pic.png'; ?>" alt="" /></div>
-            <span class="listing-post-profile-name">Jassica Doe</span> <span class="listing-post-profile-time">1 hr</span> </div>
-          <div class="listing-post-img"><img src="<?php echo base_url().'assets/images/post-detail-rgt-img.png'; ?>" alt="" /></div>
-          <p>I think <a href="#">#boeing</a> should step a head of a few changes n their new planes. Nullam id dolor id nibh ultricies vehicula ut id elit. Nulla vitae elit libero, a pharetra augue.</p>
-          <div class="post-listing-follow-btn"> <span class="back-arrow"><img src="<?php echo base_url().'assets/images/reply-arrow.png'; ?>" alt="" /></span> <span class="follow-btn fill">Follow <i class="fa fa-plus" aria-hidden="true"></i></span> <span class="wishlist empty"><i class="fa fa-heart-o" aria-hidden="true"></i> 37</span> </div>
-        </div>
+      <?php if(count($others) > 0) { ?>
+		  <?php foreach($others as $row) { ?>
+            <div class="profile-listing">
+              <div class="listing-post-name-block"> <span class="listing-post-name"><?php echo $row['title']; ?></span> <span class="listing-post-followers"><?php echo $row['followers']; ?> Follower(s)</span> </div>
+              <div class="profile-listing-img-thumb-block">
+                <div class="profile-listing-img-thumb">
+                <?php
+				if(isset($row['user_avatar'])) {
+					echo '<img src="'.$row['user_avatar'].'" alt="" />';
+				} else {
+					echo '<img src="'.ASSETS_URL . 'images/user-avatar.png" alt="" />';
+				}
+				?>
+                </div>
+                <span class="listing-post-profile-name"><?php echo $row['name']; ?></span> <span class="listing-post-profile-time"><?php echo $row['time']; ?></span> </div>
+			<?php if($row['feedback_img'] != "") { ?>
+              <div class="listing-post-img">
+              	<img src="<?php echo $row['feedback_img']; ?>" alt="" />
+              </div>
+            <?php } ?>
+              <p><?php echo $row['feedback']; ?></p>
+              <div class="post-listing-follow-btn"> 
+              	<span class="back-arrow">
+                	<img src="<?php echo base_url().'assets/images/reply-arrow.png'; ?>" alt="" />
+                </span> 
+                <?php if($row['is_followed'] == "") { ?>
+            	<span class="follow-btn fill">Follow <i class="fa fa-plus" aria-hidden="true"></i></span>	
+				<?php } else { ?>
+                    <span class="follow-btn fill">Unfollow</span>
+                <?php } ?>
+                <?php if($row['is_liked'] == "") { ?>
+                    <span class="wishlist empty">
+                        <i class="fa fa-heart-o" aria-hidden="true"></i> <?php echo $row['likes']; ?>
+                    </span>
+                <?php } else { ?>
+                    <span class="wishlist">
+                        <i class="fa fa-heart" aria-hidden="true"></i> <?php echo $row['likes']; ?>
+                    </span>
+                <?php } ?>
+              </div>
+            </div>
+          <?php } ?>
+      <?php } ?>
       </div>
     </div>
 </div>
