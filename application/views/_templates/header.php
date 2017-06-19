@@ -13,7 +13,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 <script src="<?php echo base_url().'assets/js/jquery-1.12.1.min.js';?>"></script>
 <!-- jQuery Validate -->
 <script src="<?php echo base_url().'assets/js/jquery.validate.min.js';?>"></script>
-
+<!-- Autocomplete Dropdown -->
+<link href="<?php echo base_url().'assets/css/select2.min.css'; ?>" rel="stylesheet" />
+<script src="<?php echo base_url().'assets/js/select2.min.js'; ?>"></script>
 <!-- Country Flags -->
 <link rel="stylesheet" type="text/css" href="<?php echo base_url().'assets/css/dd.css'; ?>" />
 <link rel="stylesheet" type="text/css" href="<?php echo base_url().'assets/css/sprite.css'; ?>" />
