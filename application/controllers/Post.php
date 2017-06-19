@@ -36,6 +36,29 @@ class Post extends CI_Controller {
 		$this->template->front_render('user/dashboard');
 	}
 	
+	public function get_location() {
+		if ($this->input->is_ajax_request()) {
+			$latitude = $this->input->post('latitude');
+			$longitude = $this->input->post('longitude');			
+			
+			if(!empty($latitude) && !empty($longitude)){
+				//Send request and receive json data by latitude and longitude
+				$url = 'http://maps.googleapis.com/maps/api/geocode/json?latlng='.trim($latitude).','.trim($longitude).'&sensor=false';
+				$json = @file_get_contents($url);
+				$data = json_decode($json);
+				$status = $data->status;
+				if($status=="OK"){
+					//Get address from json data
+					$location = $data->results[0]->formatted_address;
+				}else{
+					$location =  '';
+				}
+				//Print address 
+				echo json_encode(array("location" => $location));
+			}
+		}
+	}
+	
 	public function create() {
 		//check post and save data
         if ($this->input->is_ajax_request() && $this->input->post('btn_save')) {

@@ -19,8 +19,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
           <h4><?php echo $this->common->getCountries($user_info['country']); ?></h4>
           <span class="edit-profile-btn"><i class="fa fa-pencil" aria-hidden="true"></i>Edit profile</span>
           <div class="edit-feedback-btn-block"> 
-          	<span class="blue-btn">Feedbacks</span> 
-            <span class="normal-btn">
+          	<span class="normal-btn">
+            	<a href="<?php echo site_url('user/profile'); ?>">Feedbacks</a>
+            </span> 
+            <span class="blue-btn">
             	<a href="<?php echo site_url('user/followings'); ?>">Followings</a>
             </span> 
           </div>
@@ -29,9 +31,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
       <div class="profile-listing-block">
         <div class="container">
           <ul>
-          <?php if (!empty($feedbacks)) { ?>
+          <?php if (!empty($followings)) { ?>
           <!-- Loop Starts Here -->
-          <?php foreach($feedbacks as $row) { ?>
+          <?php foreach($followings as $row) { ?>
             <li>
               <div class="profile-listing">
                 <div class="profile-listing-img-thumb-block">
@@ -82,7 +84,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
           <!-- Loop Ends Here -->
           <?php } else { ?>
           <?php echo $no_record_found; ?>
-          <?php } ?>
+          <?php } ?>  
           </ul>
         </div>
       </div>

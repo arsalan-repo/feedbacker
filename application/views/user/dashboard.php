@@ -75,7 +75,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                         <?php } ?>
                     </span>
                     <span class="post-wishlist">
-                    	<i class="fa fa-heart" aria-hidden="true" <?php $row['is_liked'] ?  'style="color: #f32836;"' : '' ?>></i> 
+                    	<i class="fa fa-heart-o" aria-hidden="true" <?php $row['is_liked'] ?  'style="color: #f32836;"' : '' ?>></i> 
 						<?php echo $row['likes']; ?>
                     </span>
                 </div>

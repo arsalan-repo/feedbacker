@@ -49,6 +49,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             <?php } ?>
           </div>
           <div class="post-detail-comments-block">
+          	<?php if(!empty($feedback['replies'])) { ?>
             <h3>Comments</h3>
             <?php foreach($feedback['replies'] as $row) { ?>
             <div class="profile-listing-img-thumb-block">
@@ -66,12 +67,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
               <p><?php echo $row['feedback']; ?></p>
             </div>
             <?php } ?>
-            
+            <?php } ?>
             <div class="post-detail-comment-form">
               <h2>Write a comment</h2>
               <form id="form1" name="form1" method="post" action="">
                 <label>Comment</label>
                 <input type="text" name="textfield1" placeholder="Write comment here" />
+                <input type="text" name="textfield1" placeholder="Location" />
               </form>
               <div class="post-btn-block">
                 <div class="camera-map-icon"> 
