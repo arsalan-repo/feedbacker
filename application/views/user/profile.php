@@ -92,22 +92,21 @@ defined('BASEPATH') OR exit('No direct script access allowed');
     <div class="login-form-block">
       <div class="login-form-fields">
         <h3>Edit Profile <span class="close-edit-popup"><img src="<?php echo base_url().'assets/images/close-icon.png'; ?>" alt="" /></span></h3>
+        <?php
+        $attributes = array('class' => '', 'id' => 'edit-profile-form');
+        echo form_open('user/update_profile', $attributes);
+        ?>
         <div class="login-form-block-edit-profile">
           <div class="edit-profile-popup-pic"><img src="<?php echo base_url().'assets/images/profile-img.png'; ?>" alt=""></div>
           <span class="update-pic-btn">Update new picture</span>
-          <form id="form1" name="form1" method="post" action="">
             <ul>
               <li>
-                <label>First Name</label>
-                <input placeholder="Jessica" name="textfield" id="textfield" type="text">
-              </li>
-              <li>
-                <label>Last Name</label>
-                <input placeholder="Doe" name="textfield" id="textfield" type="text">
+                <label>Name</label>
+                <input placeholder="Jessica" name="name" id="name" type="text">
               </li>
               <li>
                 <label>Gender</label>
-                <input name="textfield" placeholder="Female" id="textfield" type="text">
+                <input name="textfield" placeholder="Female" id="gender" type="text">
               </li>
               <li>
                 <label>Date of Birth</label>
@@ -121,8 +120,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                 <input name="button" id="button" value="Save" type="submit">
               </li>
             </ul>
-          </form>
         </div>
+
       </div>
     </div>
   </div>
