@@ -46,7 +46,8 @@
                     <div class="box-body">
                         <div class="form-group col-sm-10">
                             <label for="feedback_cont" id="page_title">Feedback*</label>
-                            <input type="text" class="form-control" name="feedback_cont" id="feedback_cont" value="<?php echo $feedback_detail[0]['feedback_cont'] ?>">
+                            <?php /*?><input type="text" class="form-control" name="feedback_cont" id="feedback_cont" value="<?php echo $feedback_detail[0]['feedback_cont'] ?>"><?php */?>
+                            <textarea class="form-control" name="feedback_cont" id="feedback_cont"><?php echo $feedback_detail[0]['feedback_cont'] ?></textarea>
                         </div>
                         <!-- feedback image start -->
                         <?php if($feedback_detail[0]['feedback_img']) { ?>
@@ -96,7 +97,7 @@
                 feedback_cont: {
                     required: true,
                     minlength: 3,
-                    maxlength: 300
+                    //maxlength: 300
                 }
             },
             messages:
