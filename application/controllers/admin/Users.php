@@ -108,6 +108,37 @@ class Users extends MY_Controller {
             redirect('admin/users', 'refresh');
         }
     }
+	
+	//feedbacks by a user
+    public function feedbacks($user_id = '') {
+		$this->data['module_name'] = 'Feedbacks';
+        $this->data['section_title'] = 'Feedbacks';
+
+        $join_str = array(
+			array(
+				'table' => 'users',
+				'join_table_id' => 'users.id',
+				'from_table_id' => 'feedback.user_id',
+				'join_type' => 'left'
+			),
+			array(
+				'table' => 'titles',
+				'join_table_id' => 'titles.title_id',
+				'from_table_id' => 'feedback.title_id',
+				'join_type' => 'left'
+			)
+		);
+		
+		// $contition_array = array('replied_to' => NULL, 'deleted' => 0);
+        $contition_array = array('feedback.deleted' => 0, 'users.id' => $user_id);
+		
+		$data = 'feedback_id, feedback.title_id, title, name, email, photo, feedback_cont, feedback_img, feedback_thumb, feedback_video, replied_to, location, feedback.status, feedback.datetime as time';
+		
+		$this->data['feedback_list'] = $this->common->select_data_by_condition('feedback', $contition_array, $data, $sortby = 'feedback.datetime', $orderby = 'DESC', $limit = '', $offset = '', $join_str, $group_by = '');
+
+        /* Load Template */
+        $this->template->admin_render('admin/feedbacks/index', $this->data);
+	}
 
     //add new user
     public function add() {

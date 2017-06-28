@@ -84,7 +84,11 @@
                                                 <?php echo $user_status ?> </a></td>
                                         <td><?php echo $user['gender'] ?></td>
                                         <td><?php echo $user['country'] ?></td>
+                                        <?php if ($user['total_feedback'] > 0) { ?>
+                                        <td><a href="<?php echo base_url('admin/users/feedbacks/' . $user['id']); ?>"><?php echo $user['total_feedback']; ?></a></td>
+                                        <?php } else { ?>
                                         <td><?php echo $user['total_feedback']; ?></td>
+                                        <?php } ?>
                                         <td><?php echo ($user['dob']) ? $user['dob'] : 'N/A' ?></td>
                                         <td><?php echo $user['last_login']; ?></td>
                                         <td>
