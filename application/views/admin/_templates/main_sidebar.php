@@ -50,14 +50,21 @@
             <!--Start Reports-->
             <li <?php if ($this->uri->segment(1) == 'reports' || $this->uri->segment(1) == '') { ?> class="active treeview" <?php } else { ?> class="treeview"   <?php } ?>>
                 <a href="#">
-                    <i class="fa fa-bars"></i> <span>Reports</span>
+                    <i class="fa fa-bars"></i><span>Reports</span>
                     <i class="fa fa-angle-left pull-right"></i>
                 </a>
                 <ul class="treeview-menu">
                     <li><a href="<?php echo base_url('admin/reports/search'); ?>"><i class="fa fa-circle-o"></i>Search Log</a></li>
                 </ul>
             </li>
-            <!--Start Reports-->
+            <!--End Reports-->
+            <!--Start Manage Ads-->
+            <li <?php if ($this->uri->segment(2) == 'ads') { ?> class="active treeview" <?php } else { ?> class="treeview"   <?php } ?>>
+                <a href="<?php echo base_url('admin/ads'); ?>">    
+                    <i class="fa fa-desktop"></i><span>Ads</span>
+                </a>
+            </li>
+            <!--End Manage Ads-->
             <!--Start Settings -->
             <li <?php if ($this->uri->segment(2) == 'settings') { ?> class="active treeview" <?php } else { ?> class="treeview"   <?php } ?>>
                 <a href="<?php echo base_url('admin/settings'); ?>">    
