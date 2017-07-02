@@ -24,7 +24,16 @@ $(document).ready(function(){
 	})
 
 	$(".post-follow-back-arrow").click(function(){
-		$(".post-profile-block").toggleClass("show-comment-box");
+		$(this).parent().parent().parent(".post-profile-block").addClass("show-comment-box").siblings().removeClass("show-comment-box");
 	});
+	
+	$( "#datepicker" ).datepicker({
+		changeMonth: true,
+		changeYear: true,
+		dateFormat:'d MM, yy',
+		maxDate: '0',
+		yearRange: "-100:+0", // last hundred years
+	});
+	$('#datepicker').datepicker('setDate', new Date());
 
 });

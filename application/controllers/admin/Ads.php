@@ -384,9 +384,12 @@ class Ads extends MY_Controller {
 				'show_after' => $this->input->post('show_after')
 			);
 			
-			if($this->input->post('title_id')) {
+			if($this->input->post('show_on') == 'home' || $this->input->post('show_on') == 'search') {
+				$update_array['title_id'] = '';
+			} else {
 				$update_array['title_id'] = $this->input->post('title_id');
 			}
+			
 			if(isset($dataimage)) {
 				$update_array['usr_img'] = $dataimage;
 			}
