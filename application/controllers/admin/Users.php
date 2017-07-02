@@ -224,7 +224,7 @@ class Users extends MY_Controller {
 
                     if ($error) {
                         $this->session->set_flashdata('error', $error[0]);
-                        redirect('users', 'refresh');
+                        redirect('admin/users', 'refresh');
                     }
                 }
 
