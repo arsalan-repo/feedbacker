@@ -39,8 +39,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
           <div class="post-profile-block">
 		   <div class="post-right-arrow">
 		   <!--<i class="fa fa-angle-down" aria-hidden="true"></i>-->
-		   <span class="post-followers-text"><?php echo $row['followers']; ?> Followers</span>
-		   <span class="post-profile-time-text"><?php echo $row['time']; ?></span>
+           <?php if(isset($row['ads'])) { ?>
+           	<span class="post-profile-time-text">Promoted</span>
+           <?php } else { ?>
+		   	<span class="post-followers-text"><?php echo $row['followers']; ?> Followers</span>
+			<span class="post-profile-time-text"><?php echo $row['time']; ?></span>            
+           <?php } ?>
 		   </div>
             <div class="post-img">
             	<?php
@@ -58,11 +62,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             	<span class="post-name"><?php echo $row['name']; ?></span> 
             	<span class="post-address"><?php echo $row['location']; ?></span>
                 <p><?php echo $row['feedback']; ?></p>
-                <?php if (!empty($feedback_img)) { ?>
+                <?php if (!empty($row['feedback_img'])) { ?>
               	<div class="post-large-img"> 
-                	<img src="<?php echo $feedback_img; ?>" alt="" />
+                	<img src="<?php echo $row['feedback_img']; ?>" alt="" />
               	</div>
                 <?php } ?>
+                <?php if(!isset($row['ads'])) { ?>
               	<div class="post-follow-block"> 
                 	<span class="post-follow-back-arrow">
                     	<img src="<?php echo ASSETS_URL.'images/reply-arrow.png'; ?>" alt="" />
@@ -79,6 +84,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						<?php echo $row['likes']; ?>
                     </span>
                 </div>
+                <?php } ?>
 				<div class="post-detail-comment-form">
               <h2>Write a comment</h2>
               <form id="form1" name="form1" method="post" action="">

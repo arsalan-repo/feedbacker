@@ -212,8 +212,8 @@ class Dashboard extends CI_Controller {
 				}
 
 				if($item['feedback_thumb'] !== "") {
-					$return['feedback_thumb'] = S3_CDN . 'uploads/feedback/thumbs/' . $item['feedback_thumb'];
-				} elseif($item['feedback_img'] !== "") {
+				} elseif($item['feedback_img'] !== "") {					$return['feedback_thumb'] = S3_CDN . 'uploads/feedback/thumbs/' . $item['feedback_thumb'];
+
 					$return['feedback_thumb'] = S3_CDN . 'uploads/feedback/main/' . $item['feedback_img'];
 				} else {
 					$return['feedback_thumb'] = "";
@@ -231,6 +231,65 @@ class Dashboard extends CI_Controller {
 				$return['time'] = $this->common->timeAgo($item['time']);
 
 				array_push($return_array, $return);
+			}
+			
+			// Append Ads Banners
+			$join_str = array(
+				array(
+					'table' => 'titles',
+					'join_table_id' => 'titles.title_id',
+					'from_table_id' => 'ads.title_id',
+					'join_type' => 'left'
+				)
+			);
+	
+			$contition_array = array('ads.show_on' => 'home', 'ads.country' => $country, 'ads.status' => 1, 'ads.deleted' => 0);
+			
+			$data = 'ads_id, ads.title_id, title, usr_name, usr_img, ads_cont, ads_img, ads_thumb, ads_video, ads.country, ads.show_on, ads.show_after, ads.status, ads.datetime as time';
+			
+			$ads_list = $this->common->select_data_by_condition('ads', $contition_array, $data, $short_by = 'ads.datetime', $order_by = 'DESC', $limit = '', $offset = '', $join_str, $group_by = '');
+			
+			foreach($ads_list as $ads) {
+				$adArray = array(
+					array(
+						'id' => '',
+						'title_id' => '',
+						'title' => '',
+						'likes' => 0,
+						'followers' => 0,
+						'is_liked' => '',
+						'is_followed' => '',
+						'name' => $ads['usr_name'],
+						'feedback_video' => '',
+						'location' => '',
+						'feedback' => $ads['ads_cont'],
+						'ads' => 1
+					)
+				);
+				
+				if(isset($ads['usr_img'])) {
+					$adArray[0]['user_avatar'] = S3_CDN . 'uploads/user/thumbs/' . $ads['usr_img'];
+				} else {
+					$adArray[0]['user_avatar'] = ASSETS_URL . 'images/user-avatar.png';
+				}
+				
+				if($ads['ads_img'] !== "") {
+					$adArray[0]['feedback_img'] = S3_CDN . 'uploads/feedback/main/' . $ads['ads_img'];
+				} else {
+					$adArray[0]['feedback_img'] = "";
+				}
+
+				if($ads['ads_thumb'] !== "") {
+					$adArray[0]['feedback_thumb'] = S3_CDN . 'uploads/feedback/thumbs/' . $ads['ads_thumb'];
+				} elseif($ads['ads_img'] !== "") {
+					$adArray[0]['feedback_thumb'] = S3_CDN . 'uploads/feedback/main/' . $ads['ads_img'];
+				} else {
+					$adArray[0]['feedback_thumb'] = "";
+				}
+					
+				$adArray[0]['time'] = $this->common->timeAgo($ads['time']);
+				
+				array_splice( $return_array, $ads['show_after'], 0, $adArray );
 			}
 
 			// Null to Empty String
