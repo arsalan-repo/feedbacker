@@ -211,11 +211,14 @@ class Ads extends MY_Controller {
 				'country' => $this->input->post('country'),
 				'show_on' => $this->input->post('show_on'),
 				'show_after' => $this->input->post('show_after'),
+				'repeat_for' => $this->input->post('repeat_for'),
 				'datetime' => date('Y-m-d H:i:s'),
 				'status' => 1
 			);
 			
-			if($this->input->post('title_id')) {
+			if($this->input->post('show_on') == 'home' || $this->input->post('show_on') == 'search') {
+				$insert_array['title_id'] = '';
+			} else {
 				$insert_array['title_id'] = $this->input->post('title_id');
 			}
 			if($dataimage) {
@@ -381,7 +384,8 @@ class Ads extends MY_Controller {
 				'ads_cont' => trim($this->input->post('ads_cont')),
 				'country' => $this->input->post('country'),
 				'show_on' => $this->input->post('show_on'),
-				'show_after' => $this->input->post('show_after')
+				'show_after' => $this->input->post('show_after'),
+				'repeat_for' => $this->input->post('repeat_for')
 			);
 			
 			if($this->input->post('show_on') == 'home' || $this->input->post('show_on') == 'search') {

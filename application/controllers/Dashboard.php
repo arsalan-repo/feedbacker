@@ -118,6 +118,7 @@ class Dashboard extends CI_Controller {
 		$total_records = count($feedback);
 		
 		// Pagination
+		/*
 		$config = array();
 		$config["base_url"] = base_url('dashboard/index');
 		$config["total_rows"] = $total_records;
@@ -143,7 +144,8 @@ class Dashboard extends CI_Controller {
 		$this->data['links'] = explode('&nbsp;',$str_links);
 		
 		$feedback = $this->common->select_data_by_condition('feedback', $contition_array, $data, $sortby = 'feedback.datetime', $orderby = 'DESC', $config["per_page"], $offset, $join_str, $group_by = '');
-		
+		*/
+		$feedback = $this->common->select_data_by_condition('feedback', $contition_array, $data, $sortby = 'feedback.datetime', $orderby = 'DESC', $limit = '', $offset = '', $join_str, $group_by = '');
 		//echo $this->db->last_query();
 		
 		if($total_records > 0) {
@@ -212,8 +214,8 @@ class Dashboard extends CI_Controller {
 				}
 
 				if($item['feedback_thumb'] !== "") {
-				} elseif($item['feedback_img'] !== "") {					$return['feedback_thumb'] = S3_CDN . 'uploads/feedback/thumbs/' . $item['feedback_thumb'];
-
+					$return['feedback_thumb'] = S3_CDN . 'uploads/feedback/thumbs/' . $item['feedback_thumb'];
+				} elseif($item['feedback_img'] !== "") {
 					$return['feedback_thumb'] = S3_CDN . 'uploads/feedback/main/' . $item['feedback_img'];
 				} else {
 					$return['feedback_thumb'] = "";
@@ -233,7 +235,7 @@ class Dashboard extends CI_Controller {
 				array_push($return_array, $return);
 			}
 			
-			// Append Ads Banners
+			// Append Ad Banners
 			$join_str = array(
 				array(
 					'table' => 'titles',
@@ -245,7 +247,7 @@ class Dashboard extends CI_Controller {
 	
 			$contition_array = array('ads.show_on' => 'home', 'ads.country' => $country, 'ads.status' => 1, 'ads.deleted' => 0);
 			
-			$data = 'ads_id, ads.title_id, title, usr_name, usr_img, ads_cont, ads_img, ads_thumb, ads_video, ads.country, ads.show_on, ads.show_after, ads.status, ads.datetime as time';
+			$data = 'ads_id, ads.title_id, title, usr_name, usr_img, ads_cont, ads_img, ads_thumb, ads_video, ads.country, ads.show_on, ads.show_after, ads.repeat_for, ads.status, ads.datetime as time';
 			
 			$ads_list = $this->common->select_data_by_condition('ads', $contition_array, $data, $short_by = 'ads.datetime', $order_by = 'DESC', $limit = '', $offset = '', $join_str, $group_by = '');
 			
@@ -289,8 +291,21 @@ class Dashboard extends CI_Controller {
 					
 				$adArray[0]['time'] = $this->common->timeAgo($ads['time']);
 				
-				array_splice( $return_array, $ads['show_after'], 0, $adArray );
+				// Check If banner has to be repeated
+				if($ads['repeat_for'] > 0) {
+					$i = 0;
+					$total = $ads['show_after'] * $ads['repeat_for'];
+					for($n = 1; $n <= $total; $n++) {
+						if($n%$ads['show_after'] == 0) {
+							array_splice($return_array, $n+$i, 0, $adArray);
+							$i++;
+						}
+					}	
+				} else {
+					array_splice($return_array, $ads['show_after'], 0, $adArray);
+				}
 			}
+			// End Ad Banners
 
 			// Null to Empty String
 			array_walk_recursive($return_array, function (&$item, $key) {

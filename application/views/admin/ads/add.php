@@ -108,6 +108,19 @@
                                 ?>
                             </select>
                         </div>
+                        <div class="form-group col-sm-5">
+                            <label for="repeat_for" id="page_title">Repeat After</label>
+                            <select name="repeat_for" id="repeat_for" class="form-control select2">
+                                <option value="" selected="selected">No Repeat</option>
+                                <?php
+                                for ($i=2; $i<=50; $i++) {
+                                    ?>
+                                    <option value="<?php echo $i; ?>"><?php echo $i; ?></option>
+                                    <?php
+                                }
+                                ?>
+                            </select>
+                        </div>
                     </div><!-- /.box-body -->
                     <div class="box-footer">
                         <?php
