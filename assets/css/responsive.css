@@ -1,95 +1,51 @@
 @media screen and (max-width:1199px){
-.container{padding-left:15px; padding-right:15px;}
-.header-right {width: 80%;}
-.header-search {width: 40%;}
-.left-content, .right-content{width:25%;}
-.middle-content{width:50%;}
-
-.login-form.edit-profile-form{width:92%;}
-ul.tabs li{padding:10px 3px;}
-
+  .container{padding-left:15px; padding-right:15px;}
+  .header-search {width:300px;}
+  .left-content, .right-content{width:25%;}
+  .middle-content{width:50%;}
+  .login-form.edit-profile-form{width:92%;}
+  ul.tabs li{padding:10px 3px;}
 }
 
 @media screen and (max-width:1023px){
-.header-search{width:30%;}
-.logo {width: 17%;}
-.header-search {padding-right: 15px;width: 30%;}
-.header-search input[type="text"] {padding: 0 35px 0 15px;}
-.header-search button {padding: 22px 20px;right: 10px;top: 2px;}
-.header-create-post {background: #005db9 url("../images/create-posst-icon.png") no-repeat scroll 12px 7px;margin-top: 6px;padding: 0 0 0 40px;
-width: 130px;}
-.header-notification {padding: 10px;width: 60px;}
-.left-content, .right-content {
-  width: 30%;
+ .left-content, .right-content {width: 30%; }
+ .middle-content {width: 40%; }
+ .home-left-section {padding: 0 10px 25px; }
+ .listing-post-followers{display:block;}
+ .post-detail-left {width: 60%;}
+ .post-detail-rgt{width:40%;}
+ .post-right-arrow{position:static; padding:0 0 10px;}
 }
-.middle-content {
-  width: 40%;
+@media screen and (max-width:991px){
+ header{height:auto;}
+ .logo {padding: 0 0 15px; text-align: center; width: 100%; }
+ .header-right {width: 100%; }
+ .header-search {float: left; padding-right:0; width:100%; margin-bottom:15px; }
+ .header-profile{ float: right}
 }
-.home-left-section {
-  padding: 0 10px 25px;
-}
-/*profile*/
-.listing-post-followers{display:block;}
-
-/*post detail*/
-.post-detail-left {width: 60%;}
-.post-detail-rgt{width:40%;}
-
-
-.post-right-arrow{position:static; padding:0 0 10px;}
-}
-
 @media screen and (max-width:767px){
-header{height:auto;}
-.logo {
-  padding: 0 0 15px;
-  text-align: center;
-  width: 100%;
+  .home-left-section{width:100%;}
+  .left-content, .middle-content, .right-content{width:100%;}
+  .login-form{width:92%; margin:20px auto;}
+  .profile-listing-block li{width:100%;}
+  .profile-image-block .container{width:100%;}
+  .blue-btn, .normal-btn {font-size: 18px; padding: 7px 20px; }
+  /*edit profile*/
+  .edit-profile-popup-open .login-form.edit-profile-form{width:92%;}
+  .edit-profile-form .login-form-block-edit-profile{width:100%;}
+  .edit-profile-form form {padding: 20px;}
+  /*post detail*/
+  .post-detail-left, .post-detail-rgt {width: 100%; padding:0; }
+  .post-detail-left{margin-bottom:30px;}
+  /*setting page*/
+  .contact-tab ul, .change-password-tab ul{width:100%;}
+  ul.tabs li{width:100%;}
+  .language-tab input.css-checkbox[type="checkbox"]:checked + label.css-label{background-position:85% -40px;}
+  .language-tab input.css-checkbox[type="checkbox"] + label.css-label{background-position:85% 22px;}
+  /*notification*/
+  .notification-description {width: 70%; }
 }
-.header-right {
-  width: 100%;
-}
-.header-search {
-  float: left;
-  padding-right: 15px;
-  width: 55%;
-}
-.header-create-post {
-  margin-bottom: 20px;
-  width: 45%;
-}
-.home-left-section{width:100%;}
-.left-content, .middle-content, .right-content{width:100%;}
-
-/*forgot page*/
-.login-form{width:92%; margin:20px auto;}
-
-/*profile*/
-.profile-listing-block li{width:100%;}
-.profile-image-block .container{width:100%;}
-.blue-btn, .normal-btn {
-  font-size: 18px;
-  padding: 7px 20px;
-}
-
-/*edit profile*/
-.edit-profile-popup-open .login-form.edit-profile-form{width:92%;}
-.edit-profile-form .login-form-block-edit-profile{width:100%;}
-.edit-profile-form form {padding: 20px;}
-
-/*post detail*/
-.post-detail-left, .post-detail-rgt {width: 100%; padding:0; }
-.post-detail-left{margin-bottom:30px;}
-
-/*setting page*/
-.contact-tab ul, .change-password-tab ul{width:100%;}
-ul.tabs li{width:100%;}
-.language-tab input.css-checkbox[type="checkbox"]:checked + label.css-label{background-position:85% -40px;}
-.language-tab input.css-checkbox[type="checkbox"] + label.css-label{background-position:85% 22px;}
-
-/*notification*/
-.notification-description {
-  width: 70%;
-}
-
+@media screen and (max-width:568px){
+  .header-profile{float: left; margin: 15px 0 0;}
+  .header-notification{ padding: 9px 18px;}
 }

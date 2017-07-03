@@ -118,6 +118,7 @@ class Dashboard extends CI_Controller {
 		$total_records = count($feedback);
 		
 		// Pagination
+		/*
 		$config = array();
 		$config["base_url"] = base_url('dashboard/index');
 		$config["total_rows"] = $total_records;
@@ -143,7 +144,8 @@ class Dashboard extends CI_Controller {
 		$this->data['links'] = explode('&nbsp;',$str_links);
 		
 		$feedback = $this->common->select_data_by_condition('feedback', $contition_array, $data, $sortby = 'feedback.datetime', $orderby = 'DESC', $config["per_page"], $offset, $join_str, $group_by = '');
-		
+		*/
+		$feedback = $this->common->select_data_by_condition('feedback', $contition_array, $data, $sortby = 'feedback.datetime', $orderby = 'DESC', $limit = '', $offset = '', $join_str, $group_by = '');
 		//echo $this->db->last_query();
 		
 		if($total_records > 0) {
@@ -232,6 +234,78 @@ class Dashboard extends CI_Controller {
 
 				array_push($return_array, $return);
 			}
+			
+			// Append Ad Banners
+			$join_str = array(
+				array(
+					'table' => 'titles',
+					'join_table_id' => 'titles.title_id',
+					'from_table_id' => 'ads.title_id',
+					'join_type' => 'left'
+				)
+			);
+	
+			$contition_array = array('ads.show_on' => 'home', 'ads.country' => $country, 'ads.status' => 1, 'ads.deleted' => 0);
+			
+			$data = 'ads_id, ads.title_id, title, usr_name, usr_img, ads_cont, ads_img, ads_thumb, ads_video, ads.country, ads.show_on, ads.show_after, ads.repeat_for, ads.status, ads.datetime as time';
+			
+			$ads_list = $this->common->select_data_by_condition('ads', $contition_array, $data, $short_by = 'ads.datetime', $order_by = 'DESC', $limit = '', $offset = '', $join_str, $group_by = '');
+			
+			foreach($ads_list as $ads) {
+				$adArray = array(
+					array(
+						'id' => '',
+						'title_id' => '',
+						'title' => '',
+						'likes' => 0,
+						'followers' => 0,
+						'is_liked' => '',
+						'is_followed' => '',
+						'name' => $ads['usr_name'],
+						'feedback_video' => '',
+						'location' => '',
+						'feedback' => $ads['ads_cont'],
+						'ads' => 1
+					)
+				);
+				
+				if(isset($ads['usr_img'])) {
+					$adArray[0]['user_avatar'] = S3_CDN . 'uploads/user/thumbs/' . $ads['usr_img'];
+				} else {
+					$adArray[0]['user_avatar'] = ASSETS_URL . 'images/user-avatar.png';
+				}
+				
+				if($ads['ads_img'] !== "") {
+					$adArray[0]['feedback_img'] = S3_CDN . 'uploads/feedback/main/' . $ads['ads_img'];
+				} else {
+					$adArray[0]['feedback_img'] = "";
+				}
+
+				if($ads['ads_thumb'] !== "") {
+					$adArray[0]['feedback_thumb'] = S3_CDN . 'uploads/feedback/thumbs/' . $ads['ads_thumb'];
+				} elseif($ads['ads_img'] !== "") {
+					$adArray[0]['feedback_thumb'] = S3_CDN . 'uploads/feedback/main/' . $ads['ads_img'];
+				} else {
+					$adArray[0]['feedback_thumb'] = "";
+				}
+					
+				$adArray[0]['time'] = $this->common->timeAgo($ads['time']);
+				
+				// Check If banner has to be repeated
+				if($ads['repeat_for'] > 0) {
+					$i = 0;
+					$total = $ads['show_after'] * $ads['repeat_for'];
+					for($n = 1; $n <= $total; $n++) {
+						if($n%$ads['show_after'] == 0) {
+							array_splice($return_array, $n+$i, 0, $adArray);
+							$i++;
+						}
+					}	
+				} else {
+					array_splice($return_array, $ads['show_after'], 0, $adArray);
+				}
+			}
+			// End Ad Banners
 
 			// Null to Empty String
 			array_walk_recursive($return_array, function (&$item, $key) {
