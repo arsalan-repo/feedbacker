@@ -1364,7 +1364,8 @@ class V1 extends CI_Controller {
                 'body' => [
                     'query' => [
                         'query_string' => [
-                            'query' => 'title:*'.$qs.'*'
+                            'query' => 'title:*'.$qs.'*',
+                            //"fuzzy_prefix_length" => 1,
                         ],
                     ]
                 ]
@@ -1387,7 +1388,8 @@ class V1 extends CI_Controller {
                 'body' => [
                     'settings' => [
                         'number_of_shards' => 5,
-                        'number_of_replicas' => 1
+                        'number_of_replicas' => 1,
+
                     ]
                 ]
             ];
@@ -1401,7 +1403,8 @@ class V1 extends CI_Controller {
                 'body' => [
                     'query' => [
                         'query_string' => [
-                            'query' => 'feedback_cont:*'.$qs.'*'
+                            'query' => 'feedback_cont:*'.$qs.'*',
+                            //"fuzzy_prefix_length" => 1,
                         ],
                     ]
                 ]
@@ -1441,9 +1444,11 @@ class V1 extends CI_Controller {
             $data = 'feedback_id, feedback.title_id, title, name, photo, feedback_cont, feedback_img, feedback_thumb, feedback_video, replied_to, location, feedback.datetime as time';
 
             if ($limit != '' && $offset != '') {
-                $feedback = $this->common->select_data_by_search('feedback', $search_condition, $condition_array = array(), $data, $sortby = '', $orderby = '', $limit, $offset, $join_str);
+                $feedback = $this->common->select_data_by_search('feedback', $search_condition, $condition_array = array(), $data, $sortby = '', $orderby = '', $limit, $offset, $join_str,'(title = "'.$qs.'") DESC,(name = "'.$qs.'") DESC, length(title), length(name)');
+
             } else {
-                $feedback = $this->common->select_data_by_search('feedback', $search_condition, $condition_array = array(), $data, $sortby = '', $orderby = '', $limit = '', $offset = '', $join_str);
+                //echo 'sd44444';die;
+                $feedback = $this->common->select_data_by_search('feedback', $search_condition, $condition_array = array(), $data, $sortby = '', $orderby = '', $limit = '', $offset = '', $join_str,'(title = "'.$qs.'") DESC,(name = "'.$qs.'") DESC, length(title), length(name)');
             }
             
             if(count($feedback) > 0) {

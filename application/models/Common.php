@@ -142,7 +142,7 @@ class Common extends CI_Model {
     }
 
     // select data using multiple conditions and search keyword
-    function select_data_by_search($tablename, $search_condition, $contition_array = array(), $data = '*', $sortby = '', $orderby = '', $limit = '', $offset = '', $join_str = '') {
+    function select_data_by_search($tablename, $search_condition, $contition_array = array(), $data = '*', $sortby = '', $orderby = '', $limit = '', $offset = '', $join_str = '', $custom_order_by = '') {
         $this->db->select($data);
         if (!empty($join_str)) {
             foreach ($join_str as $join) {
@@ -161,6 +161,11 @@ class Common extends CI_Model {
         //order by query
         if ($sortby != '' && $orderby != '') {
             $this->db->order_by($sortby, $orderby);
+        }
+
+        if($custom_order_by != ''){
+            //echo 'Jam';die;
+            $this->db->order_by($custom_order_by);   
         }
 
         $query = $this->db->get($tablename);
