@@ -1005,6 +1005,7 @@ class V1 extends CI_Controller {
             if($total_records > 0) {
                 foreach ($feedback as $item) {
                     $return = array();
+					$return['ads'] = 0;
                     $return['id'] = $item['feedback_id'];
                     $return['title_id'] = $item['title_id'];                
                     $return['title'] = $item['title'];
@@ -1230,6 +1231,7 @@ class V1 extends CI_Controller {
             $return_array = array();
             foreach ($feedback as $item) {
                 $return = array();
+				$return['ads'] = 0;
                 $return['id'] = $item['feedback_id'];
                 $return['title_id'] = $item['title_id'];                
                 $return['title'] = $item['title'];
@@ -1608,6 +1610,7 @@ class V1 extends CI_Controller {
                 $return_array = array();
                 foreach ($feedback as $item) {
                     $return = array();
+					$return['ads'] = 0;
                     $return['id'] = $item['feedback_id'];
                     $return['title_id'] = $item['title_id'];                
                     $return['title'] = $item['title'];
