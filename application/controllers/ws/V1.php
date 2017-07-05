@@ -1120,6 +1120,7 @@ class V1 extends CI_Controller {
 							'feedback_video' => '',
 							'location' => '',
 							'feedback' => $ads['ads_cont'],
+							'ads_url' => 'http://feedbacker.me/',
 							'ads' => 1
 						)
 					);
@@ -1361,6 +1362,7 @@ class V1 extends CI_Controller {
 						'name' => $ads['usr_name'],
 						'feedback_video' => '',
 						'location' => '',
+						'ads_url' => 'http://feedbacker.me/',
 						'feedback' => $ads['ads_cont'],
 						'ads' => 1
 					)
@@ -1730,6 +1732,7 @@ class V1 extends CI_Controller {
 							'name' => $ads['usr_name'],
 							'feedback_video' => '',
 							'location' => '',
+							'ads_url' => 'http://feedbacker.me/',
 							'feedback' => $ads['ads_cont'],
 							'ads' => 1
 						)
