@@ -50,6 +50,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
            <?php } ?>
 		   </div>
             <div class="post-img">
+	            <a href="<?php echo site_url('post/detail').'/'.$row['id']; ?>">
             	<?php
 				if(isset($row['user_avatar'])) {
 					echo '<img src="'.$row['user_avatar'].'" alt="" />';
@@ -57,10 +58,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					echo '<img src="'.ASSETS_URL . 'images/user-avatar.png" alt="" />';
 				}
 				?>
+                </a>
             </div>
             <div class="post-profile-content"> 
             	<span class="post-designation">
-                	<a href="<?php echo site_url('post/detail').'/'.$row['id']; ?>"><?php echo $row['title']; ?></a>
+                	<a href="<?php echo site_url('post/title').'/'.$row['title_id']; ?>"><?php echo $row['title']; ?></a>
                 </span> 
             	<span class="post-name"><?php echo $row['name']; ?></span> 
             	<span class="post-address"><?php echo $row['location']; ?></span>

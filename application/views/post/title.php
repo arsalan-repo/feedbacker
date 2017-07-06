@@ -20,7 +20,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                     ?>
                 </span> 
                 <span class="home-left-profile-name"><?php echo $user_info['name']; ?></span> 
-                <span class="home-left-profile-designation"><?php echo $this->common->getCountries($user_info['country']); ?></span> </div>
+                <span class="home-left-profile-designation">
+				<?php
+				$getcountry = $this->common->select_data_by_id('users', 'id', $user_info['id'], 'country', '');
+				echo $this->common->getCountries($getcountry[0]['country']); ?></span> </div>
           </div>
         </div>
         <div class="home-left-text-block">
@@ -43,6 +46,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		   <span class="post-profile-time-text"><?php echo $row['time']; ?></span>
 		   </div>
             <div class="post-img">
+            <a href="<?php echo site_url('post/detail').'/'.$row['id']; ?>">
             	<?php
 				if(isset($row['user_avatar'])) {
 					echo '<img src="'.$row['user_avatar'].'" alt="" />';
@@ -50,10 +54,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					echo '<img src="'.ASSETS_URL . 'images/user-avatar.png" alt="" />';
 				}
 				?>
+            </a>    
             </div>
             <div class="post-profile-content"> 
             	<span class="post-designation">
-                	<a href="<?php echo site_url('post/detail').'/'.$row['id']; ?>"><?php echo $row['title']; ?></a>
+                	<a href="<?php echo site_url('post/title').'/'.$row['title_id']; ?>"><?php echo $row['title']; ?></a>
                 </span> 
             	<span class="post-name"><?php echo $row['name']; ?></span> 
             	<span class="post-address"><?php echo $row['location']; ?></span>
@@ -75,7 +80,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                         <?php } ?>
                     </span>
                     <span class="post-wishlist">
-                    	<i class="fa fa-heart" aria-hidden="true" <?php $row['is_liked'] ?  'style="color: #f32836;"' : '' ?>></i> 
+                    	<i class="fa fa-heart-o" aria-hidden="true" <?php $row['is_liked'] ?  'style="color: #f32836;"' : '' ?>></i> 
 						<?php echo $row['likes']; ?>
                     </span>
                 </div>
