@@ -116,19 +116,10 @@
                         </div>
                         <div class="form-group col-sm-5">
                             <label for="show_after" id="page_title">Show After*</label>
-                            <select name="show_after" id="show_after" class="form-control select2">
-                                <option value="" selected="selected" disabled="disabled">No. of Feedbacks</option>
-                                <?php
-                                for ($i=2; $i<=50; $i++) {
-                                    ?>
-                                    <option value="<?php echo $i; ?>" <?php if($ads_detail[0]['show_after'] == $i) echo "selected"; ?>><?php echo $i; ?></option>
-                                    <?php
-                                }
-                                ?>
-                            </select>
+                            <input type="text" class="form-control" name="show_after" id="show_after" value="<?php echo $ads_detail[0]['show_after'] ?>">
                         </div>
                         <div class="form-group col-sm-5">
-                            <label for="repeat_for" id="page_title">Repeat After</label>
+                            <label for="repeat_for" id="page_title">Repeat For</label>
                             <select name="repeat_for" id="repeat_for" class="form-control select2">
                                 <option value="" <?php if($ads_detail[0]['repeat_for'] == 0) echo "selected"; ?>>No Repeat</option>
                                 <?php
@@ -179,6 +170,7 @@
 				},
 				show_after: {
 					required: true,	
+					digits: true
 				},
 				title_id: {
 					required: {
@@ -200,7 +192,8 @@
                     required: "Please select country",
                 },
 				show_after: {
-					required: "Please select after how many feedbacks this ad will be shown",	
+					required: "Please enter after how many feedbacks this ad will be shown",	
+					digits: "Please enter a valid number"
 				},
 				title_id: {
                     required: "Please select title",
