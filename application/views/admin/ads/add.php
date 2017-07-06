@@ -54,7 +54,7 @@
                         </div>
                         <!-- User image end -->
                         <div class="form-group col-sm-10">
-                            <label for="ads_cont" id="page_title">Ads Content*</label>
+                            <label for="ads_cont" id="page_title">Ads Content</label>
                             <textarea rows="10" class="form-control" name="ads_cont" id="ads_cont"></textarea>
                         </div>
                         <div class="form-group col-sm-10">
@@ -151,10 +151,10 @@
                     minlength: 3,
                     maxlength: 50
                 },
-				ads_cont: {
+				/*ads_cont: {
                     required: true,
                     minlength: 20
-                },
+                },*/
 				country: {
                     required: true,
 				},
@@ -174,9 +174,9 @@
                 usr_name: {
                     required: "Please enter user name",
                 },
-                ads_cont: {
+                /*ads_cont: {
                     required: "Please enter ads content",
-                },
+                },*/
 				country: {
                     required: "Please select country",
                 },
