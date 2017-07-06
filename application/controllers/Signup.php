@@ -9,7 +9,7 @@ class Signup extends CI_Controller {
         parent::__construct();
 
         if ($this->session->userdata('mec_user')) {
-            redirect('dashboard');
+            redirect('user/dashboard');
         }
 
         $this->data['title'] = "Sign Up | Feedbacker ";
@@ -111,6 +111,6 @@ class Signup extends CI_Controller {
 		$this->session->set_userdata('mec_user', $user_info);
 		
 		$this->session->set_flashdata('success', $this->lang->line('success_msg_sinup_done'));
-		redirect('dashboard');
+		redirect('user/dashboard');
     }
 }

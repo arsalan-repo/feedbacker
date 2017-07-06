@@ -9,7 +9,7 @@ class Signin extends CI_Controller {
         parent::__construct();
 
         if ($this->session->userdata('mec_user')) {
-            redirect('dashboard');
+            redirect('user/dashboard');
         }
 
         $this->data['title'] = "Login | Feedbacker ";
@@ -163,7 +163,7 @@ class Signin extends CI_Controller {
 				$this->session->set_userdata('mec_user', $userinfo[0]);
 				
 				$this->session->set_flashdata('success', $this->lang->line('msg_login_success'));
-	            redirect('dashboard');
+	            redirect('user/dashboard');
 			}
 		} else {
 			$this->session->set_flashdata('error', $this->lang->line('error_msg_login'));

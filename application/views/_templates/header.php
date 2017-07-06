@@ -28,28 +28,30 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	<script src="<?php echo base_url().'assets/js/custom.js'; ?>"></script>
 	<script type="application/javascript">
 	$(document).ready(function(e) {		
-	//no use
-	try {
-		var pages = $("#pages").msDropdown({on:{change:function(data, ui) {
-			var val = data.value;
-			if(val!="")
-				window.location = val;
-		}}}).data("dd");
-
-		var pagename = document.location.pathname.toString();
-		pagename = pagename.split("/");
-		pages.setIndexByValue(pagename[pagename.length-1]);
-		$("#ver").html(msBeautify.version.msDropdown);
-	} catch(e) {
-		//console.log(e);	
-	}
+		//no use
+		try {
+			var countries = $("#countries").msDropdown({on:{change:function(data, ui) {
+				var url = $("#dashboard_url").val();
+				var val = data.value;
+				
+				if(val != "")
+					window.location = url+"/"+val;
+			}}}).data("dd");
 	
-	$("#ver").html(msBeautify.version.msDropdown);
-
-	//convert
-	$("select").msDropdown({roundedBorder:false});
-	$("#tech").data("dd");
-});
+			var pagename = document.location.pathname.toString();
+			pagename = pagename.split("/");
+			pages.setIndexByValue(pagename[pagename.length-1]);
+			$("#ver").html(msBeautify.version.msDropdown);
+		} catch(e) {
+			//console.log(e);	
+		}
+		
+		$("#ver").html(msBeautify.version.msDropdown);
+	
+		//convert
+		$("select").msDropdown({roundedBorder:false});
+		$("#tech").data("dd");
+	});
 	</script>
 	
 </head>

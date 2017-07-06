@@ -20,7 +20,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                     ?>
                 </span> 
                 <span class="home-left-profile-name"><?php echo $user_info['name']; ?></span> 
-                <span class="home-left-profile-designation"><?php echo $this->common->getCountries($user_info['country']); ?></span> </div>
+                <span class="home-left-profile-designation">
+				<?php
+				$getcountry = $this->common->select_data_by_id('users', 'id', $user_info['id'], 'country', '');
+				echo $this->common->getCountries($getcountry[0]['country']); ?></span> </div>
           </div>
         </div>
         <div class="home-left-text-block">
