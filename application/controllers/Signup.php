@@ -28,16 +28,20 @@ class Signup extends CI_Controller {
     }
 
 	public function index() {
-		$this->load->view('user/signup');
+		$this->data['country_list'] = $this->common->select_data_by_condition('countries', $contition_array = array(), '*', $short_by = 'country_name', $order_by = 'ASC', $limit = '', $offset = '');
+		
+		$this->load->view('user/signup', $this->data);
 	}
 	
 	public function submit() {
         $name = $this->input->post('name');
 		$email = $this->input->post('email');
+		$country = $this->input->post('country');
         $password = $this->input->post('password');
 		
 		$this->form_validation->set_rules('name', 'Name', 'trim|required|min_length[3]');
 		$this->form_validation->set_rules('email', 'Email', 'trim|required|valid_email|is_unique[users.email]');
+		$this->form_validation->set_rules('country', 'Country', 'trim|required');
 		$this->form_validation->set_rules('password', 'Password', 'trim|required');
 		$this->form_validation->set_rules('confirm_password', 'Confirm Password', 'trim|required|matches[password]');
 		
@@ -49,8 +53,9 @@ class Signup extends CI_Controller {
 		// Add User in database
 		$md5_password = md5($password);
 
-		$insert_array['name'] = $name;
+		$insert_array['name'] = trim($name);
 		$insert_array['email'] = trim($email);
+		$insert_array['country'] = $country;
 		$insert_array['password'] = trim($md5_password);
 		//$insert_array['country'] = $country;
 		$insert_array['status'] = 1;

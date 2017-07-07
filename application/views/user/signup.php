@@ -48,8 +48,22 @@
               <label>Name</label>
               <input type="text" autocomplete="off" placeholder="" name="name" id="name" />
             </li>
+            <li>
             <label>Email</label>
             <input type="text" autocomplete="off" placeholder="" name="email" id="email" />
+            </li>
+            <li>
+            <label>Country</label>
+            <select name="country" id="country" class="form-control select2">
+                <option value="">Select Country</option>
+                <?php
+                foreach ($country_list as $country) {
+                    ?>
+                    <option value="<?php echo $country['country_code']; ?>"><?php echo $country['country_name']; ?></option>
+                    <?php
+                }
+                ?>
+            </select>
             </li>
             <li>
               <label>Password</label>
@@ -82,10 +96,15 @@ $(function() {
 	
 		// Specify the validation rules
 		rules: {
-			name: "required",
+			name: {
+				required: true
+			},
 			email: {
 				required: true,
 				email: true
+			},
+			country: {
+				required: true
 			},
 			password: {
 				required: true,
@@ -100,6 +119,7 @@ $(function() {
 		messages: {
 			name: "Please enter your name",
 			email: "Please enter a valid email address",
+			country: "Please select your country",
 			password: {
 				required: "Please provide a password",
 				minlength: "Your password must be at least 5 characters long"
