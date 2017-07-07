@@ -101,9 +101,9 @@ class User extends CI_Controller {
 		);
 		
 		if(!empty($country)) {
-			$contition_array = array('feedback.deleted' => 0, 'feedback.status' => 1, 'feedback.country' => $country);
+			$contition_array = array('replied_to' => NULL, 'feedback.deleted' => 0, 'feedback.status' => 1, 'feedback.country' => $country);
 		} else {
-			$contition_array = array('feedback.deleted' => 0, 'feedback.status' => 1);
+			$contition_array = array('replied_to' => NULL, 'feedback.deleted' => 0, 'feedback.status' => 1);
 		}
 		
 		$this->data['trends'] = $this->common->select_data_by_condition('feedback', $contition_array, 'feedback_id, feedback.title_id, title, feedback_cont, feedback_img, feedback_thumb, feedback_video, replied_to, location, feedback.datetime as time', $sortby = 'count(db_feedback.title_id)', $orderby = 'DESC', $limit = '10', $offset = '', $join_str_tr, $group_by = 'feedback.title_id');
@@ -157,8 +157,6 @@ class User extends CI_Controller {
 		
 		$feedback = $this->common->select_data_by_condition('feedback', $contition_array, $data, $sortby = 'feedback.datetime', $orderby = 'DESC', $config["per_page"], $offset, $join_str, $group_by = '');
 		*/
-		$feedback = $this->common->select_data_by_condition('feedback', $contition_array, $data, $sortby = 'feedback.datetime', $orderby = 'DESC', $limit = '', $offset = '', $join_str, $group_by = '');
-		//echo $this->db->last_query();
 		
 		if($total_records > 0) {
 			foreach ($feedback as $item) {
