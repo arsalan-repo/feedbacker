@@ -1329,7 +1329,7 @@ class V1 extends CI_Controller {
 			$country = $this->input->post('country');
 			
 			if($country == '') {
-				$getcountry = $this->common->select_data_by_id('users', 'id', $user_info['id'], 'country', '');
+				$getcountry = $this->common->select_data_by_id('users', 'id', $user_id, 'country', '');
 				$country = $getcountry[0]['country'];
 			}
 			
@@ -1699,7 +1699,7 @@ class V1 extends CI_Controller {
 				$country = $this->input->post('country');
 				
 				if($country == '') {
-					$getcountry = $this->common->select_data_by_id('users', 'id', $user_info['id'], 'country', '');
+					$getcountry = $this->common->select_data_by_id('users', 'id', $user_id, 'country', '');
 					$country = $getcountry[0]['country'];
 				}
 				
