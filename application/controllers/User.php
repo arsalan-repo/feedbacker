@@ -36,6 +36,14 @@ class User extends CI_Controller {
 		$this->template->front_render('user/dashboard');
 	}
 	
+	public function language($id) {
+		$user_info = $this->session->userdata['mec_user'];
+		$user_info['lang_id'] = $id;  
+		
+		$this->session->set_userdata('mec_user', $user_info);
+		redirect();
+	}
+	
 	//display dashboard
     public function dashboard($country = '') {
 		// Session data

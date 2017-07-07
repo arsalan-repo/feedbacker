@@ -302,7 +302,25 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		// echo select_countries('flags', 'jo');
         ?>
     </div>
-    
+    <div class="language-text">
+    	<?php
+		$contition_array = array('lang_status' => 1);
+		$languages = $this->common->select_data_by_condition('languages', $contition_array, $data = 'lang_id, lang_code, lang_name');
+
+		if(!empty($languages)) {
+			foreach($languages as $lang) {  
+				// Check for user preferred language
+				if($user_info['lang_id'] == $lang['lang_id']) {
+					$class = 'lang-selected';
+				} else {
+					$class = '';    
+				}
+				
+				echo '<span class="'.$class.'"><a href="'.site_url('user/language').'/'.$lang['lang_id'].'">'.strtoupper($lang['lang_code']).'</a> </span>';
+			}
+		}
+		?>
+    </div>
     <div class="header-profile">
        <span class="profile-icon">
          <?php

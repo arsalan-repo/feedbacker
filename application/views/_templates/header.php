@@ -15,8 +15,18 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	<link rel="stylesheet" type="text/css" href="<?php echo base_url().'assets/css/dd.css'; ?>" />
 	<link rel="stylesheet" type="text/css" href="<?php echo base_url().'assets/css/sprite.css'; ?>" />
 	<link rel="stylesheet" type="text/css" href="<?php echo base_url().'assets/css/flags.css'; ?>" />
-	<link href="<?php echo base_url().'assets/css/style.css'; ?>" rel="stylesheet" type="text/css" />
-	<link href="<?php echo base_url().'assets/css/responsive.css'; ?>" rel="stylesheet" type="text/css" />
+	<?php 
+	$user_info = $this->session->userdata['mec_user'];
+	if ($user_info['lang_id'] == 1) { 
+		$style = 'style.css';
+		$responsive = 'responsive.css';
+	} else {
+		$style = 'style-rtl.css';
+		$responsive = 'responsive-rtl.css';		
+	}
+	?>    
+	<link href="<?php echo base_url().'assets/css/'.$style; ?>" rel="stylesheet" type="text/css" />
+	<link href="<?php echo base_url().'assets/css/'.$responsive; ?>" rel="stylesheet" type="text/css" />
 	<!-- jQuery 1.12.1 -->
 	<script src="<?php echo base_url().'assets/js/jquery-1.12.1.min.js';?>"></script>
 	<script src="<?php echo base_url().'assets/js/jquery-ui.min.js';?>"></script>
