@@ -171,7 +171,7 @@ class Signin extends CI_Controller {
 		}
     }
 	
-	public function facebook() {
+	public function fbauth() {
 		$userData = array();
 		
 		// Check if user is logged in
@@ -189,6 +189,10 @@ class Signin extends CI_Controller {
             $userData['locale'] = $userProfile['locale'];
             $userData['profile_url'] = 'https://www.facebook.com/'.$userProfile['id'];
             $userData['picture_url'] = $userProfile['picture']['data']['url'];
+			
+			echo "<pre>";
+			print_r($userData);
+			exit;
 			
             // Insert or update user data
             $userID = $this->user->checkUser($userData);
