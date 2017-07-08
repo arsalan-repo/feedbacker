@@ -300,12 +300,12 @@ class Signin extends CI_Controller {
 		$this->load->view('user_authentication/index',$data);
     }
 
-	public function logout() {
+	public function fblogout() {
 		$this->session->unset_userdata('token');
 		$this->session->unset_userdata('token_secret');
 		$this->session->unset_userdata('status');
 		$this->session->unset_userdata('userData');
         $this->session->sess_destroy();
-		redirect('/user_authentication');
+		redirect();
     }
 }
