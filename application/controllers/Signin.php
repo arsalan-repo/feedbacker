@@ -177,45 +177,118 @@ class Signin extends CI_Controller {
 		// Check if user is logged in
 		if ($this->facebook->is_authenticated()) {
 			// Get user facebook profile details
-			$userProfile = $this->facebook->request('get', '/me?fields=id,first_name,last_name,email,gender,locale,picture');
+			$userProfile = $this->facebook->request('get', '/me?fields=id,first_name,last_name,email,gender,locale,picture,location');
+			
+//			echo "<pre>";
+//			print_r($userProfile);
+//			exit;
 
             // Preparing data for database insertion
-            $userData['oauth_provider'] = 'facebook';
-            $userData['oauth_uid'] = $userProfile['id'];
-            $userData['first_name'] = $userProfile['first_name'];
-            $userData['last_name'] = $userProfile['last_name'];
-            $userData['email'] = $userProfile['email'];
-            $userData['gender'] = $userProfile['gender'];
-            $userData['locale'] = $userProfile['locale'];
-            $userData['profile_url'] = 'https://www.facebook.com/'.$userProfile['id'];
-            $userData['picture_url'] = $userProfile['picture']['data']['url'];
+//            $userData['oauth_provider'] = 'facebook';
+//            $userData['oauth_uid'] = $userProfile['id'];
+//            $userData['first_name'] = $userProfile['first_name'];
+//            $userData['last_name'] = $userProfile['last_name'];
+//            $userData['email'] = $userProfile['email'];
+//            $userData['gender'] = $userProfile['gender'];
+//            $userData['locale'] = $userProfile['locale'];
+//            $userData['profile_url'] = 'https://www.facebook.com/'.$userProfile['id'];
+//            $userData['picture_url'] = $userProfile['picture']['data']['url'];
 			
-			echo "<pre>";
-			print_r($userData);
-			exit;
+			// IF ALREADY EXISTS
+			$condition_array = array('deleted' => 0);
+            $check_result = $this->common->check_unique_avalibility('users', 'fbid', $userProfile['id'], '', '', $condition_array);
+
+            if ($check_result == 1) {
+				// CHECK IF USER BLOCKED
+				$contition_user = array('fbid' => $userProfile['id']);
+				$user_result = $this->common->select_data_by_condition('users', $contition_user, $data = 'id, name, email, password, country, lang_id, photo, fbid, status', $sortby = '', $orderby = '', $limit = '', $offset = '', $join_str = array());
+				
+				if ($user_result[0]['status'] == "0") {
+					$this->session->set_flashdata('error', $this->lang->line('error_account_blocked'));
+					redirect();
+				}
+				
+				// UPDATE LAST LOGIN
+				$userData['last_login'] = date('Y-m-d h:i:s');
+				
+				// UPDATE FBID
+				$userData['fbid'] = trim($userProfile['id']);
+				
+				$this->common->update_data($userData, 'users', 'id', $user_result[0]['id']);
+				
+				// SET SESSION DATA
+				$user_result[0]['social_login'] = TRUE;
+				$user_result[0]['logout_url'] = $this->facebook->logout_url();
+				$this->session->set_userdata('mec_user', $user_result[0]);
+				
+				$this->session->set_flashdata('success', $this->lang->line('msg_login_success'));
+	            redirect('user/dashboard');
+			} else {
+				// NEW SIGNUP
+				$userData['name'] = $userProfile['first_name'];
+				
+				if ($userProfile['last_name'] != '') {
+					$userData['name'] .= " ".$userProfile['last_name'];
+				}
+				
+				$userData['email'] = $userProfile['email'];
+				
+				if ($userProfile['locale']) {
+					$getLang = explode('_', $userProfile['locale']);
+				}
+				$userData['lang_id'] = 1;
+				
+				$userData['fbid'] = trim($userProfile['id']);
+				$userData['country'] = 'JO';
+				$userData['status'] = 1;
+				$userData['create_date'] = date('Y-m-d h:i:s');
+				$userData['last_login'] = date('Y-m-d h:i:s');
+	
+				$insert_result = $this->common->insert_data_getid($userData, $tablename = 'users');
+				
+				// USER NOTIFICATIONS PREFERENCES
+				$insert_pref_1['user_id'] = $insert_result;
+				$insert_pref_1['notification_id'] = 1;
+				$insert_pref_1['status'] = 'on';
+				$insert_pref_1['updated_on'] = date('Y-m-d h:i:s');
+				
+				$pref_result_1 = $this->common->insert_data($insert_pref_1, $tablename = 'user_preferences');
+				
+				$insert_pref_2['user_id'] = $insert_result;
+				$insert_pref_2['notification_id'] = 2;
+				$insert_pref_2['status'] = 'on';
+				$insert_pref_2['updated_on'] = date('Y-m-d h:i:s');
+				
+				$pref_result_2 = $this->common->insert_data($insert_pref_2, $tablename = 'user_preferences');
+				
+				$insert_pref_3['user_id'] = $insert_result;
+				$insert_pref_3['notification_id'] = 3;
+				$insert_pref_3['status'] = 'on';
+				$insert_pref_3['updated_on'] = date('Y-m-d h:i:s');
+				
+				$pref_result_3 = $this->common->insert_data($insert_pref_3, $tablename = 'user_preferences');
+				
+				$insert_pref_4['user_id'] = $insert_result;
+				$insert_pref_4['notification_id'] = 4;
+				$insert_pref_4['status'] = 'on';
+				$insert_pref_4['updated_on'] = date('Y-m-d h:i:s');
+				
+				$pref_result_4 = $this->common->insert_data($insert_pref_4, $tablename = 'user_preferences');
+				
+				// SET SESSION DATA
+				$userData['id'] = $insert_result;
+				$userData['social_login'] = TRUE;
+				$userData['logout_url'] = $this->facebook->logout_url();
+				$this->session->set_userdata('mec_user', $userData);
+				
+				$this->session->set_flashdata('success', $this->lang->line('msg_login_success'));
+	            redirect('user/dashboard');
+			}
 			
-            // Insert or update user data
-            $userID = $this->user->checkUser($userData);
-			
-			// Check user data insert or update status
-            if (!empty($userID)) {
-                $data['userData'] = $userData;
-                $this->session->set_userdata('userData',$userData);
-            } else {
-               $data['userData'] = array();
-            }
-			
-			// Get logout URL
-			$data['logoutUrl'] = $this->facebook->logout_url();
-		}else{
-            $fbuser = '';
-			
-			// Get login URL
-            $data['authUrl'] =  $this->facebook->login_url();
+		} else {		
+			$this->session->set_flashdata('error', $this->lang->line('error_msg_login'));
+			redirect();
         }
-		
-		// Load login & profile view
-        $this->load->view('user_authentication/index', $data);
     }
 	
 	public function twitter(){
