@@ -36,11 +36,11 @@ class Signin extends CI_Controller {
 	public function index() {
 		// Get Facebook Login URL
 		$this->data['authUrl'] =  $this->facebook->login_url();
-		/*
+		
 		// Twitter API Configuration
-		$consumerKey = 'Insert_Twitter_API_Key';
-		$consumerSecret = 'Insert_Twitter_API_Secret';
-		$oauthCallback = base_url().'user_authentication/';
+		$consumerKey = 'sHUkqavFNxaGgr7RvZq94xxE0';
+		$consumerSecret = '90MBNCqkFAdETUgAv7YkAeTrZ8dXjTBLWvHAwwgbsYptSzFB1A';
+		$oauthCallback = base_url().'signin/twauth/';
 		
 		//unset token and token secret from session
 		$this->session->unset_userdata('token');
@@ -60,8 +60,8 @@ class Signin extends CI_Controller {
 			$twitterUrl = $connection->getAuthorizeURL($requestToken['oauth_token']);
 			$this->data['oauthURL'] = $twitterUrl;
 		}
-		*/
-		$this->data['oauthURL'] = '';
+		
+
 		/* Load Template */
 		$this->load->view('user/signin', $this->data);
 	}
@@ -209,11 +209,7 @@ class Signin extends CI_Controller {
 				}
 				
 				// UPDATE LAST LOGIN
-				$userData['last_login'] = date('Y-m-d h:i:s');
-				
-				// UPDATE FBID
-				$userData['fbid'] = trim($userProfile['id']);
-				
+				$userData['last_login'] = date('Y-m-d h:i:s');				
 				$this->common->update_data($userData, 'users', 'id', $user_result[0]['id']);
 				
 				// SET SESSION DATA
@@ -291,86 +287,111 @@ class Signin extends CI_Controller {
         }
     }
 	
-	public function twitter(){
+	public function twauth(){
 		$userData = array();
+		
+		// Twitter API Configuration
+		$consumerKey = 'sHUkqavFNxaGgr7RvZq94xxE0';
+		$consumerSecret = '90MBNCqkFAdETUgAv7YkAeTrZ8dXjTBLWvHAwwgbsYptSzFB1A';
 		
 		//Get existing token and token secret from session
 		$sessToken = $this->session->userdata('token');
 		$sessTokenSecret = $this->session->userdata('token_secret');
 		
-		//Get status and user info from session
-		$sessStatus = $this->session->userdata('status');
-		$sessUserData = $this->session->userdata('userData');
-		
-		if (isset($sessStatus) && $sessStatus == 'verified') {
-			//Connect and get latest tweets
-			$connection = new TwitterOAuth($consumerKey, $consumerSecret, $sessUserData['accessToken']['oauth_token'], $sessUserData['accessToken']['oauth_token_secret']); 
-			$data['tweets'] = $connection->get('statuses/user_timeline', array('screen_name' => $sessUserData['username'], 'count' => 5));
-
-			//User info from session
-			$userData = $sessUserData;
-		} elseif (isset($_REQUEST['oauth_token']) && $sessToken == $_REQUEST['oauth_token']) {
+		if (isset($_REQUEST['oauth_token']) && $sessToken == $_REQUEST['oauth_token']) {
 			//Successful response returns oauth_token, oauth_token_secret, user_id, and screen_name
 			$connection = new TwitterOAuth($consumerKey, $consumerSecret, $sessToken, $sessTokenSecret); //print_r($connection);die;
 			$accessToken = $connection->getAccessToken($_REQUEST['oauth_verifier']);
 			if ($connection->http_code == '200') {
 				//Get user profile info
 				$userInfo = $connection->get('account/verify_credentials');
-
-				//Preparing data for database insertion
-				$name = explode(" ",$userInfo->name);
-				$first_name = isset($name[0])?$name[0]:'';
-				$last_name = isset($name[1])?$name[1]:'';
-				$userData = array(
-					'oauth_provider' => 'twitter',
-					'oauth_uid' => $userInfo->id,
-					'username' => $userInfo->screen_name,
-					'first_name' => $first_name,
-					'last_name' => $last_name,
-					'locale' => $userInfo->lang,
-					'profile_url' => 'https://twitter.com/'.$userInfo->screen_name,
-					'picture_url' => $userInfo->profile_image_url
-				);
 				
-				//Insert or update user data
-				$userID = $this->user->checkUser($userData);
+				// IF ALREADY EXISTS
+				$condition_array = array('deleted' => 0);
+				$check_result = $this->common->check_unique_avalibility('users', 'twitterid', $userInfo->id, '', '', $condition_array);
 				
-				//Store status and user profile info into session
-				$userData['accessToken'] = $accessToken;
-				$this->session->set_userdata('status','verified');
-				$this->session->set_userdata('userData',$userData);
-				
-				//Get latest tweets
-				$data['tweets'] = $connection->get('statuses/user_timeline', array('screen_name' => $userInfo->screen_name, 'count' => 5));
+				if ($check_result == 1) {
+					// CHECK IF USER BLOCKED
+					$contition_user = array('twitterid' => $userInfo->id);
+					$user_result = $this->common->select_data_by_condition('users', $contition_user, $data = 'id, name, email, password, country, lang_id, photo, twitterid, status', $sortby = '', $orderby = '', $limit = '', $offset = '', $join_str = array());
+					
+					if ($user_result[0]['status'] == "0") {
+						$this->session->set_flashdata('error', $this->lang->line('error_account_blocked'));
+						redirect();
+					}
+					
+					// UPDATE LAST LOGIN
+					$userData['last_login'] = date('Y-m-d h:i:s');
+					$this->common->update_data($userData, 'users', 'id', $user_result[0]['id']);
+					
+					// SET SESSION DATA
+					$user_result[0]['social_login'] = TRUE;
+					$this->session->set_userdata('mec_user', $user_result[0]);
+					
+					$this->session->set_flashdata('success', $this->lang->line('msg_login_success'));
+	            redirect('user/dashboard');
+				} else {
+					// NEW SIGNUP
+					$userData['name'] = $userInfo->name;
+//					$userData['lang_id'] = $userInfo->lang; // It gives en
+					$userData['lang_id'] = 1;
+					$userData['twitterid'] = trim($userInfo->id);
+					$userData['country'] = 'JO';
+					$userData['status'] = 1;
+					$userData['create_date'] = date('Y-m-d h:i:s');
+					$userData['last_login'] = date('Y-m-d h:i:s');
+					
+					$insert_result = $this->common->insert_data_getid($userData, $tablename = 'users');
+					
+					// USER NOTIFICATIONS PREFERENCES
+					$insert_pref_1['user_id'] = $insert_result;
+					$insert_pref_1['notification_id'] = 1;
+					$insert_pref_1['status'] = 'on';
+					$insert_pref_1['updated_on'] = date('Y-m-d h:i:s');
+					
+					$pref_result_1 = $this->common->insert_data($insert_pref_1, $tablename = 'user_preferences');
+					
+					$insert_pref_2['user_id'] = $insert_result;
+					$insert_pref_2['notification_id'] = 2;
+					$insert_pref_2['status'] = 'on';
+					$insert_pref_2['updated_on'] = date('Y-m-d h:i:s');
+					
+					$pref_result_2 = $this->common->insert_data($insert_pref_2, $tablename = 'user_preferences');
+					
+					$insert_pref_3['user_id'] = $insert_result;
+					$insert_pref_3['notification_id'] = 3;
+					$insert_pref_3['status'] = 'on';
+					$insert_pref_3['updated_on'] = date('Y-m-d h:i:s');
+					
+					$pref_result_3 = $this->common->insert_data($insert_pref_3, $tablename = 'user_preferences');
+					
+					$insert_pref_4['user_id'] = $insert_result;
+					$insert_pref_4['notification_id'] = 4;
+					$insert_pref_4['status'] = 'on';
+					$insert_pref_4['updated_on'] = date('Y-m-d h:i:s');
+					
+					$pref_result_4 = $this->common->insert_data($insert_pref_4, $tablename = 'user_preferences');
+					
+					// SET SESSION DATA
+					$userData['id'] = $insert_result;
+					$userData['social_login'] = TRUE;
+					$userData['logout_url'] = $this->facebook->logout_url();
+					$this->session->set_userdata('mec_user', $userData);
+					
+					//Get latest tweets
+					//$data['tweets'] = $connection->get('statuses/user_timeline', array('screen_name' => $userInfo->screen_name, 'count' => 5));
+					
+					$this->session->set_flashdata('success', $this->lang->line('msg_login_success'));
+					redirect('user/dashboard');
+				}
 			} else {
-				$data['error_msg'] = 'Some problem occurred, please try again later!';
+				$this->session->set_flashdata('error', $this->lang->line('error_msg_login'));
+				redirect();
 			}
 		} else {
-			//unset token and token secret from session
-			$this->session->unset_userdata('token');
-			$this->session->unset_userdata('token_secret');
-			
-			//Fresh authentication
-			$connection = new TwitterOAuth($consumerKey, $consumerSecret);
-			$requestToken = $connection->getRequestToken($oauthCallback);
-			
-			//Received token info from twitter
-			$this->session->set_userdata('token',$requestToken['oauth_token']);
-			$this->session->set_userdata('token_secret',$requestToken['oauth_token_secret']);
-			
-			//Any value other than 200 is failure, so continue only if http code is 200
-			if ($connection->http_code == '200') {
-				//redirect user to twitter
-				$twitterUrl = $connection->getAuthorizeURL($requestToken['oauth_token']);
-				$data['oauthURL'] = $twitterUrl;
-			} else {
-				$data['oauthURL'] = base_url().'twitter';
-				$data['error_msg'] = 'Error connecting to twitter! try again later!';
-			}
+			$this->session->set_flashdata('error', $this->lang->line('error_something_wrong'));
+			redirect();
         }
-
-		$data['userData'] = $userData;
-		$this->load->view('user_authentication/index',$data);
     }
 
 	public function fblogout() {
