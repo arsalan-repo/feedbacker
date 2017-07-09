@@ -38,8 +38,8 @@ class Signin extends CI_Controller {
 		$this->data['authUrl'] =  $this->facebook->login_url();
 		
 		// Twitter API Configuration
-		$consumerKey = 'RLqrrrVbalqcyPkkDA1pBVXsS';
-		$consumerSecret = '7w2hPokRkNJg0X1BLOj8QnnRPHyoW8qL7zgGRokQIXNkmHMNZx';
+		$consumerKey = 'sHUkqavFNxaGgr7RvZq94xxE0';
+		$consumerSecret = '90MBNCqkFAdETUgAv7YkAeTrZ8dXjTBLWvHAwwgbsYptSzFB1A';
 		$oauthCallback = base_url().'signin/twauth/';
 		
 		//unset token and token secret from session
@@ -283,8 +283,10 @@ class Signin extends CI_Controller {
 		$userData = array();
 		
 		// Twitter API Configuration
-		$consumerKey = 'RLqrrrVbalqcyPkkDA1pBVXsS';
-		$consumerSecret = '7w2hPokRkNJg0X1BLOj8QnnRPHyoW8qL7zgGRokQIXNkmHMNZx';
+//		$consumerKey = 'RLqrrrVbalqcyPkkDA1pBVXsS';
+//		$consumerSecret = '7w2hPokRkNJg0X1BLOj8QnnRPHyoW8qL7zgGRokQIXNkmHMNZx';
+		$consumerKey = 'sHUkqavFNxaGgr7RvZq94xxE0';
+		$consumerSecret = '90MBNCqkFAdETUgAv7YkAeTrZ8dXjTBLWvHAwwgbsYptSzFB1A';
 		
 		//Get existing token and token secret from session
 		$sessToken = $this->session->userdata('token');
