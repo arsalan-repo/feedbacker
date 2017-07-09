@@ -221,6 +221,9 @@ class Ads extends MY_Controller {
 			} else {
 				$insert_array['title_id'] = $this->input->post('title_id');
 			}
+			if($this->input->post('ads_url') != '') {
+                $insert_array['ads_url'] = $this->input->post('ads_url');
+            }
 			if($dataimage) {
 				$insert_array['usr_img'] = $dataimage;
 			}
@@ -393,7 +396,9 @@ class Ads extends MY_Controller {
 			} else {
 				$update_array['title_id'] = $this->input->post('title_id');
 			}
-			
+			if($this->input->post('ads_url') != '') {
+                $update_array['ads_url'] = $this->input->post('ads_url');
+            }
 			if(isset($dataimage)) {
 				$update_array['usr_img'] = $dataimage;
 			}

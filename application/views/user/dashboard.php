@@ -50,7 +50,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
            <?php } ?>
 		   </div>
             <div class="post-img">
-	            <a href="<?php echo site_url('post/detail').'/'.$row['id']; ?>">
+				<?php
+                    if(isset($row['ads'])) {
+                        echo '<a href="'.$row['ads_url'].'" target="_blank">';
+					} else {
+						echo '<a href="'.site_url('post/detail').'/'.$row['id'].'">';	
+					}
+                ?>
             	<?php
 				if(isset($row['user_avatar'])) {
 					echo '<img src="'.$row['user_avatar'].'" alt="" />';
@@ -68,9 +74,15 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             	<span class="post-address"><?php echo $row['location']; ?></span>
                 <p><?php echo $row['feedback']; ?></p>
                 <?php if (!empty($row['feedback_img'])) { ?>
-              	<div class="post-large-img"> 
-                	<img src="<?php echo $row['feedback_img']; ?>" alt="" />
-              	</div>
+                    <div class="post-large-img">
+					<?php if(isset($row['ads'])) { ?>
+                        <a href="<?php echo $row['ads_url']; ?>" target="_blank">
+                            <img src="<?php echo $row['feedback_img']; ?>" alt="" />
+                        </a>
+                    <?php } else { ?>
+                        <img src="<?php echo $row['feedback_img']; ?>" alt="" />	
+                    <?php } ?>
+                    </div>
                 <?php } ?>
                 <?php if(!isset($row['ads'])) { ?>
               	<div class="post-follow-block"> 

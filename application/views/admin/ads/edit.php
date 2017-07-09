@@ -131,6 +131,10 @@
                                 ?>
                             </select>
                         </div>
+                        <div class="form-group col-sm-5">
+                            <label for="ads_url" id="page_title">Ads URL</label>
+                            <input type="text" class="form-control" name="ads_url" id="ads_url" value="<?php echo $ads_detail[0]['ads_url'] ?>">
+                        </div>
                     </div><!-- /.box-body -->
                     <div class="box-footer">
                         <?php
@@ -178,6 +182,9 @@
 							return $('#show_on').val() == 'title';
 						}	
 					}	
+				},
+				ads_url: {
+					url: true	
 				}
             },
             messages:
@@ -197,7 +204,10 @@
 				},
 				title_id: {
                     required: "Please select title",
-                }
+                },
+				ads_url: {
+					url: "Please enter a valid URL"	
+				}
             },
         });
     });

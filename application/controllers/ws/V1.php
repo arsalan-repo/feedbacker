@@ -1102,7 +1102,7 @@ class V1 extends CI_Controller {
 		
 				$contition_array = array('ads.show_on' => 'home', 'ads.country' => $country, 'ads.status' => 1, 'ads.deleted' => 0);
 				
-				$data = 'ads_id, ads.title_id, title, usr_name, usr_img, ads_cont, ads_img, ads_thumb, ads_video, ads.country, ads.show_on, ads.show_after, ads.repeat_for, ads.status, ads.datetime as time';
+				$data = 'ads_id, ads.title_id, title, usr_name, usr_img, ads_cont, ads_img, ads_thumb, ads_video, ads.country, ads.show_on, ads.show_after, ads.repeat_for, ads.ads_url, ads.status, ads.datetime as time';
 				
 				$ads_list = $this->common->select_data_by_condition('ads', $contition_array, $data, $short_by = 'ads.datetime', $order_by = 'DESC', $limit = '', $offset = '', $join_str, $group_by = '');
 				
@@ -1120,7 +1120,7 @@ class V1 extends CI_Controller {
 							'feedback_video' => '',
 							'location' => '',
 							'feedback' => $ads['ads_cont'],
-							'ads_url' => 'http://feedbacker.me/',
+							'ads_url' => $ads['ads_url'],
 							'ads' => 1
 						)
 					);
@@ -1345,7 +1345,7 @@ class V1 extends CI_Controller {
 	
 			$contition_array = array('ads.show_on' => 'title', 'ads.title_id' => $title_id, 'ads.country' => $country, 'ads.status' => 1, 'ads.deleted' => 0);
 			
-			$data = 'ads_id, ads.title_id, title, usr_name, usr_img, ads_cont, ads_img, ads_thumb, ads_video, ads.country, ads.show_on, ads.show_after, ads.repeat_for, ads.status, ads.datetime as time';
+			$data = 'ads_id, ads.title_id, title, usr_name, usr_img, ads_cont, ads_img, ads_thumb, ads_video, ads.country, ads.show_on, ads.show_after, ads.repeat_for, ads.ads_url, ads.status, ads.datetime as time';
 			
 			$ads_list = $this->common->select_data_by_condition('ads', $contition_array, $data, $short_by = 'ads.datetime', $order_by = 'DESC', $limit = '', $offset = '', $join_str, $group_by = '');
 			
@@ -1362,7 +1362,7 @@ class V1 extends CI_Controller {
 						'name' => $ads['usr_name'],
 						'feedback_video' => '',
 						'location' => '',
-						'ads_url' => 'http://feedbacker.me/',
+						'ads_url' => $ads['ads_url'],
 						'feedback' => $ads['ads_cont'],
 						'ads' => 1
 					)
@@ -1715,7 +1715,7 @@ class V1 extends CI_Controller {
 		
 				$contition_array = array('ads.show_on' => 'search', 'ads.country' => $country, 'ads.status' => 1, 'ads.deleted' => 0);
 				
-				$data = 'ads_id, ads.title_id, title, usr_name, usr_img, ads_cont, ads_img, ads_thumb, ads_video, ads.country, ads.show_on, ads.show_after, ads.repeat_for, ads.status, ads.datetime as time';
+				$data = 'ads_id, ads.title_id, title, usr_name, usr_img, ads_cont, ads_img, ads_thumb, ads_video, ads.country, ads.show_on, ads.show_after, ads.repeat_for, ads.ads_url, ads.status, ads.datetime as time';
 				
 				$ads_list = $this->common->select_data_by_condition('ads', $contition_array, $data, $short_by = 'ads.datetime', $order_by = 'DESC', $limit = '', $offset = '', $join_str, $group_by = '');
 				
@@ -1732,7 +1732,7 @@ class V1 extends CI_Controller {
 							'name' => $ads['usr_name'],
 							'feedback_video' => '',
 							'location' => '',
-							'ads_url' => 'http://feedbacker.me/',
+							'ads_url' => $ads['ads_url'],
 							'feedback' => $ads['ads_cont'],
 							'ads' => 1
 						)
