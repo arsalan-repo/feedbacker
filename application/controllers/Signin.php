@@ -179,18 +179,6 @@ class Signin extends CI_Controller {
 			// Get user facebook profile details
 			$userProfile = $this->facebook->request('get', '/me?fields=id,first_name,last_name,email,gender,locale,picture,location');
 			
-//			echo "<pre>";
-//			print_r($userProfile);
-//			exit;
-
-            // Preparing data for database insertion
-//            $userData['oauth_provider'] = 'facebook';
-//            $userData['oauth_uid'] = $userProfile['id'];
-//            $userData['first_name'] = $userProfile['first_name'];
-//            $userData['last_name'] = $userProfile['last_name'];
-//            $userData['email'] = $userProfile['email'];
-//            $userData['gender'] = $userProfile['gender'];
-//            $userData['locale'] = $userProfile['locale'];
 //            $userData['profile_url'] = 'https://www.facebook.com/'.$userProfile['id'];
 //            $userData['picture_url'] = $userProfile['picture']['data']['url'];
 			
@@ -228,6 +216,10 @@ class Signin extends CI_Controller {
 				}
 				
 				$userData['email'] = $userProfile['email'];
+				
+				if ($userProfile['gender']) {
+					$userData['gender'] = ucfirst($userProfile['gender']);
+				}
 				
 				if ($userProfile['locale']) {
 					$getLang = explode('_', $userProfile['locale']);
