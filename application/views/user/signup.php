@@ -52,10 +52,10 @@
             <label>Email</label>
             <input type="text" autocomplete="off" placeholder="" name="email" id="email" />
             </li>
-            <li>
+            <li class="country-select">
             <label>Country</label>
             <select name="country" id="country" class="form-control select2">
-                <option value="">Select Country</option>
+                <option value="" disabled="disabled" selected="selected">Select Country</option>
                 <?php
                 foreach ($country_list as $country) {
                     ?>
