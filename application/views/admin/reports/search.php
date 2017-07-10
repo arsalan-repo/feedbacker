@@ -133,7 +133,7 @@
                 return false;
         });
 
-        $('#country').click(function(){
+        $('#country').change(function(){
             window.location.href = "<?php echo base_url('admin/reports/search/'); ?>" + $(this).val();
         });
     });
