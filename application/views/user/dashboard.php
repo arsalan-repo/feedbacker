@@ -35,110 +35,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
         </div>
       </div>
       <div class="middle-content">
-        <div class="middle-content-block">
-          <?php if (!empty($feedbacks)) { ?>
-          <!-- Loop Starts Here -->
-          <?php foreach($feedbacks as $row) { ?>
-          <div class="post-profile-block">
-		   <div class="post-right-arrow">
-		   <!--<i class="fa fa-angle-down" aria-hidden="true"></i>-->
-           <?php if(isset($row['ads'])) { ?>
-           	<span class="post-profile-time-text">Promoted</span>
-           <?php } else { ?>
-		   	<span class="post-followers-text"><?php echo $row['followers']; ?> Followers</span>
-			<span class="post-profile-time-text"><?php echo $row['time']; ?></span>            
-           <?php } ?>
-		   </div>
-            <div class="post-img">
-				<?php
-                    if(isset($row['ads'])) {
-                        echo '<a href="'.$row['ads_url'].'" target="_blank">';
-					} else {
-						echo '<a href="'.site_url('post/detail').'/'.$row['id'].'">';	
-					}
-                ?>
-            	<?php
-				if(isset($row['user_avatar'])) {
-					echo '<img src="'.$row['user_avatar'].'" alt="" />';
-				} else {
-					echo '<img src="'.ASSETS_URL . 'images/user-avatar.png" alt="" />';
-				}
-				?>
-                </a>
-            </div>
-            <div class="post-profile-content"> 
-            	<span class="post-designation">
-                	<a href="<?php echo site_url('post/title').'/'.$row['title_id']; ?>"><?php echo $row['title']; ?></a>
-                </span> 
-            	<span class="post-name"><?php echo $row['name']; ?></span> 
-            	<span class="post-address"><?php echo $row['location']; ?></span>
-                <p><?php echo $row['feedback']; ?></p>
-                <?php if (!empty($row['feedback_img'])) { ?>
-                    <div class="post-large-img">
-					<?php if(isset($row['ads'])) { ?>
-                        <a href="<?php echo $row['ads_url']; ?>" target="_blank">
-                            <img src="<?php echo $row['feedback_img']; ?>" alt="" />
-                        </a>
-                    <?php } else { ?>
-                        <img src="<?php echo $row['feedback_img']; ?>" alt="" />	
-                    <?php } ?>
-                    </div>
-                <?php } ?>
-                <?php if(!isset($row['ads'])) { ?>
-              	<div class="post-follow-block"> 
-                	<span class="post-follow-back-arrow">
-                    	<img src="<?php echo ASSETS_URL.'images/reply-arrow.png'; ?>" alt="" />
-                    </span>
-                    <span class="follow-btn-default">
-                    	<?php if ($row['is_followed']) { ?>
-                        	Unfollow
-                        <?php } else { ?>    
-                            Follow <i class="fa fa-plus" aria-hidden="true"></i>
-                        <?php } ?>
-                    </span>
-                    <span class="post-wishlist">
-                    	<i class="fa fa-heart-o" aria-hidden="true" <?php $row['is_liked'] ?  'style="color: #f32836;"' : '' ?>></i> 
-						<?php echo $row['likes']; ?>
-                    </span>
-                </div>
-                <?php } ?>
-				<div class="post-detail-comment-form">
-              <h2>Write a comment</h2>
-              <form id="form1" name="form1" method="post" action="">
-                <label>Comment</label>
-                <input type="text" name="textfield1" placeholder="Write comment here" />
-              </form>
-              <div class="post-btn-block">
-                <div class="camera-map-icon"> 
-				<div class="camera-icon-block">
-					<span>Choose File</span>
-					<input name="Select File" type="file" />
-				</div>
-				<?php /*?><img src="<?php echo base_url().'assets/images/camera-icon.png'; ?>" alt="" /> <?php */?>
-				
-				<img src="<?php echo base_url().'assets/images/map-icon.png'; ?>" alt="" /> </div>
-                <span class="post-btn">Post</span> </div>
-            </div>
-            </div>
-          </div>
-          <?php } ?>
-          <!-- Loop Ends Here -->
-          <!--
-          <div id="pagination">
-            <ul class="tsc_pagination">
-            	<!-- Show pagination links -->
-            	<?php 
-				//foreach ($links as $link) {
-            	//	echo "<li>". $link."</li>";
-            	//} 
-				?>
-            <!--
-            </ul>
-          </div>
-          -->
-          <?php } else { ?>
-          <?php echo $no_record_found; ?>
-          <?php } ?>
+        <div class="middle-content-block" id="post-data">
+          <?php 
+		  if (!empty($feedbacks)) {
+		  	$this->load->view('user/feedbacks', $feedbacks);
+          } else {
+          	echo $no_record_found;
+          } ?>
         </div>
       </div>
       <div class="right-content">
@@ -162,5 +65,43 @@ defined('BASEPATH') OR exit('No direct script access allowed');
         <?php } ?>
       </div>
     </div>
+    <div class="ajax-load text-center" style="display:none">
+        <p><img src="http://demo.itsolutionstuff.com/plugin/loader.gif">Loading</p>
+    </div>
+    
+    <script type="text/javascript">
+        var page = 1;
+        $(window).scroll(function() {
+            if($(window).scrollTop() + $(window).height() >= $(document).height()) {
+                page++;
+                loadMoreData(page);
+            }
+        });
+    
+        function loadMoreData(page){
+          $.ajax(
+                {
+                    url: '?page=' + page,
+                    type: "get",
+                    beforeSend: function()
+                    {
+                        $('.ajax-load').show();
+                    }
+                })
+                .done(function(data)
+                {
+                    if(data == " "){
+                        $('.ajax-load').html("No more records found");
+                        return;
+                    }
+                    $('.ajax-load').hide();
+                    $("#post-data").append(data);
+                })
+                .fail(function(jqXHR, ajaxOptions, thrownError)
+                {
+                      alert('server not responding...');
+                });
+        }
+    </script>
 </div>
 <!-- /.content-wrapper -->

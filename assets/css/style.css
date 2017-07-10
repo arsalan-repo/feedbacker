@@ -478,3 +478,4 @@ html .ui-button.ui-state-disabled:hover, html .ui-button.ui-state-disabled:activ
 .login-form-fields .dd .ddTitle .ddTitleText{ width: 100% !important; border-bottom: 1px solid #c3c8d1; }
 .login-form-fields .dd .ddTitle{ background:none;}
 .login-form-fields .dd .ddArrow{width: 0; margin-top: 0; height: 0; border-left:6px solid transparent; border-right:6px solid transparent; border-top:6px solid #c3c8d1;}
+.ajax-load{ background: #e1e1e1; padding: 10px 0px; width: 100%; }
