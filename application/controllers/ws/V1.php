@@ -1087,7 +1087,7 @@ class V1 extends CI_Controller {
                 }
 				
 				// Append Ad Banners
-				$page = $offset/20;
+				$page = round($offset/20);
 				$return_array = $this->common->adBanners($return_array, $country, $page);
     
                 // Null to Empty String
@@ -1261,7 +1261,7 @@ class V1 extends CI_Controller {
 			}
 			
 			// Append Ad Banners
-			$page = $offset/20;
+			$page = round($offset/20);
 			$return_array = $this->common->adBanners($return_array, $country, $page);
 
             // Null to Empty String
@@ -1562,7 +1562,7 @@ class V1 extends CI_Controller {
 				}
 				
 				// Append Ad Banners
-				$page = $offset/20;
+				$page = round($offset/20);
 				$return_array = $this->common->adBanners($return_array, $country, $page);
     
                 // Null to Empty String
