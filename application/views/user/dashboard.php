@@ -66,7 +66,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
       </div>
     </div>
     <div class="ajax-load text-center" style="display:none">
-        <p><img src="http://demo.itsolutionstuff.com/plugin/loader.gif">Loading</p>
+        <p><img src="<?php echo ASSETS_URL . 'images/loader.gif'; ?>">Loading</p>
     </div>
     
     <script type="text/javascript">
