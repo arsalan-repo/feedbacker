@@ -127,7 +127,7 @@ class Common extends CI_Model {
 		return $return_array;
 	}
 	
-	function adBanners($result, $country) {
+	function adBanners($result, $country, $page = 1) {
 		$join_str = array(
 			array(
 				'table' => 'titles',
@@ -185,6 +185,10 @@ class Common extends CI_Model {
 			$adArray[0]['time'] = $this->common->timeAgo($ads['time']);
 			
 			// Check If banner has to be repeated
+			if($page <= $ads['repeat_for']) {
+				array_splice($result, $ads['show_after'], 0, $adArray);
+			}
+			/*
 			if($ads['repeat_for'] > 0) {
 				$i = 0;
 				$total = $ads['show_after'] * $ads['repeat_for'];
@@ -197,6 +201,7 @@ class Common extends CI_Model {
 			} else {
 				array_splice($result, $ads['show_after'], 0, $adArray);
 			}
+			*/
 		}
 		
 		return $result;

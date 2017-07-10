@@ -102,7 +102,12 @@ class User extends CI_Controller {
 			$feedback = $this->common->select_data_by_condition('feedback', $contition_array, $data, $sortby = 'feedback.datetime', $orderby = 'DESC', $this->perPage, $start, $join_str, $group_by = '');
 			
 			// Get Likes, Followings and Other details
-			$this->data['feedbacks'] = $this->common->getFeedbacks($feedback, $user_info['id']);
+			$result = $this->common->getFeedbacks($feedback, $user_info['id']);
+			
+			// Append Ad Banners
+			$return_array = $this->common->adBanners($result, $country, $this->input->get("page"));
+			
+			$this->data['feedbacks'] = $return_array;
 			
 			$response = $this->load->view('user/feedbacks', $this->data);
 			echo json_encode($response);
@@ -115,7 +120,7 @@ class User extends CI_Controller {
 			// Append Ad Banners
 			$return_array = $this->common->adBanners($result, $country);
 			
-			$this->data['feedbacks'] = $result;
+			$this->data['feedbacks'] = $return_array;
 		
 			/* Load Template */
 			$this->template->front_render('user/dashboard', $this->data);

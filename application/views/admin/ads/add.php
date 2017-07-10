@@ -102,7 +102,7 @@
                         <div class="form-group col-sm-5">
                             <label for="repeat_for" id="page_title">Repeat For</label>
                             <select name="repeat_for" id="repeat_for" class="form-control select2">
-                                <option value="" selected="selected">No Repeat</option>
+                                <option value="1" selected="selected">No Repeat</option>
                                 <?php
                                 for ($i=2; $i<=50; $i++) {
                                     ?>
