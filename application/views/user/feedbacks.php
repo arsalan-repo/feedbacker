@@ -52,7 +52,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             <span class="post-follow-back-arrow">
                 <img src="<?php echo ASSETS_URL.'images/reply-arrow.png'; ?>" alt="" />
             </span>
-            <span class="follow-btn-default">
+            <span class="follow-btn-default" id="follow-btn-<?php echo $row['id']; ?>">
                 <?php if ($row['is_followed']) { ?>
                     Unfollow
                 <?php } else { ?>    
@@ -63,25 +63,47 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                 <i class="fa fa-heart-o" aria-hidden="true" <?php $row['is_liked'] ?  'style="color: #f32836;"' : '' ?>></i> 
                 <?php echo $row['likes']; ?>
             </span>
+            <input type="hidden" id="title_id" value="<?php echo $row['title_id']; ?>" />
+            <input type="hidden" id="user_id" value="<?php echo $row['user_id']; ?>" />
         </div>
         <?php } ?>
         <div class="post-detail-comment-form">
-      <h2>Write a comment</h2>
-      <form id="form1" name="form1" method="post" action="">
-        <label>Comment</label>
-        <input type="text" name="textfield1" placeholder="Write comment here" />
-      </form>
-      <div class="post-btn-block">
-        <div class="camera-map-icon"> 
-        <div class="camera-icon-block">
-            <span>Choose File</span>
-            <input name="Select File" type="file" />
-        </div>
-        <?php /*?><img src="<?php echo base_url().'assets/images/camera-icon.png'; ?>" alt="" /> <?php */?>
-        
-        <img src="<?php echo base_url().'assets/images/map-icon.png'; ?>" alt="" /> </div>
-        <span class="post-btn">Post</span> </div>
-    </div>
+          <h2>Write a comment</h2>
+          <form id="form-reply-post" name="form-reply-post" method="post" action="">
+            <label>Comment</label>
+            <input type="text" name="feedback_cont" id="feedback_cont" placeholder="Write comment here" />
+            <input type="text" name="location" id="location" placeholder="Location" />
+          </form>
+          <div class="post-btn-block">
+            <div class="camera-map-icon"> 
+            <div class="camera-icon-block">
+                <span>Choose File</span>
+                <input name="Select File" type="file" />
+            </div>            
+            <img src="<?php echo base_url().'assets/images/map-icon.png'; ?>" alt="" /> </div>
+            <span class="post-btn">Post</span> </div>
+    	</div>
     </div>
   </div>
 <?php } ?>
+<script type="application/javascript">
+	$('.follow-btn-default').off("click").on("click",function(e){
+		e.preventDefault();
+		
+		var title = $(this).attr('id');
+		var description = $("#create-item").find("textarea[name='description']").val();
+	
+		$.ajax({
+			dataType: 'json',
+			type:'POST',
+			url: '<?php echo site_url('title/follow'); ?>',
+			data:{title:title, description:description}
+		}).done(function(data){
+	
+			getPageData();
+			$(".modal").modal('hide');
+			toastr.success('Item Created Successfully.', 'Success Alert', {timeOut: 5000});
+	
+		});
+	});
+</script>

@@ -88,6 +88,7 @@ class Common extends CI_Model {
 				$return['is_followed'] = FALSE;
 			}
 			
+			$return['user_id'] = $item['user_id'];
 			$return['name'] = $item['name'];
 			
 			if(isset($item['photo'])) {
