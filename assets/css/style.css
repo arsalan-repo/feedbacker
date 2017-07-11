@@ -154,7 +154,7 @@ span.profile-text span i{color:#fff; cursor:pointer; float: right; font-size: 18
 .post-follow-back-arrow img{ cursor: pointer;}
 .post-follow-text {color: #7d7d88;float: left;font-size: 14px;padding: 0 60px 0 0;}
 .post-follow-text i {float: right;font-size: 15px;padding: 4px 0 0 5px;}
-.post-wishlist {font-size: 16px;font-weight: 700;}
+.post-wishlist {font-size: 16px;font-weight: 700; cursor:pointer;}
 .right-content h3 {color: #131315;font-size: 18px;padding:0;font-weight: 600;}
 .right-content h3 a {color: #00b7b9;font-size: 14px;text-decoration: none;}
 .who-follow-block {border-bottom: 1px solid #d3d6d9;float: left;padding:15px 0;width: 100%;}
@@ -162,7 +162,7 @@ span.profile-text span i{color:#fff; cursor:pointer; float: right; font-size: 18
 .who-follow-block > span {float: left;overflow: hidden;margin-right: 10px;width:48px; border-radius: 4px;}
 .who-follow-text {float: left;width:calc(100% - 58px);font-weight:600;font-size:14px;}
 .who-follow-text span {color: #131315;width: 100%;float: left;}
-.who-follow-add {float: left;padding: 15px 0 0;text-align: center;width: 100%;}
+.who-follow-add {float: left;padding: 15px 0 0;text-align: center;width: 100%; cursor:pointer;}
 .header-notification {position: relative;}
 .notification-count {background: #e7ae0a;border-radius: 20px;height: 8px;position: absolute;right: 24px;top: 7px;width: 8px;}
 .forgot-text{color:#434b57; font-size:22px; text-align:center; width:100%; float:left; padding:20px 0 30px; line-height:28px; font-weight:400;}

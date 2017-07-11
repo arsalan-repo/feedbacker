@@ -46,23 +46,29 @@ defined('BASEPATH') OR exit('No direct script access allowed');
       </div>
       <div class="right-content">
         <h3>What to Follow <!--<a href="#">View All</a>--></h3>
-        <?php foreach($to_follow as $row) { ?>
-        <div class="who-follow-block">
-        	<span>
-            	<?php
-				if(isset($row['user_avatar'])) {
-					echo '<img src="'.$row['user_avatar'].'" alt="" />';
-				} else {
-					echo '<img src="'.ASSETS_URL . 'images/user-avatar.png" alt="" />';
-				}
-				?>
-            </span>
-            <div class="who-follow-text">
-            	<span><?php echo $row['title']; ?></span> <?php echo $row['name']; ?>
-            </div>
-            <div class="who-follow-add"> Follow <i class="fa fa-plus" aria-hidden="true"></i></div>
-        </div>
-        <?php } ?>
+		<?php if (!empty($to_follow)) { ?>
+			<?php foreach($to_follow as $row) { ?>
+			<div class="who-follow-block">
+				<span>
+					<?php
+					if (isset($row['user_avatar'])) {
+						echo '<img src="'.$row['user_avatar'].'" alt="" />';
+					} else {
+						echo '<img src="'.ASSETS_URL . 'images/user-avatar.png" alt="" />';
+					}
+					?>
+				</span>
+				<div class="who-follow-text">
+					<span><?php echo $row['title']; ?></span> <?php echo $row['name']; ?>
+				</div>
+				<div class="who-follow-add" id="follow-btn-<?php echo $row['feedback_id']; ?>"> Follow <i class="fa fa-plus" aria-hidden="true"></i></div>
+				<input type="hidden" id="title_id" value="<?php echo $row['title_id']; ?>" />
+				<input type="hidden" id="user_id" value="<?php echo $user_id; ?>" />
+			</div>
+			<?php } ?>
+		<?php } else { ?>
+			<div class="no-record">No records found</div>
+		<?php } ?>
       </div>
     </div>
     <div class="ajax-load text-center" style="display:none">
@@ -102,6 +108,27 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                       alert('server not responding...');
                 });
         }
+		
+		$('.who-follow-add').off("click").on("click",function(e){
+			e.preventDefault();
+			
+			var element = $(this).attr('id');
+			var title_id = $(this).parent().find('#title_id').val();
+			var user_id = $(this).parent().find('#user_id').val();		
+		
+			$.ajax({
+				dataType: 'json',
+				type:'POST',
+				url: '<?php echo site_url('title/follow'); ?>',
+				data:{title_id:title_id, user_id:user_id}
+			}).done(function(data){
+				// console.log(data);
+				if (data.is_followed == 1) {
+					$('#'+element).parent().remove();
+					toastr.success(data.message, 'Success Alert', {timeOut: 5000});
+				}
+			});
+		});
     </script>
 </div>
 <!-- /.content-wrapper -->
