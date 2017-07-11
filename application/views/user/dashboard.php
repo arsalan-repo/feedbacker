@@ -11,6 +11,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
           <div class="home-left-section">
             <div class="home-left-profile-block"> 
             	<span class="home-left-profile-thumb">
+					<a href="<?php echo site_url('user/profile'); ?>">
 					<?php 
                     if(isset($user_info['photo'])) {
                         echo '<img src="'.S3_CDN . 'uploads/user/thumbs/' . $user_info['photo'].'" alt="" />';
@@ -18,6 +19,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                         echo '<img src="'.ASSETS_URL . 'images/user-avatar.png" alt="" />';
                     }
                     ?>
+					</a>
                 </span> 
                 <span class="home-left-profile-name"><?php echo $user_info['name']; ?></span> 
                 <span class="home-left-profile-designation">
@@ -61,7 +63,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				<div class="who-follow-text">
 					<span><?php echo $row['title']; ?></span> <?php echo $row['name']; ?>
 				</div>
-				<div class="who-follow-add" id="follow-btn-<?php echo $row['feedback_id']; ?>"> Follow <i class="fa fa-plus" aria-hidden="true"></i></div>
+				<div class="who-follow-add" id="who-follow-<?php echo $row['feedback_id']; ?>"> Follow <i class="fa fa-plus" aria-hidden="true"></i></div>
 				<input type="hidden" id="title_id" value="<?php echo $row['title_id']; ?>" />
 				<input type="hidden" id="user_id" value="<?php echo $user_id; ?>" />
 			</div>
