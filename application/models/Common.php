@@ -229,7 +229,13 @@ class Common extends CI_Model {
 		return $trends;	
 	}
 	
-	function whatToFollow($country = '') {
+	function whatToFollow($user_id, $country = '') {
+		// Exclude Title already Followed
+		$condition_array = array('user_id' => $user_id);
+		$followings = $this->common->select_data_by_condition('followings', $condition_array, $data = 'title_id', $short_by = '', $order_by = '', $limit = '', $offset = '', $join_str = array(), $group_by = '');
+		
+		$follow_ids = implode(',', array_column($followings, 'title_id'));
+	
 		$join_str_wt = array(
 			array(
 				'table' => 'users',
@@ -246,12 +252,12 @@ class Common extends CI_Model {
 		);
 		
 		if(!empty($country)) {
-			$contition_array = array('replied_to' => NULL, 'feedback.deleted' => 0, 'feedback.status' => 1, 'feedback.country' => $country);
+			$search_condition = "feedback.country = '".$country."' AND replied_to IS NULL AND feedback.deleted = 0 AND feedback.status = 1 AND feedback.title_id NOT IN (".$follow_ids.")";
 		} else {
-			$contition_array = array('replied_to' => NULL, 'feedback.deleted' => 0, 'feedback.status' => 1);
+			$search_condition = "replied_to IS NULL AND feedback.deleted = 0 AND feedback.status = 1 AND feedback.title_id NOT IN (".$follow_ids.")";
 		}
 		
-		$to_follow = $this->common->select_data_by_condition('feedback', $contition_array, 'feedback_id, feedback.title_id, title, name, photo, feedback_cont, feedback_img, feedback_thumb, feedback_video, replied_to, location, feedback.datetime as time', $sortby = 'feedback.datetime', $orderby = 'DESC', $limit = '10', $offset = '', $join_str_wt, $group_by = 'feedback.title_id');
+		$to_follow = $this->common->select_data_by_search('feedback', $search_condition, $contition_array = array(), 'feedback_id, feedback.title_id, title, name, photo, feedback_cont, feedback_img, feedback_thumb, feedback_video, replied_to, location, feedback.datetime as time', $sortby = 'feedback.datetime', $orderby = 'DESC', $limit = '10', $offset = '', $join_str_wt, $custom_order_by = '', $group_by = 'feedback.title_id');
 		
 		return $to_follow;
 	}
@@ -363,7 +369,7 @@ class Common extends CI_Model {
     }
 
     // select data using multiple conditions and search keyword
-    function select_data_by_search($tablename, $search_condition, $contition_array = array(), $data = '*', $sortby = '', $orderby = '', $limit = '', $offset = '', $join_str = '', $custom_order_by = '') {
+    function select_data_by_search($tablename, $search_condition, $contition_array = array(), $data = '*', $sortby = '', $orderby = '', $limit = '', $offset = '', $join_str = '', $custom_order_by = '', $group_by='') {
         $this->db->select($data);
         if (!empty($join_str)) {
             foreach ($join_str as $join) {
@@ -387,6 +393,9 @@ class Common extends CI_Model {
         if($custom_order_by != ''){
             //echo 'Jam';die;
             $this->db->order_by($custom_order_by);   
+        }
+		if ($group_by != '') {
+            $this->db->group_by($group_by);
         }
 
         $query = $this->db->get($tablename);

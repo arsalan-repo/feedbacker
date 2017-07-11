@@ -71,7 +71,7 @@ class User extends CI_Controller {
 		$this->data['trends'] = $this->common->getTrends($country);
 		
 		// What to Follow
-		$this->data['to_follow'] = $this->common->whatToFollow($country);
+		$this->data['to_follow'] = $this->common->whatToFollow($user_info['id'], $country);
 		
 		// Get all feedbacks
 		$join_str = array(
