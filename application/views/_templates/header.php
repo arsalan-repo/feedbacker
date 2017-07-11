@@ -32,6 +32,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	<script src="<?php echo base_url().'assets/js/jquery-ui.min.js';?>"></script>
 	<!-- jQuery Validate -->
 	<script src="<?php echo base_url().'assets/js/jquery.validate.min.js';?>"></script>
+	<!-- jQuery Toastr -->
+	<script src="<?php echo base_url().'assets/js/toastr.min.js';?>"></script>
+	<link href="<?php echo base_url().'assets/css/toastr.min.css'; ?>" rel="stylesheet" />
 	<!-- Autocomplete Dropdown -->
 	<script src="<?php echo base_url().'assets/js/select2.min.js'; ?>"></script>
 	<script src="<?php echo base_url().'assets/js/jquery.dd.js'; ?>"></script>

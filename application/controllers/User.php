@@ -54,6 +54,7 @@ class User extends CI_Controller {
 		
 		$this->data['module_name'] = 'User';
         $this->data['section_title'] = 'Dashboard';
+		$this->data['user_id'] = $user_info['id'];
 		
 		// Get user country		
 		if($country == '') {

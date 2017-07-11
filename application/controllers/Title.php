@@ -38,26 +38,25 @@ class Title extends CI_Controller {
 	
 	public function follow() {
 		if ($this->input->is_ajax_request()) {
-			echo "<pre>";
-			print_r($this->input->post());
-			exit();
-			$latitude = $this->input->post('latitude');
-			$longitude = $this->input->post('longitude');			
+			$user_id = $this->input->post('user_id');
+			$title_id = $this->input->post('title_id');
 			
-			if(!empty($latitude) && !empty($longitude)){
-				//Send request and receive json data by latitude and longitude
-				$url = 'http://maps.googleapis.com/maps/api/geocode/json?latlng='.trim($latitude).','.trim($longitude).'&sensor=false';
-				$json = @file_get_contents($url);
-				$data = json_decode($json);
-				$status = $data->status;
-				if($status=="OK"){
-					//Get address from json data
-					$location = $data->results[0]->formatted_address;
-				}else{
-					$location =  '';
-				}
-				//Print address 
-				echo json_encode(array("location" => $location));
+			$condition_array = array('user_id' => $user_id, 'title_id' => $title_id);
+			$followings = $this->common->select_data_by_condition('followings', $condition_array, $data = '*', $short_by = '', $order_by = '', $limit = '1', $offset = '', $join_str = array(), $group_by = '');
+			
+			if(count($followings) > 0) {
+				// Unfollow Title
+				$this->common->delete_data('followings', 'follow_id', $followings[0]['follow_id']);
+				echo json_encode(array('is_followed' => 0, 'message' => $this->lang->line('success_unfollow_title'), 'status' => 1));
+				die();
+			} else {
+				// Follow Title
+				$insert_array['user_id'] = $user_id;
+				$insert_array['title_id'] = $title_id;
+				
+				$insert_result = $this->common->insert_data($insert_array, $tablename = 'followings');
+				echo json_encode(array('is_followed' => 1, 'message' => $this->lang->line('success_follow_title'), 'status' => 1));
+				die();
 			}
 		}
 	}

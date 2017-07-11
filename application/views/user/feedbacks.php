@@ -64,7 +64,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                 <?php echo $row['likes']; ?>
             </span>
             <input type="hidden" id="title_id" value="<?php echo $row['title_id']; ?>" />
-            <input type="hidden" id="user_id" value="<?php echo $row['user_id']; ?>" />
+            <input type="hidden" id="user_id" value="<?php echo $user_id; ?>" />
         </div>
         <?php } ?>
         <div class="post-detail-comment-form">
@@ -90,20 +90,26 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	$('.follow-btn-default').off("click").on("click",function(e){
 		e.preventDefault();
 		
-		var title = $(this).attr('id');
-		var description = $("#create-item").find("textarea[name='description']").val();
+		var element = $(this).attr('id');
+		var title_id = $(this).parent().find('#title_id').val();
+		var user_id = $(this).parent().find('#user_id').val();		
 	
 		$.ajax({
 			dataType: 'json',
 			type:'POST',
 			url: '<?php echo site_url('title/follow'); ?>',
-			data:{title:title, description:description}
+			data:{title_id:title_id, user_id:user_id}
 		}).done(function(data){
-	
-			getPageData();
-			$(".modal").modal('hide');
-			toastr.success('Item Created Successfully.', 'Success Alert', {timeOut: 5000});
-	
+			// console.log(data);
+			if (data.is_followed == 1) {
+				$('#'+element).html('Unfollow');
+				toastr.success(data.message, 'Success Alert', {timeOut: 5000});
+			}
+			else
+			{
+				$('#'+element).html('Follow <i class="fa fa-plus" aria-hidden="true"></i>');
+				toastr.warning(data.message, 'Success Alert', {timeOut: 5000});
+			}
 		});
 	});
 </script>
