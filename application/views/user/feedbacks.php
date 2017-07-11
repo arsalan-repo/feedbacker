@@ -52,7 +52,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             <span class="post-follow-back-arrow">
                 <img src="<?php echo ASSETS_URL.'images/reply-arrow.png'; ?>" alt="" />
             </span>
-            <span class="follow-btn-default" id="follow-btn-<?php echo $row['id']; ?>">
+            <span class="follow-btn-default follow-btn-<?php echo $row['title_id']; ?>" id="follow-btn-<?php echo $row['id']; ?>">
                 <?php if ($row['is_followed']) { ?>
                     Unfollow
                 <?php } else { ?>    
@@ -96,7 +96,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	$('.follow-btn-default').off("click").on("click",function(e){
 		e.preventDefault();
 		
-		var element = $(this).attr('id');
 		var title_id = $(this).parent().find('#title_id').val();
 		var user_id = $(this).parent().find('#user_id').val();		
 	
@@ -108,12 +107,16 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		}).done(function(data){
 			// console.log(data);
 			if (data.is_followed == 1) {
-				$('#'+element).html('Unfollow');
+				$('.follow-btn-'+title_id).each(function() {
+					$(this).html('Unfollow');
+				});
 				toastr.success(data.message, 'Success Alert', {timeOut: 5000});
 			}
 			else
 			{
-				$('#'+element).html('Follow <i class="fa fa-plus" aria-hidden="true"></i>');
+				$('.follow-btn-'+title_id).each(function() {
+					$(this).html('Follow <i class="fa fa-plus" aria-hidden="true"></i>');
+				});
 				toastr.warning(data.message, 'Success Alert', {timeOut: 5000});
 			}
 		});
