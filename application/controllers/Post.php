@@ -59,6 +59,41 @@ class Post extends CI_Controller {
 		}
 	}
 	
+	// Like / Unlike Feedback
+    function like() {
+		if ($this->input->is_ajax_request()) {
+			$user_id = $this->input->post('user_id');
+			$feedback_id = $this->input->post('feedback_id');
+			$totl_likes = $this->input->post('totl_likes');
+			
+			$condition_array = array('user_id' => $user_id, 'feedback_id' => $feedback_id);
+			$likes = $this->common->select_data_by_condition('feedback_likes', $condition_array, $data = '*', $short_by = '', $order_by = '', $limit = '1', $offset = '', $join_str = array(), $group_by = '');
+			
+			if(count($likes) > 0) {
+				// Unlike Feedback
+				$this->common->delete_data('feedback_likes', 'like_id', $likes[0]['like_id']);
+	
+				// Check / Add Notification for users
+				$this->common->notification('', $user_id, $title_id = '', $feedback_id, $replied_to = '', 3);
+	
+				echo json_encode(array('is_liked' => 0, 'likes' => $totl_likes, 'message' => $this->lang->line('success_unlike_feedback'), 'status' => 1));
+				die();
+			} else {
+				// Like Feedback
+				$insert_array['user_id'] = $user_id;
+				$insert_array['feedback_id'] = $feedback_id;
+				
+				$insert_result = $this->common->insert_data($insert_array, $tablename = 'feedback_likes');
+	
+				// Check / Add Notification for users
+				$this->common->notification('', $user_id, $title_id = '', $feedback_id, $replied_to = '', 3);
+	
+				echo json_encode(array('is_liked' => 1, 'likes' => $totl_likes, 'message' => $this->lang->line('success_like_feedback'), 'status' => 1));
+				die();
+			}
+		}
+    }
+	
 	public function create() {
 		//check post and save data
         if ($this->input->is_ajax_request() && $this->input->post('btn_save')) {

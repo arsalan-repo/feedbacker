@@ -36,6 +36,7 @@ class Title extends CI_Controller {
 		$this->template->front_render('user/dashboard');
 	}
 	
+	// Follow / Unfollow Title
 	public function follow() {
 		if ($this->input->is_ajax_request()) {
 			$user_id = $this->input->post('user_id');

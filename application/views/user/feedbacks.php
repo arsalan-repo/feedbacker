@@ -59,10 +59,16 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                     Follow <i class="fa fa-plus" aria-hidden="true"></i>
                 <?php } ?>
             </span>
-            <span class="post-wishlist">
-                <i class="fa fa-heart-o" aria-hidden="true" <?php $row['is_liked'] ?  'style="color: #f32836;"' : '' ?>></i> 
-                <?php echo $row['likes']; ?>
+            <span class="post-wishlist" id="post-wishlist-<?php echo $row['id']; ?>">
+				<?php if ($row['is_liked']) { ?>
+					<i class="fa fa-heart" aria-hidden="true"></i> 
+				<?php } else { ?>
+					<i class="fa fa-heart-o" aria-hidden="true"></i>
+				<?php } ?> 
+				<?php echo $row['likes']; ?>
             </span>
+			<input type="hidden" id="feedback_id" value="<?php echo $row['id']; ?>" />
+			<input type="hidden" id="totl_likes" value="<?php echo $row['likes']; ?>" />			
             <input type="hidden" id="title_id" value="<?php echo $row['title_id']; ?>" />
             <input type="hidden" id="user_id" value="<?php echo $user_id; ?>" />
         </div>
@@ -108,6 +114,39 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			else
 			{
 				$('#'+element).html('Follow <i class="fa fa-plus" aria-hidden="true"></i>');
+				toastr.warning(data.message, 'Success Alert', {timeOut: 5000});
+			}
+		});
+	});
+	
+	$('.post-wishlist').off("click").on("click",function(e){
+		e.preventDefault();
+		
+		var element = $(this).attr('id');
+		var totl_likes = $(this).parent().find('#totl_likes').val();
+		var feedback_id = $(this).parent().find('#feedback_id').val();
+		var user_id = $(this).parent().find('#user_id').val();		
+	
+		$.ajax({
+			dataType: 'json',
+			type:'POST',
+			url: '<?php echo site_url('post/like'); ?>',
+			data:{feedback_id:feedback_id, user_id:user_id, totl_likes:totl_likes}
+		}).done(function(data){
+			// console.log(data);
+			if (data.is_liked == 1) {
+				var totl = parseInt(data.likes) + 1;	
+				$('#'+element).parent().find('#totl_likes').val(totl);
+							
+				$('#'+element).html('<i class="fa fa-heart" aria-hidden="true"></i><span class="total-likes"> '+totl+'</span>');
+				toastr.success(data.message, 'Success Alert', {timeOut: 5000});
+			}
+			else
+			{
+				var totl = parseInt(data.likes) - 1;
+				$('#'+element).parent().find('#totl_likes').val(totl);
+				
+				$('#'+element).html('<i class="fa fa-heart-o" aria-hidden="true"></i><span class="total-likes"> '+totl+'</span>');
 				toastr.warning(data.message, 'Success Alert', {timeOut: 5000});
 			}
 		});
