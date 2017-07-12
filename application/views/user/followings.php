@@ -7,27 +7,23 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 <div class="content-secion profile-page-wrapper"> <span class="edit-profile-popup-overlay">fas</span>
     <div class="profile-page">
       <div class="profile-image-block">
-        <div class="container">
-        	<?php 
-			if(isset($user_info['photo'])) {
-				echo '<img src="'.S3_CDN . 'uploads/user/thumbs/' . $user_info['photo'].'" alt="" />';
-			} else {
-				echo '<img src="'.ASSETS_URL . 'images/user-avatar-big.png" alt="" />';
-			}
-			?>
-          <h3><?php echo $user_info['name']; ?></h3>
-          <h4><?php echo $this->common->getCountries($user_info['country']); ?></h4>
-          <span class="edit-profile-btn"><i class="fa fa-pencil" aria-hidden="true"></i>Edit profile</span>
-          <div class="edit-feedback-btn-block"> 
-          	<span class="normal-btn">
-            	<a href="<?php echo site_url('user/profile'); ?>">Feedbacks</a>
-            </span> 
-            <span class="blue-btn">
-            	<a href="<?php echo site_url('user/followings'); ?>">Followings</a>
-            </span> 
-          </div>
-        </div>
-      </div>
+		  <div class="container">
+		   <?php 
+		   if(isset($user_info['photo'])) {
+			echo '<img src="'.S3_CDN . 'uploads/user/thumbs/' . $user_info['photo'].'" alt="" />';
+		  } else {
+			echo '<img src="'.ASSETS_URL . 'images/user-avatar-big.png" alt="" />';
+		  }
+		  ?>
+		  <h3><?php echo $user_info['name']; ?></h3>
+		  <h4><?php echo $this->common->getCountries($user_info['country']); ?></h4>
+		  <span class="edit-profile-btn"><i class="fa fa-pencil" aria-hidden="true"></i><?php echo $this->lang->line('edit_profile'); ?></span>
+		  <div class="edit-feedback-btn-block"> 
+		   <a href="<?php echo site_url('user/profile'); ?>" class="normal-btn" title="Feedbacks"><?php echo $this->lang->line('feedbacks'); ?></a> 
+		   <a href="javascript:void(0)" class="blue-btn" title="Followings"><?php echo $this->lang->line('followings'); ?></a>
+		 </div>
+	   </div>
+	 </div>
       <div class="profile-listing-block">
         <div class="container">
           <ul>
@@ -68,9 +64,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                     </span> 
                     <span class="follow-btn-default">
                     	<?php if ($row['is_followed']) { ?>
-                        	Unfollow
+                        	<?php echo $this->lang->line('unfollow'); ?>
                         <?php } else { ?>    
-                            Follow <i class="fa fa-plus" aria-hidden="true"></i>
+                            <?php echo $this->lang->line('follow'); ?> <i class="fa fa-plus" aria-hidden="true"></i>
                         <?php } ?>
                     </span>
                     <span class="wishlist">
@@ -93,38 +89,47 @@ defined('BASEPATH') OR exit('No direct script access allowed');
   <div class="login-form edit-profile-form">
     <div class="login-form-block">
       <div class="login-form-fields">
-        <h3>Edit Profile <span class="close-edit-popup"><img src="<?php echo base_url().'assets/images/close-icon.png'; ?>" alt="" /></span></h3>
+        <h3><?php echo $this->lang->line('edit_profile'); ?> <span class="close-edit-popup"><img src="<?php echo base_url().'assets/images/close-icon.png'; ?>" alt="" /></span></h3>
         <div class="login-form-block-edit-profile">
-          <div class="edit-profile-popup-pic"><img src="<?php echo base_url().'assets/images/profile-img.png'; ?>" alt=""></div>
-          <span class="update-pic-btn">Update new picture</span>
-          <form id="form1" name="form1" method="post" action="">
-            <ul>
-              <li>
-                <label>First Name</label>
-                <input placeholder="Jessica" name="textfield" id="textfield" type="text">
+        <div class="edit-profile-popup-pic"><img src="<?php echo base_url().'assets/images/profile-img.png'; ?>" alt=""></div>
+        <div class="fileUpload update-pic-btn">
+          <span><?php echo $this->lang->line('upload_picture'); ?></span>
+          <input type="file" class="upload" />
+        </div>
+        <ul>
+          <li>
+            <label><?php echo $this->lang->line('name'); ?></label>
+            <input placeholder="Jessica" name="name" id="name" type="text">
+          </li>
+          <li class="gender">
+            <label><?php echo $this->lang->line('gender'); ?></label>
+				<div class="radio-block">
+				  <span><input type="radio" name="gender" value="male"> <?php echo $this->lang->line('male'); ?></span>
+				  <span><input type="radio" name="gender" value="female"> <?php echo $this->lang->line('female'); ?></span>
+				  <span><input type="radio" name="gender" value="other"> <?php echo $this->lang->line('other'); ?></span>
+				</div>
               </li>
               <li>
-                <label>Last Name</label>
-                <input placeholder="Doe" name="textfield" id="textfield" type="text">
+                <label><?php echo $this->lang->line('birth_date'); ?></label>
+                <input name="textfield" placeholder="DD/MMM/YYYY" id="datepicker" type="text">
+
+              </li>
+              <li class="country-select">
+                <label><?php echo $this->lang->line('country'); ?></label>
+                <!-- <input name="textfield" placeholder="Jordan" id="textfield" type="text"> -->
+                <select name="countries1" id="countries1">
+                  <option value="1">US</option>
+
+                  <option value="2">JO</option>
+                  <option value="3">IN</option>                  
+
+                </select>
               </li>
               <li>
-                <label>Gender</label>
-                <input name="textfield" placeholder="Female" id="textfield" type="text">
-              </li>
-              <li>
-                <label>Date of Birth</label>
-                <input name="textfield" placeholder="20 April 1991" id="textfield" type="text">
-              </li>
-              <li>
-                <label>Country</label>
-                <input name="textfield" placeholder="Jordan" id="textfield" type="text">
-              </li>
-              <li>
-                <input name="button" id="button" value="Save" type="submit">
+                <input name="button" id="button" value="<?php echo $this->lang->line('save'); ?>" type="submit">
               </li>
             </ul>
-          </form>
-        </div>
+          </div>
       </div>
     </div>
   </div>

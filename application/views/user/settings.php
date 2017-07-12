@@ -6,12 +6,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 <!-- Content Wrapper. Contains page content -->
 <div class="content-secion">
     <div class="container creatae-post-content">
-      <h2>Settings</h2>
+      <h2><?php echo $this->lang->line('settings'); ?></h2>
       <ul class="tabs">
-          <li class="tab-link current" data-tab="tab-1">Language</li>
-          <li class="tab-link" data-tab="tab-2">Change Password</li>
-          <li class="tab-link" data-tab="tab-3">Contact Us</li>
-          <li class="tab-link" data-tab="tab-4">Terms and Conditions</li>
+          <li class="tab-link current" data-tab="tab-1"><?php echo $this->lang->line('language'); ?></li>
+          <li class="tab-link" data-tab="tab-2"><?php echo $this->lang->line('change_pass'); ?></li>
+          <li class="tab-link" data-tab="tab-3"><?php echo $this->lang->line('contact_us'); ?></li>
+          <li class="tab-link" data-tab="tab-4"><?php echo $this->lang->line('terms_cond'); ?></li>
       </ul>
       <div id="tab-1" class="tab-content language-tab current">
           <form id="form1" name="form1" method="post" action="">
@@ -26,7 +26,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                  <label for="radio5" class="css-label radGroup2">Arabic</label>
               </li>
               <li>
-                <input type="submit" name="button" id="button" value="Save" />
+                <input type="submit" name="button" id="button" value="<?php echo $this->lang->line('save'); ?>" />
               </li>
             </ul>
           </form>
@@ -35,19 +35,19 @@ defined('BASEPATH') OR exit('No direct script access allowed');
           <form id="form1" name="form1" method="post" action="">
             <ul>
               <li>
-                <label>Old Password</label>
-                <input type="password" placeholder="**********" name="textfield" id="textfield" />
+                <label><?php echo $this->lang->line('old_pass'); ?></label>
+                <input type="password" placeholder="" name="textfield" id="textfield" />
               </li>
               <li>
-                <label>New Password</label>
-                <input type="text" placeholder="**********" name="textfield" id="textfield" />
+                <label><?php echo $this->lang->line('new_pass'); ?></label>
+                <input type="text" placeholder="" name="textfield" id="textfield" />
               </li>
               <li>
-                <label>Confirm New Password</label>
-                <input type="text" name="textfield" placeholder="**********" id="textfield" />
+                <label><?php echo $this->lang->line('confirm_pass'); ?></label>
+                <input type="text" name="textfield" placeholder="" id="textfield" />
               </li>
               <li>
-                <input type="submit" name="button" id="button" value="Save" />
+                <input type="submit" name="button" id="button" value="<?php echo $this->lang->line('save'); ?>" />
               </li>
               <li> </li>
             </ul>
@@ -57,19 +57,19 @@ defined('BASEPATH') OR exit('No direct script access allowed');
           <form id="form1" name="form1" method="post" action="">
             <ul>
               <li>
-                <label>Name</label>
-                <input type="text" placeholder="John Doe" name="textfield" id="textfield" />
+                <label><?php echo $this->lang->line('name'); ?></label>
+                <input type="text" placeholder="" name="textfield" id="textfield" />
               </li>
               <li>
-                <label>Email</label>
-                <input type="text" placeholder="johndoe@gmail.com" name="textfield" id="textfield" />
+                <label><?php echo $this->lang->line('email'); ?></label>
+                <input type="text" placeholder="" name="textfield" id="textfield" />
               </li>
               <li>
-                <label>Comment</label>
-                <input type="text" name="textfield" placeholder="I think #boeing should step a head of a few changes n their new planes." id="textfield" />
+                <label><?php echo $this->lang->line('comment'); ?></label>
+                <input type="text" name="textfield" placeholder="" id="textfield" />
               </li>
               <li>
-                <input type="submit" name="button" id="button" value="Send" />
+                <input type="submit" name="button" id="button" value="<?php echo $this->lang->line('send'); ?>" />
               </li>
               <li> </li>
             </ul>

@@ -19,18 +19,32 @@ $lang['reply'] = 'Reply';
 $lang['followers'] = 'Followers';
 
 // Profile
-Edit profile
-Update new picture
-Name
-Gender
-Male
-Female
-Other
-Date of Birth
-Country
-Save
-Feedbacks
-Followings
+$lang['edit_profile'] = 'Edit profile';
+$lang['upload_picture'] = 'Update new picture';
+$lang['name'] = 'Name';
+$lang['gender'] = 'Gender';
+$lang['male'] = 'Male';
+$lang['female'] = 'Female';
+$lang['other'] = 'Other';
+$lang['birth_date'] = 'Date of Birth';
+$lang['country'] = 'Country';
+$lang['save'] = 'Save';
+$lang['feedbacks'] = 'Feedbacks';
+$lang['followings'] = 'Followings';
+
+// Settings
+$lang['settings'] = 'Settings';
+$lang['language'] = 'Language';
+$lang['change_pass'] = 'Change Password';
+$lang['old_pass'] = 'Old Password';
+$lang['new_pass'] = 'New Password';
+$lang['confirm_pass'] = 'Confirm New Password';
+$lang['contact_us'] = 'Contact Us';
+$lang['name'] = 'Name';
+$lang['email'] = 'Email';
+$lang['comment'] = 'Comment';
+$lang['send'] = 'Send';
+$lang['terms_cond'] = 'Terms And Conditions';
 
 // Create Post
 $lang['create_post'] = 'Create Post';

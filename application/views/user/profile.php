@@ -17,10 +17,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
       ?>
       <h3><?php echo $user_info['name']; ?></h3>
       <h4><?php echo $this->common->getCountries($user_info['country']); ?></h4>
-      <span class="edit-profile-btn"><i class="fa fa-pencil" aria-hidden="true"></i>Edit profile</span>
+      <span class="edit-profile-btn"><i class="fa fa-pencil" aria-hidden="true"></i><?php echo $this->lang->line('edit_profile'); ?></span>
       <div class="edit-feedback-btn-block"> 
-       <a href="#" class="blue-btn" title="Feedbacks">Feedbacks</a> 
-       <a class="normal-btn" href="<?php echo site_url('user/followings'); ?>" title="Followings">Followings</a>
+       <a href="javascript:void(0)" class="blue-btn" title="Feedbacks"><?php echo $this->lang->line('feedbacks'); ?></a> 
+       <a href="<?php echo site_url('user/followings'); ?>" class="normal-btn" title="Followings"><?php echo $this->lang->line('followings'); ?></a>
      </div>
    </div>
  </div>
@@ -64,9 +64,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
        </span> 
        <span class="follow-btn-default">
          <?php if ($row['is_followed']) { ?>
-         Unfollow
+         <?php echo $this->lang->line('unfollow'); ?>
          <?php } else { ?>    
-         Follow <i class="fa fa-plus" aria-hidden="true"></i>
+         <?php echo $this->lang->line('follow'); ?> <i class="fa fa-plus" aria-hidden="true"></i>
          <?php } ?>
        </span>
        <span class="wishlist">
@@ -89,7 +89,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 <div class="login-form edit-profile-form">
   <div class="login-form-block">
     <div class="login-form-fields">
-      <h3>Edit Profile <span class="close-edit-popup"><img src="<?php echo base_url().'assets/images/close-icon.png'; ?>" alt="" /></span></h3>
+      <h3><?php echo $this->lang->line('edit_profile'); ?> <span class="close-edit-popup"><img src="<?php echo base_url().'assets/images/close-icon.png'; ?>" alt="" /></span></h3>
       <?php
       $attributes = array('class' => '', 'id' => 'edit-profile-form');
       echo form_open('user/update_profile', $attributes);
@@ -97,40 +97,40 @@ defined('BASEPATH') OR exit('No direct script access allowed');
       <div class="login-form-block-edit-profile">
         <div class="edit-profile-popup-pic"><img src="<?php echo base_url().'assets/images/profile-img.png'; ?>" alt=""></div>
         <div class="fileUpload update-pic-btn">
-          <span>Update new picture</span>
+          <span><?php echo $this->lang->line('upload_picture'); ?></span>
           <input type="file" class="upload" />
         </div>
         <ul>
           <li>
-            <label>Name</label>
+            <label><?php echo $this->lang->line('name'); ?></label>
             <input placeholder="Jessica" name="name" id="name" type="text">
           </li>
           <li class="gender">
-            <label>Gender</label>
-            <div class="radio-block">
-              <span><input type="radio" name="gender" value="male"> Male</span>
-              <span><input type="radio" name="gender" value="female"> Female</span>
-              <span><input type="radio" name="gender" value="other"> Other</span>
-              <div>
+            <label><?php echo $this->lang->line('gender'); ?></label>
+				<div class="radio-block">
+				  <span><input type="radio" name="gender" value="male"> <?php echo $this->lang->line('male'); ?></span>
+				  <span><input type="radio" name="gender" value="female"> <?php echo $this->lang->line('female'); ?></span>
+				  <span><input type="radio" name="gender" value="other"> <?php echo $this->lang->line('other'); ?></span>
+				</div>
               </li>
               <li>
-                <label>Date of Birth</label>
+                <label><?php echo $this->lang->line('birth_date'); ?></label>
                 <input name="textfield" placeholder="DD/MMM/YYYY" id="datepicker" type="text">
 
               </li>
               <li class="country-select">
-                <label>Country</label>
+                <label><?php echo $this->lang->line('country'); ?></label>
                 <!-- <input name="textfield" placeholder="Jordan" id="textfield" type="text"> -->
                 <select name="countries1" id="countries1">
-                  <option value="1">1</option>
+                  <option value="1">US</option>
 
-                  <option value="2">2</option>
-                  <option value="3">3</option>                  
+                  <option value="2">JO</option>
+                  <option value="3">IN</option>                  
 
                 </select>
               </li>
               <li>
-                <input name="button" id="button" value="Save" type="submit">
+                <input name="button" id="button" value="<?php echo $this->lang->line('save'); ?>" type="submit">
               </li>
             </ul>
           </div>
