@@ -4,6 +4,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 class Title extends CI_Controller {
 	
 	public $data;
+	
+	public $user;
 
     public function __construct() {
         parent::__construct();
@@ -21,8 +23,18 @@ class Title extends CI_Controller {
         // Load Login Model
         $this->load->model('common');
 		
-		// Load Language File
-		$this->lang->load('message','english');
+		// Session data
+		$this->user = $this->session->userdata['mec_user'];
+		$this->data['user_info'] = $this->user;
+		
+		// Load Language File		
+		if ($this->user['language'] == 'ar') {
+			$this->lang->load('message','arabic');
+			$this->lang->load('label','arabic');
+		} else {
+			$this->lang->load('message','english');
+			$this->lang->load('label','english');
+		}
 
         //remove catch so after logout cannot view last visited page if that page is this
         $this->output->set_header('Last-Modified:' . gmdate('D, d M Y H:i:s') . 'GMT');

@@ -5,6 +5,8 @@ class User extends CI_Controller {
 	
 	public $data;
 	
+	public $user;
+	
 	private $perPage = 5;
 
     public function __construct() {
@@ -23,8 +25,18 @@ class User extends CI_Controller {
         // Load Login Model
         $this->load->model('common');
 		
-		// Load Language File
-		$this->lang->load('message','english');
+		// Session data
+		$this->user = $this->session->userdata['mec_user'];
+		$this->data['user_info'] = $this->user;
+		
+		// Load Language File		
+		if ($this->user['language'] == 'ar') {
+			$this->lang->load('message','arabic');
+			$this->lang->load('label','arabic');
+		} else {
+			$this->lang->load('message','english');
+			$this->lang->load('label','english');
+		}
 
         //remove catch so after logout cannot view last visited page if that page is this
         $this->output->set_header('Last-Modified:' . gmdate('D, d M Y H:i:s') . 'GMT');
@@ -38,40 +50,34 @@ class User extends CI_Controller {
 		$this->template->front_render('user/dashboard');
 	}
 	
-	public function language($id) {
-		$user_info = $this->session->userdata['mec_user'];
-		$user_info['lang_id'] = $id;  
+	public function language($code) {
+		$this->user['language'] = $code;  
 		
-		$this->session->set_userdata('mec_user', $user_info);
+		$this->session->set_userdata('mec_user', $this->user);
 		redirect();
 	}
 	
 	//display dashboard
     public function dashboard($country = '') {
-		// Session data
-		$user_info = $this->session->userdata['mec_user'];
-		$this->data['user_info'] = $user_info;
-		
 		$this->data['module_name'] = 'User';
         $this->data['section_title'] = 'Dashboard';
-		$this->data['user_id'] = $user_info['id'];
+		$this->data['user_id'] = $this->user['id'];
 		
 		// Get user country		
 		if($country == '') {
-			$getcountry = $this->common->select_data_by_id('users', 'id', $user_info['id'], 'country', '');
+			$getcountry = $this->common->select_data_by_id('users', 'id', $this->user['id'], 'country', '');
 			$country = $getcountry[0]['country'];
 		} else {
-			$user_info = $this->session->userdata['mec_user'];
-			$user_info['country'] = $country;  
+			$this->user['country'] = $country;  
 			
-			$this->session->set_userdata('mec_user', $user_info);	
+			$this->session->set_userdata('mec_user', $this->user);	
 		}
 		
 		// Trends
 		$this->data['trends'] = $this->common->getTrends($country);
 		
 		// What to Follow
-		$this->data['to_follow'] = $this->common->whatToFollow($user_info['id'], $country);
+		$this->data['to_follow'] = $this->common->whatToFollow($this->user['id'], $country);
 		
 		// Get all feedbacks
 		$join_str = array(
@@ -103,7 +109,7 @@ class User extends CI_Controller {
 			$feedback = $this->common->select_data_by_condition('feedback', $contition_array, $data, $sortby = 'feedback.datetime', $orderby = 'DESC', $this->perPage, $start, $join_str, $group_by = '');
 			
 			// Get Likes, Followings and Other details
-			$result = $this->common->getFeedbacks($feedback, $user_info['id']);
+			$result = $this->common->getFeedbacks($feedback, $this->user['id']);
 			
 			// Append Ad Banners
 			$return_array = $this->common->adBanners($result, $country, $this->input->get("page"));
@@ -116,7 +122,7 @@ class User extends CI_Controller {
 			$feedback = $this->common->select_data_by_condition('feedback', $contition_array, $data, $sortby = 'feedback.datetime', $orderby = 'DESC', $this->perPage, 5, $join_str, $group_by = '');
 			
 			// Get Likes, Followings and Other details
-			$result = $this->common->getFeedbacks($feedback, $user_info['id']);
+			$result = $this->common->getFeedbacks($feedback, $this->user['id']);
 			
 			// Append Ad Banners
 			$return_array = $this->common->adBanners($result, $country);
@@ -139,10 +145,6 @@ class User extends CI_Controller {
 			}
 		}
 		
-		// Session data
-		$user_info = $this->session->userdata['mec_user'];
-		$this->data['user_info'] = $user_info;
-		
 		// Get All Feedbacks by User
 		$join_str = array(
 			array(
@@ -159,7 +161,7 @@ class User extends CI_Controller {
 			)
 		);
 		
-		$contition_array = array('feedback.user_id' => $user_info['id'], 'feedback.replied_to' => NULL, 'feedback.deleted' => 0, 'feedback.status' => 1);
+		$contition_array = array('feedback.user_id' => $this->user['id'], 'feedback.replied_to' => NULL, 'feedback.deleted' => 0, 'feedback.status' => 1);
 		$data = 'feedback_id, feedback.title_id, title, name, photo, feedback_cont, feedback_img, feedback_thumb, feedback_video, replied_to, location, feedback.datetime as time';
 		
 		$feedback = $this->common->select_data_by_condition('feedback', $contition_array, $data, $sortby = 'feedback.datetime', $orderby = 'DESC', $limit = '', $offset = '', $join_str, $group_by = '');
@@ -197,7 +199,7 @@ class User extends CI_Controller {
                 }
 
                 // Check If user reported this feedback
-                $contition_array_rs = array('feedback_id' => $item['feedback_id'], 'user_id' => $user_info['id']);
+                $contition_array_rs = array('feedback_id' => $item['feedback_id'], 'user_id' => $this->user['id']);
                 $spam = $this->common->select_data_by_condition('spam', $contition_array_rs, $data = '*', $short_by = '', $order_by = '', $limit = '', $offset = '', $join_str = array(), $group_by = '');
                             
                 if(count($spam) > 0) {
@@ -207,7 +209,7 @@ class User extends CI_Controller {
                 }
                 
                 // Check If user liked this feedback
-                $contition_array_li = array('feedback_id' => $item['feedback_id'], 'user_id' => $user_info['id']);
+                $contition_array_li = array('feedback_id' => $item['feedback_id'], 'user_id' => $this->user['id']);
                 $likes = $this->common->select_data_by_condition('feedback_likes', $contition_array_li, $data = '*', $short_by = '', $order_by = '', $limit = '', $offset = '', $join_str = array(), $group_by = '');
                             
                 if(count($likes) > 0) {
@@ -217,7 +219,7 @@ class User extends CI_Controller {
                 }
                 
                 // Check If user followed this title
-                $contition_array_ti = array('title_id' => $item['title_id'], 'user_id' => $user_info['id']);
+                $contition_array_ti = array('title_id' => $item['title_id'], 'user_id' => $this->user['id']);
                 $followtitles = $this->common->select_data_by_condition('followings', $contition_array_ti, $data = '*', $short_by = '', $order_by = '', $limit = '', $offset = '', $join_str = array(), $group_by = '');
                             
                 if(count($followtitles) > 0) {
@@ -274,10 +276,6 @@ class User extends CI_Controller {
 	}
 	
 	public function followings() {
-		// Session data
-		$user_info = $this->session->userdata['mec_user'];
-		$this->data['user_info'] = $user_info;
-		
 		// Get Followings for User
 		$join_str = array(
 			array(
@@ -300,7 +298,7 @@ class User extends CI_Controller {
 			)
 		);
 
-		$contition_array = array('followings.user_id' => $user_info['id'], 'feedback.replied_to' => NULL, 'feedback.deleted' => 0, 'feedback.status' => 1);
+		$contition_array = array('followings.user_id' => $this->user['id'], 'feedback.replied_to' => NULL, 'feedback.deleted' => 0, 'feedback.status' => 1);
 		$data = 'feedback_id, feedback.title_id, title, name, photo, feedback_cont, feedback_img, feedback_thumb, feedback_video, replied_to, location, feedback.datetime as time';
 		
 		$feedback = $this->common->select_data_by_condition('feedback', $contition_array, $data, $sortby = 'feedback.datetime', $orderby = 'DESC', $limit = '', $offset = '', $join_str, $group_by = '');
@@ -338,7 +336,7 @@ class User extends CI_Controller {
                 }
                 
                 // Check If user liked this feedback
-                $contition_array_li = array('feedback_id' => $item['feedback_id'], 'user_id' => $user_info['id']);
+                $contition_array_li = array('feedback_id' => $item['feedback_id'], 'user_id' => $this->user['id']);
                 $likes = $this->common->select_data_by_condition('feedback_likes', $contition_array_li, $data = '*', $short_by = '', $order_by = '', $limit = '', $offset = '', $join_str = array(), $group_by = '');
                             
                 if(count($likes) > 0) {
@@ -348,7 +346,7 @@ class User extends CI_Controller {
                 }
                 
                 // Check If user followed this title
-                $contition_array_ti = array('title_id' => $item['title_id'], 'user_id' => $user_info['id']);
+                $contition_array_ti = array('title_id' => $item['title_id'], 'user_id' => $this->user['id']);
                 $followtitles = $this->common->select_data_by_condition('followings', $contition_array_ti, $data = '*', $short_by = '', $order_by = '', $limit = '', $offset = '', $join_str = array(), $group_by = '');
                             
                 if(count($followtitles) > 0) {
@@ -598,24 +596,22 @@ class User extends CI_Controller {
 		$this->data['module_name'] = 'User';
         $this->data['section_title'] = 'Notifications';
 		
-		$user_info = $this->session->userdata['mec_user'];
-		
 		$n_array = array();
 		
 		/* Titles I Follow */
-		$n_follow = $this->common->get_notification($user_info['id'], 2);
+		$n_follow = $this->common->get_notification($this->user['id'], 2);
 		if(count($n_follow) > 0) {
 			$n_array = array_merge($n_array, $n_follow);
 		}
 
 		/* Likes on the Feedbacks */
-		$n_likes = $this->common->get_notification($user_info['id'], 3);
+		$n_likes = $this->common->get_notification($this->user['id'], 3);
 		if(count($n_likes) > 0) {
 			$n_array = array_merge($n_array, $n_likes);
 		}
 
 		/* Feedbacks on my Titles */
-		$n_reply = $this->common->get_notification($user_info['id'], 4);
+		$n_reply = $this->common->get_notification($this->user['id'], 4);
 		if(count($n_reply) > 0) {
 			$n_array = array_merge($n_array, $n_reply);
 		}

@@ -8,7 +8,14 @@ defined('BASEPATH') OR exit('No direct script access allowed');
    <?php if(isset($row['ads'])) { ?>
     <span class="post-profile-time-text">Promoted</span>
    <?php } else { ?>
-    <span class="post-followers-text"><?php echo $row['followers']; ?> Followers</span>
+    <span class="post-followers-text">
+	<?php 
+	if($user_info['language'] == 'ar') {
+		echo $this->lang->line('followers')." ".$row['followers'];
+	} else {
+		echo $row['followers']." ".$this->lang->line('followers');
+	} ?>
+	</span>
     <span class="post-profile-time-text"><?php echo $row['time']; ?></span>            
    <?php } ?>
    </div>
@@ -50,20 +57,20 @@ defined('BASEPATH') OR exit('No direct script access allowed');
         <?php if(!isset($row['ads'])) { ?>
         <div class="post-follow-block"> 
             <span class="post-follow-back-arrow">
-                <img src="<?php echo ASSETS_URL.'images/reply-arrow.png'; ?>" alt="" />
+                <img src="<?php echo ASSETS_URL.'images/reply-arrow.png'; ?>" alt="" title="<?php echo $this->lang->line('reply'); ?>" />
             </span>
             <span class="follow-btn-default follow-btn-<?php echo $row['title_id']; ?>" id="follow-btn-<?php echo $row['id']; ?>">
                 <?php if ($row['is_followed']) { ?>
-                    Unfollow
+                    <?php echo $this->lang->line('unfollow'); ?>
                 <?php } else { ?>    
-                    Follow <i class="fa fa-plus" aria-hidden="true"></i>
+                    <?php echo $this->lang->line('follow'); ?> <i class="fa fa-plus" aria-hidden="true"></i>
                 <?php } ?>
             </span>
             <span class="post-wishlist" id="post-wishlist-<?php echo $row['id']; ?>">
 				<?php if ($row['is_liked']) { ?>
-					<i class="fa fa-heart" aria-hidden="true"></i> 
+					<i class="fa fa-heart" aria-hidden="true" title="<?php echo $this->lang->line('unlike'); ?>"></i> 
 				<?php } else { ?>
-					<i class="fa fa-heart-o" aria-hidden="true"></i>
+					<i class="fa fa-heart-o" aria-hidden="true" title="<?php echo $this->lang->line('like'); ?>"></i>
 				<?php } ?> 
 				<?php echo $row['likes']; ?>
             </span>

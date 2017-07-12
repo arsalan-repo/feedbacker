@@ -13,13 +13,14 @@ defined('BASEPATH') OR exit('No direct script access allowed');
         <button type="submit"></button> -->
         <?php //echo form_close(); ?>
         <!-- http://itsolutionstuff.com/post/codeigniter-3-select2-ajax-autocomplete-from-database-example-with-demoexample.html -->
-        <select class="itemName form-control" name="itemName">
+        <select class="itemName form-control" name="itemName" placeholder="<?php echo $this->lang->line('type_search'); ?>">
 
         </select>
 
 	<script type="text/javascript">
+		var str = $('.itemName').attr('placeholder');
         $('.itemName').select2({
-            placeholder: 'Type in to search',
+            placeholder: str,
             ajax: {
                 url: '/search',
                 dataType: 'json',
@@ -35,15 +36,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
     </script>
 
     </div>
-    <div class="header-create-post"><a href="<?php echo site_url('post/create'); ?>">Create Post</a></div>
+    <div class="header-create-post"><a href="<?php echo site_url('post/create'); ?>"><?php echo $this->lang->line('create_post'); ?></a></div>
     <div class="header-notification">
         <!--<span class="notification-count"></span>-->
         <a href="<?php echo site_url('user/notifications'); ?>"><img src="<?php echo base_url().'assets/images/notification-icon.png'; ?>" alt="" /></a>
     </div>
-    <?php 
-	$user_info = $this->session->userdata['mec_user']; 
-	$country = strtolower($user_info['country']); 
-	?>
+    <?php $country = strtolower($user_info['country']); ?>
     <div class="header-flag">
         <select name="countries" id="countries">
             <option value='ad' <?php if($country == 'ad') { echo "selected"; } ?> data-image="<?php echo ASSETS_URL; ?>images/icons/blank.gif" data-imagecss="flag ad" data-title="Andorra">Andorra</option>
@@ -305,18 +303,18 @@ defined('BASEPATH') OR exit('No direct script access allowed');
     <div class="language-text">
     	<?php
 		$contition_array = array('lang_status' => 1);
-		$languages = $this->common->select_data_by_condition('languages', $contition_array, $data = 'lang_id, lang_code, lang_name');
+		$languages = $this->common->select_data_by_condition('languages', $contition_array, $data = 'lang_code, lang_name');
 
 		if(!empty($languages)) {
 			foreach($languages as $lang) {  
 				// Check for user preferred language
-				if($user_info['lang_id'] == $lang['lang_id']) {
+				if($user_info['language'] == $lang['lang_code']) {
 					$class = 'lang-selected';
 				} else {
 					$class = '';    
 				}
 				
-				echo '<span class="'.$class.'"><a href="'.site_url('user/language').'/'.$lang['lang_id'].'">'.strtoupper($lang['lang_code']).'</a> </span>';
+				echo '<span class="'.$class.'"><a href="'.site_url('user/language').'/'.$lang['lang_code'].'">'.strtoupper($lang['lang_code']).'</a> </span>';
 			}
 		}
 		?>
@@ -334,9 +332,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
     <span class="profile-text"><span><?php echo $user_info['name']; ?> <i class="fa fa-caret-down" aria-hidden="true"></i></span></span>
 
     <ul>
-       <li><a href="<?php echo site_url('user/profile'); ?>">Profile</a></li> 
-       <li><a href="<?php echo site_url('user/settings'); ?>">Settings</a></li>
-       <li><a href="<?php echo site_url('user/logout'); ?>">Logout</a></li>
+       <li><a href="<?php echo site_url('user/profile'); ?>"><?php echo $this->lang->line('profile'); ?></a></li> 
+       <li><a href="<?php echo site_url('user/settings'); ?>"><?php echo $this->lang->line('settings'); ?></a></li>
+       <li><a href="<?php echo site_url('user/logout'); ?>"><?php echo $this->lang->line('logout'); ?></a></li>
    </ul>
 </div>
 </div>

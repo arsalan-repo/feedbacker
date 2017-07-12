@@ -7,7 +7,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
-	<title>Welcome to Feedbacker</title>
+	<title><?php echo $this->lang->line('lbl_welcome'); ?></title>
 	<link href="<?php echo base_url().'assets/css/font-awesome.min.css'; ?>" rel="stylesheet" type="text/css" />
 	<!-- Autocomplete Dropdown -->
 	<link href="<?php echo base_url().'assets/css/select2.min.css'; ?>" rel="stylesheet" />
@@ -17,12 +17,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	<link rel="stylesheet" type="text/css" href="<?php echo base_url().'assets/css/flags.css'; ?>" />
 	<?php 
 	$user_info = $this->session->userdata['mec_user'];
-	if ($user_info['lang_id'] == 1) { 
+	if ($user_info['language'] == 'ar') { 
+		$style = 'style-rtl.css';
+		$responsive = 'responsive-rtl.css';
+	} else {
 		$style = 'style.css';
 		$responsive = 'responsive.css';
-	} else {
-		$style = 'style-rtl.css';
-		$responsive = 'responsive-rtl.css';		
 	}
 	?>    
 	<link href="<?php echo base_url().'assets/css/'.$style; ?>" rel="stylesheet" type="text/css" />

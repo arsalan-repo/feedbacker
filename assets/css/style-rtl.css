@@ -99,8 +99,8 @@ input[type="submit"] {background: #181a53;border: medium none;border-radius: 20p
 .header-notification{float:right;padding:9px 20px; margin-top: 5px;}
 .header-flag {float: right; margin-top:5px;  /*border: 1px solid #2d2e5d;border-radius: 7px;padding: 16px 5px 10px 10px;width: 70px;*/}
 .header-flag i {padding-right: 5px;color:#fff;}
-.header-create-post {background: #005db9 url("../images/create-posst-icon.png") no-repeat 105px 9px;border-radius: 20px;color: #fff; float:right;font-size: 14px;line-height:20px;margin-top:5px;text-align: right;}
-.header-create-post a{color:#fff; text-decoration:none;padding:10px 50px 10px 20px; float: left;}
+.header-create-post {background: #005db9 url("../images/create-posst-icon.png") no-repeat 105px 9px;border-radius: 20px;color: #fff; float:right;font-size: 14px;line-height:20px;margin-top:5px;text-align: right;min-width: 135px;}
+.header-create-post a{color:#fff; text-decoration:none;padding:10px 50px 10px 30px; float: left;}
 .header-profile {cursor: pointer; float: right;margin-right:20px;width: 170px;margin-top: 5px;padding: 0; position: relative;}
 .profile-icon {border-radius: 50px;height:40px;overflow: hidden;width:40px;position: absolute;top: 0; right: 0;}
 .profile-icon img {display: block; width:100%; height: 100%;}
@@ -147,7 +147,7 @@ span.profile-text span i{color:#fff; cursor:pointer; float: left; font-size: 18p
 .post-designation {color: #ea9707;font-size: 18px;}
 .post-designation a{color: #ea9707;}
 .post-address {padding: 0 0 10px;color: #858692;}
-.post-large-img {border: 1px solid #c8cdd0;border-radius: 10px;margin-bottom:20px;float: left;overflow: hidden;width: 100%;}
+.post-large-img {border: 1px solid #c8cdd0;border-radius: 10px;margin-bottom:20px;float: right;overflow: hidden;}
 .post-large-img > img {width: 100%;}
 .post-large-img h3, .post-large-img p {margin: 0;padding: 0 10px 10px;}
 .post-follow-block {float: left;padding: 0px 0 10px;width: 100%;}
@@ -155,7 +155,8 @@ span.profile-text span i{color:#fff; cursor:pointer; float: left; font-size: 18p
 .post-follow-back-arrow img{ cursor: pointer;}
 .post-follow-text {color: #7d7d88;float: left;font-size: 14px;padding: 0 60px 0 0;}
 .post-follow-text i {float: right;font-size: 15px;padding: 4px 0 0 5px;}
-.post-wishlist {font-size: 16px;font-weight: 700;}
+.post-wishlist {font-size: 16px;font-weight: 700;float: right;cursor:pointer;}
+.post-wishlist i.fa-heart {color: #f32836;}
 .right-content h3 {color: #131315;font-size: 18px;padding:0;font-weight: 600; text-align: right;}
 .right-content h3 a {color: #00b7b9;font-size: 14px;text-decoration: none;}
 .who-follow-block {border-bottom: 1px solid #d3d6d9;float: left;padding:15px 0;width: 100%;}

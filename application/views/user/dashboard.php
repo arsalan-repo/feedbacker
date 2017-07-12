@@ -29,7 +29,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
           </div>
         </div>
         <div class="home-left-text-block">
-          <h2><span>Trends</span><!-- Change--></h2>
+          <h2><span><?php echo $this->lang->line('trends'); ?></span><!-- Change--></h2>
           <?php foreach($trends as $row) {
               echo '<h3><a href="'.site_url('post/title').'/'.$row['title_id'].'">'.$row['title'].'</a></h3>';
               echo '<p>'.$this->common->limitText($row['feedback_cont'], 20).'</p>';
@@ -47,7 +47,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
         </div>
       </div>
       <div class="right-content">
-        <h3>What to Follow <!--<a href="#">View All</a>--></h3>
+        <h3><?php echo $this->lang->line('what_tofollow'); ?> <!--<a href="#">View All</a>--></h3>
 		<?php if (!empty($to_follow)) { ?>
 			<?php foreach($to_follow as $row) { ?>
 			<div class="who-follow-block">
@@ -63,13 +63,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				<div class="who-follow-text">
 					<span><?php echo $row['title']; ?></span> <?php echo $row['name']; ?>
 				</div>
-				<div class="who-follow-add" id="who-follow-<?php echo $row['feedback_id']; ?>"> Follow <i class="fa fa-plus" aria-hidden="true"></i></div>
+				<div class="who-follow-add" id="who-follow-<?php echo $row['feedback_id']; ?>"> <?php echo $this->lang->line('follow'); ?> <i class="fa fa-plus" aria-hidden="true"></i></div>
 				<input type="hidden" id="title_id" value="<?php echo $row['title_id']; ?>" />
 				<input type="hidden" id="user_id" value="<?php echo $user_id; ?>" />
 			</div>
 			<?php } ?>
 		<?php } else { ?>
-			<div class="no-record">No records found</div>
+			<div class="no-record"><?php echo $this->lang->line('no_results'); ?></div>
 		<?php } ?>
       </div>
     </div>

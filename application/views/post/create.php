@@ -10,13 +10,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	echo form_open('post/create', $attributes);
 	?>
     <div class="container creatae-post-content">
-      <h2>Create Post</h2>
+      <h2><?php echo $this->lang->line('create_post'); ?></h2>
       
-        <label>Write About?</label>
+        <label><?php echo $this->lang->line('write_about'); ?></label>
         <input type="text" name="title" id="title" placeholder="" />
-        <label>Location</label>
+        <label><?php echo $this->lang->line('location'); ?></label>
         <input type="text" name="location" id="location" placeholder="" />
-        <label>Your Feedback</label>
+        <label><?php echo $this->lang->line('your_feedback'); ?></label>
         <input type="text" name="feedback_cont" id="feedback_cont" placeholder="" />
       <div class="post-btn-block">
         <div class="camera-map-icon">
@@ -26,7 +26,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             </div>
             <img src="<?php echo base_url().'assets/images/map-icon.png'; ?>" class="geo-map" alt="" />
         </div>
-      	<span class="post-btn">Post</span>
+      	<span class="post-btn"><?php echo $this->lang->line('post'); ?></span>
       </div>
     </div>
     <?php echo form_close(); ?>
@@ -75,8 +75,6 @@ $(function() {
 		}
 	});
 	
-	$('.callout-danger').delay(3000).hide('700');
-    $('.callout-success').delay(3000).hide('700');
 });
 
 function showLocation(position) {
@@ -92,7 +90,7 @@ function showLocation(position) {
 				var objJSON = JSON.parse(response);
             	$('#location').val(objJSON.location);
             }else{
-                alert('Not Available');
+				toastr.error('Error getting location. Try later!', 'Failure Alert', {timeOut: 5000});
             }
         }
     });
