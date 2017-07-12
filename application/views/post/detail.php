@@ -11,7 +11,15 @@ defined('BASEPATH') OR exit('No direct script access allowed');
         <div class="profile-listing">
           <div class="listing-post-name-block">
           	<span class="listing-post-name"><?php echo $feedback['title']; ?></span> 
-            <span class="listing-post-followers"><?php echo $feedback['followers']; ?> Follower(s)</span> </div>
+            <span class="listing-post-followers">
+				<?php 
+				if($user_info['language'] == 'ar') {
+					echo $this->lang->line('followers')." ".$feedback['followers'];
+				} else {
+					echo $feedback['followers']." ".$this->lang->line('followers');
+				} ?>
+			</span> 
+		  </div>
           <div class="profile-listing-img-thumb-block">
             <div class="profile-listing-img-thumb">
             	<?php
@@ -34,9 +42,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             	<img src="<?php echo base_url().'assets/images/reply-arrow.png'; ?>" alt="" />
             </span> 
             <?php if($feedback['is_followed'] == "") { ?>
-            	<span class="follow-btn fill">Follow <i class="fa fa-plus" aria-hidden="true"></i></span>	
+            	<span class="follow-btn fill"><?php echo $this->lang->line('follow'); ?> <i class="fa fa-plus" aria-hidden="true"></i></span>	
             <?php } else { ?>
-            	<span class="follow-btn fill">Unfollow</span>
+            	<span class="follow-btn fill"><?php echo $this->lang->line('unfollow'); ?></span>
 			<?php } ?>
             <?php if($feedback['is_liked'] == "") { ?>
                 <span class="wishlist empty">
@@ -50,7 +58,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
           </div>
           <div class="post-detail-comments-block">
           	<?php if(!empty($feedback['replies'])) { ?>
-            <h3>Comments</h3>
+            <h3><?php echo $this->lang->line('comments'); ?></h3>
             <?php foreach($feedback['replies'] as $row) { ?>
             <div class="profile-listing-img-thumb-block">
               <div class="profile-listing-img-thumb">
@@ -69,11 +77,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             <?php } ?>
             <?php } ?>
             <div class="post-detail-comment-form">
-              <h2>Write a comment</h2>
+              <h2><?php echo $this->lang->line('write_comment'); ?></h2>
               <form id="form1" name="form1" method="post" action="">
-                <label>Comment</label>
-                <input type="text" name="textfield1" placeholder="Write comment here" />
-                <input type="text" name="textfield1" placeholder="Location" />
+                <label><?php echo $this->lang->line('comment'); ?></label>
+                <input type="text" name="textfield1" placeholder="<?php echo $this->lang->line('comment_here'); ?>" />
+                <input type="text" name="textfield1" placeholder="<?php echo $this->lang->line('location'); ?>" />
               </form>
               <div class="post-btn-block">
                 <div class="camera-map-icon"> 
@@ -84,7 +92,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				<?php /*?><img src="<?php echo base_url().'assets/images/camera-icon.png'; ?>" alt="" /> <?php */?>
 				
 				<img src="<?php echo base_url().'assets/images/map-icon.png'; ?>" alt="" /> </div>
-                <span class="post-btn">Post</span> </div>
+                <span class="post-btn"><?php echo $this->lang->line('post'); ?></span> </div>
             </div>
           </div>
         </div>
@@ -93,7 +101,16 @@ defined('BASEPATH') OR exit('No direct script access allowed');
       <?php if(count($others) > 0) { ?>
 		  <?php foreach($others as $row) { ?>
             <div class="profile-listing">
-              <div class="listing-post-name-block"> <span class="listing-post-name"><?php echo $row['title']; ?></span> <span class="listing-post-followers"><?php echo $row['followers']; ?> Follower(s)</span> </div>
+              <div class="listing-post-name-block"> <span class="listing-post-name"><?php echo $row['title']; ?></span> 
+				  <span class="listing-post-followers">
+				  <?php 
+					if($user_info['language'] == 'ar') {
+						echo $this->lang->line('followers')." ".$feedback['followers'];
+					} else {
+						echo $feedback['followers']." ".$this->lang->line('followers');
+					} ?>
+				  </span> 
+			  </div>
               <div class="profile-listing-img-thumb-block">
                 <div class="profile-listing-img-thumb">
                 <?php
@@ -116,9 +133,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                 	<img src="<?php echo base_url().'assets/images/reply-arrow.png'; ?>" alt="" />
                 </span> 
                 <?php if($row['is_followed'] == "") { ?>
-            	<span class="follow-btn fill">Follow <i class="fa fa-plus" aria-hidden="true"></i></span>	
+            	<span class="follow-btn fill"><?php echo $this->lang->line('follow'); ?> <i class="fa fa-plus" aria-hidden="true"></i></span>	
 				<?php } else { ?>
-                    <span class="follow-btn fill">Unfollow</span>
+                    <span class="follow-btn fill"><?php echo $this->lang->line('unfollow'); ?></span>
                 <?php } ?>
                 <?php if($row['is_liked'] == "") { ?>
                     <span class="wishlist empty">

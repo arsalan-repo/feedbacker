@@ -128,45 +128,11 @@ class Post extends CI_Controller {
 		$this->data['module_name'] = 'Post';
         $this->data['section_title'] = 'Title';
 		
-		// Session data
-		$user_info = $this->session->userdata['mec_user'];
-		$this->data['user_info'] = $user_info;
-		
 		// Trends
-		$join_str_tr = array(
-			array(
-				'table' => 'titles',
-				'join_table_id' => 'titles.title_id',
-				'from_table_id' => 'feedback.title_id',
-				'join_type' => 'inner'
-			)
-		);
-		
-		if(!empty($user_info['country'])) {
-			$contition_array = array('feedback.deleted' => 0, 'feedback.status' => 1, 'feedback.country' => $user_info['country']);
-		} else {
-			$contition_array = array('feedback.deleted' => 0, 'feedback.status' => 1);
-		}
-		
-		$this->data['trends'] = $this->common->select_data_by_condition('feedback', $contition_array, 'feedback_id, feedback.title_id, title, feedback_cont, feedback_img, feedback_thumb, feedback_video, replied_to, location, feedback.datetime as time', $sortby = 'count(db_feedback.title_id)', $orderby = 'DESC', $limit = '10', $offset = '', $join_str_tr, $group_by = 'feedback.title_id');
+		$this->data['trends'] = $this->common->getTrends($this->user['country']);
 		
 		// What to Follow
-		$join_str_wt = array(
-			array(
-				'table' => 'users',
-				'join_table_id' => 'users.id',
-				'from_table_id' => 'feedback.user_id',
-				'join_type' => 'left'
-			),
-			array(
-				'table' => 'titles',
-				'join_table_id' => 'titles.title_id',
-				'from_table_id' => 'feedback.title_id',
-				'join_type' => 'left'
-			)
-		);
-		
-		$this->data['to_follow'] = $this->common->select_data_by_condition('feedback', $contition_array, 'feedback_id, feedback.title_id, title, name, photo, feedback_cont, feedback_img, feedback_thumb, feedback_video, replied_to, location, feedback.datetime as time', $sortby = 'feedback.datetime', $orderby = 'DESC', $limit = '10', $offset = '', $join_str_wt, $group_by = 'feedback.title_id');
+		$this->data['to_follow'] = $this->common->whatToFollow($this->user['id'], $this->user['country']);
 		
 		// Get Feedbacks from Title ID
 		$join_str = array(
@@ -223,7 +189,7 @@ class Post extends CI_Controller {
 				}
 	
 				// Check If user reported this feedback
-				$contition_array_rs = array('feedback_id' => $item['feedback_id'], 'user_id' => $user_info['id']);
+				$contition_array_rs = array('feedback_id' => $item['feedback_id'], 'user_id' => $this->user['id']);
 				$spam = $this->common->select_data_by_condition('spam', $contition_array_rs, $data = '*', $short_by = '', $order_by = '', $limit = '', $offset = '', $join_str = array(), $group_by = '');
 							
 				if(count($spam) > 0) {
@@ -233,7 +199,7 @@ class Post extends CI_Controller {
 				}
 				
 				// Check If user liked this feedback
-				$contition_array_li = array('feedback_id' => $item['feedback_id'], 'user_id' => $user_info['id']);
+				$contition_array_li = array('feedback_id' => $item['feedback_id'], 'user_id' => $this->user['id']);
 				$likes = $this->common->select_data_by_condition('feedback_likes', $contition_array_li, $data = '*', $short_by = '', $order_by = '', $limit = '', $offset = '', $join_str = array(), $group_by = '');
 							
 				if(count($likes) > 0) {
@@ -243,7 +209,7 @@ class Post extends CI_Controller {
 				}
 				
 				// Check If user followed this title
-				$contition_array_ti = array('title_id' => $item['title_id'], 'user_id' => $user_info['id']);
+				$contition_array_ti = array('title_id' => $item['title_id'], 'user_id' => $this->user['id']);
 				$followtitles = $this->common->select_data_by_condition('followings', $contition_array_ti, $data = '*', $short_by = '', $order_by = '', $limit = '', $offset = '', $join_str = array(), $group_by = '');
 							
 				if(count($followtitles) > 0) {
@@ -300,11 +266,8 @@ class Post extends CI_Controller {
 		$this->data['module_name'] = 'Post';
         $this->data['section_title'] = 'Detail';
 		
-		// Session data
-		$user_info = $this->session->userdata['mec_user'];
-		
 		// Get Feedback Details
-        $return_array = $this->common->getFeedbackDetail($user_info['id'], $id);
+        $return_array = $this->common->getFeedbackDetail($this->user['id'], $id);
 
         // Get all replies for this feedback
         $contition_array = array('replied_to' => $id, 'feedback.deleted' => 0, 'feedback.status' => 1);
@@ -373,7 +336,7 @@ class Post extends CI_Controller {
 				}
 				
 				// Check If user liked this feedback
-				$contition_array_li = array('feedback_id' => $item['feedback_id'], 'user_id' => $user_info['id']);
+				$contition_array_li = array('feedback_id' => $item['feedback_id'], 'user_id' =>$this->user['id']);
 				$likes = $this->common->select_data_by_condition('feedback_likes', $contition_array_li, $data = '*', $short_by = '', $order_by = '', $limit = '', $offset = '', $join_str = array(), $group_by = '');
 							
 				if(count($likes) > 0) {
@@ -383,7 +346,7 @@ class Post extends CI_Controller {
 				}
 				
 				// Check If user followed this title
-				$contition_array_ti = array('title_id' => $item['title_id'], 'user_id' => $user_info['id']);
+				$contition_array_ti = array('title_id' => $item['title_id'], 'user_id' =>$this->user['id']);
 				$followtitles = $this->common->select_data_by_condition('followings', $contition_array_ti, $data = '*', $short_by = '', $order_by = '', $limit = '', $offset = '', $join_str = array(), $group_by = '');
 							
 				if(count($followtitles) > 0) {
@@ -437,24 +400,6 @@ class Post extends CI_Controller {
 		
 		/* Load Template */
 		$this->template->front_render('post/detail', $this->data);
-	}
-	
-	public function search() {
-		//check post and save data
-        if ($this->input->is_ajax_request() && $this->input->post('btn_save')) {
-			$this->form_validation->set_rules('email', 'Email', 'trim|valid_email|required');
-			
-			if ($this->form_validation->run() == FALSE) {
-				$this->session->set_flashdata('error', validation_errors());
-				redirect('user/profile');
-			}
-		}
-		
-		$this->data['module_name'] = 'Post';
-        $this->data['section_title'] = 'Search';
-		
-		/* Load Template */
-		$this->template->front_render('post/search', $this->data);
 	}
 	
 }

@@ -24,3 +24,13 @@ $lang['write_about'] = 'اكتب عن؟';
 $lang['location'] = 'الموقع';
 $lang['your_feedback'] = 'تعليقاتي';
 $lang['post'] = 'نشر';
+
+// Feedback Detail
+$lang['comments'] = 'التعليقات';
+$lang['write_comment'] = 'اكتب تعليق';
+$lang['comment'] = 'تعليق';
+$lang['comment_here'] = 'اكتب تعليق هنا';
+
+// Search Results
+$lang['tap_to_create'] = 'انقر لانشاء';
+$lang['create'] = 'انشاء';

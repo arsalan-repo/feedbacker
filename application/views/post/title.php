@@ -27,7 +27,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
           </div>
         </div>
         <div class="home-left-text-block">
-          <h2><span>Trends</span><!-- Change--></h2>
+          <h2><span><?php echo $this->lang->line('trends'); ?></span><!-- Change--></h2>
           <?php foreach($trends as $row) {
               echo '<h3><a href="'.site_url('post/title').'/'.$row['title_id'].'">'.$row['title'].'</a></h3>';
               echo '<p>'.$this->common->limitText($row['feedback_cont'], 20).'</p>';
@@ -42,7 +42,14 @@ defined('BASEPATH') OR exit('No direct script access allowed');
           <div class="post-profile-block">
 		   <div class="post-right-arrow">
 		   <!--<i class="fa fa-angle-down" aria-hidden="true"></i>-->
-		   <span class="post-followers-text"><?php echo $row['followers']; ?> Followers</span>
+		   <span class="post-followers-text">
+		   <?php 
+			if($user_info['language'] == 'ar') {
+				echo $this->lang->line('followers')." ".$row['followers'];
+			} else {
+				echo $row['followers']." ".$this->lang->line('followers');
+			} ?>
+		   </span>
 		   <span class="post-profile-time-text"><?php echo $row['time']; ?></span>
 		   </div>
             <div class="post-img">
@@ -68,39 +75,48 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                 	<img src="<?php echo $feedback_img; ?>" alt="" />
               	</div>
                 <?php } ?>
-              	<div class="post-follow-block"> 
-                	<span class="post-follow-back-arrow">
-                    	<img src="<?php echo ASSETS_URL.'images/reply-arrow.png'; ?>" alt="" />
-                    </span>
-                    <span class="follow-btn-default">
-                    	<?php if ($row['is_followed']) { ?>
-                        	Unfollow
-                        <?php } else { ?>    
-                            Follow <i class="fa fa-plus" aria-hidden="true"></i>
-                        <?php } ?>
-                    </span>
-                    <span class="post-wishlist">
-                    	<i class="fa fa-heart-o" aria-hidden="true" <?php $row['is_liked'] ?  'style="color: #f32836;"' : '' ?>></i> 
+              	<?php if(!isset($row['ads'])) { ?>
+				<div class="post-follow-block"> 
+					<span class="post-follow-back-arrow">
+						<img src="<?php echo ASSETS_URL.'images/reply-arrow.png'; ?>" alt="" title="<?php echo $this->lang->line('reply'); ?>" />
+					</span>
+					<span class="follow-btn-default follow-btn-<?php echo $row['title_id']; ?>" id="follow-btn-<?php echo $row['id']; ?>">
+						<?php if ($row['is_followed']) { ?>
+							<?php echo $this->lang->line('unfollow'); ?>
+						<?php } else { ?>    
+							<?php echo $this->lang->line('follow'); ?> <i class="fa fa-plus" aria-hidden="true"></i>
+						<?php } ?>
+					</span>
+					<span class="post-wishlist" id="post-wishlist-<?php echo $row['id']; ?>">
+						<?php if ($row['is_liked']) { ?>
+							<i class="fa fa-heart" aria-hidden="true" title="<?php echo $this->lang->line('unlike'); ?>"></i> 
+						<?php } else { ?>
+							<i class="fa fa-heart-o" aria-hidden="true" title="<?php echo $this->lang->line('like'); ?>"></i>
+						<?php } ?> 
 						<?php echo $row['likes']; ?>
-                    </span>
-                </div>
-				<div class="post-detail-comment-form">
-              <h2>Write a comment</h2>
-              <form id="form1" name="form1" method="post" action="">
-                <label>Comment</label>
-                <input type="text" name="textfield1" placeholder="Write comment here" />
-              </form>
-              <div class="post-btn-block">
-                <div class="camera-map-icon"> 
-				<div class="camera-icon-block">
-					<span>Choose File</span>
-					<input name="Select File" type="file" />
+					</span>
+					<input type="hidden" id="feedback_id" value="<?php echo $row['id']; ?>" />
+					<input type="hidden" id="totl_likes" value="<?php echo $row['likes']; ?>" />			
+					<input type="hidden" id="title_id" value="<?php echo $row['title_id']; ?>" />
+					<input type="hidden" id="user_id" value="<?php echo $user_info['id']; ?>" />
 				</div>
-				<?php /*?><img src="<?php echo base_url().'assets/images/camera-icon.png'; ?>" alt="" /> <?php */?>
-				
-				<img src="<?php echo base_url().'assets/images/map-icon.png'; ?>" alt="" /> </div>
-                <span class="post-btn">Post</span> </div>
-            </div>
+				<?php } ?>
+				<div class="post-detail-comment-form">
+				  <h2><?php echo $this->lang->line('write_comment'); ?></h2>
+				  <form id="form-reply-post" name="form-reply-post" method="post" action="">
+					<label><?php echo $this->lang->line('comment'); ?></label>
+					<input type="text" name="feedback_cont" id="feedback_cont" placeholder="<?php echo $this->lang->line('comment_here'); ?>" />
+					<input type="text" name="location" id="location" placeholder="<?php echo $this->lang->line('location'); ?>" />
+				  </form>
+				  <div class="post-btn-block">
+					<div class="camera-map-icon"> 
+					<div class="camera-icon-block">
+						<span>Choose File</span>
+						<input name="Select File" type="file" />
+					</div>            
+					<img src="<?php echo base_url().'assets/images/map-icon.png'; ?>" alt="" /> </div>
+					<span class="post-btn"><?php echo $this->lang->line('post'); ?></span> </div>
+				</div>
             </div>
           </div>
           <?php } ?>
@@ -111,7 +127,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
         </div>
       </div>
       <div class="right-content">
-        <h3>What to Follow <!--<a href="#">View All</a>--></h3>
+        <h3><?php echo $this->lang->line('what_tofollow'); ?> <!--<a href="#">View All</a>--></h3>
         <?php foreach($to_follow as $row) { ?>
         <div class="who-follow-block">
         	<span>
@@ -126,10 +142,96 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             <div class="who-follow-text">
             	<span><?php echo $row['title']; ?></span> <?php echo $row['name']; ?>
             </div>
-            <div class="who-follow-add"> Follow <i class="fa fa-plus" aria-hidden="true"></i></div>
+            <div class="who-follow-add" id="who-follow-<?php echo $row['feedback_id']; ?>"> <?php echo $this->lang->line('follow'); ?> <i class="fa fa-plus" aria-hidden="true"></i></div>
+			<input type="hidden" id="title_id" value="<?php echo $row['title_id']; ?>" />
+			<input type="hidden" id="user_id" value="<?php echo $user_info['id']; ?>" />
         </div>
         <?php } ?>
       </div>
     </div>
 </div>
 <!-- /.content-wrapper -->
+<script type="application/javascript">
+	$('.who-follow-add').off("click").on("click",function(e){
+		e.preventDefault();
+		
+		var element = $(this).attr('id');
+		var title_id = $(this).parent().find('#title_id').val();
+		var user_id = $(this).parent().find('#user_id').val();		
+	
+		$.ajax({
+			dataType: 'json',
+			type:'POST',
+			url: '<?php echo site_url('title/follow'); ?>',
+			data:{title_id:title_id, user_id:user_id}
+		}).done(function(data){
+			// console.log(data);
+			if (data.is_followed == 1) {
+				$('#'+element).parent().remove();
+				toastr.success(data.message, 'Success Alert', {timeOut: 5000});
+			}
+		});
+	});
+		
+	$('.follow-btn-default').off("click").on("click",function(e){
+		e.preventDefault();
+		
+		var title_id = $(this).parent().find('#title_id').val();
+		var user_id = $(this).parent().find('#user_id').val();		
+	
+		$.ajax({
+			dataType: 'json',
+			type:'POST',
+			url: '<?php echo site_url('title/follow'); ?>',
+			data:{title_id:title_id, user_id:user_id}
+		}).done(function(data){
+			// console.log(data);
+			if (data.is_followed == 1) {
+				$('.follow-btn-'+title_id).each(function() {
+					$(this).html('Unfollow');
+				});
+				toastr.success(data.message, 'Success Alert', {timeOut: 5000});
+			}
+			else
+			{
+				$('.follow-btn-'+title_id).each(function() {
+					$(this).html('Follow <i class="fa fa-plus" aria-hidden="true"></i>');
+				});
+				toastr.warning(data.message, 'Success Alert', {timeOut: 5000});
+			}
+		});
+	});
+	
+	$('.post-wishlist').off("click").on("click",function(e){
+		e.preventDefault();
+		
+		var element = $(this).attr('id');
+		var totl_likes = $(this).parent().find('#totl_likes').val();
+		var feedback_id = $(this).parent().find('#feedback_id').val();
+		var user_id = $(this).parent().find('#user_id').val();		
+	
+		$.ajax({
+			dataType: 'json',
+			type:'POST',
+			url: '<?php echo site_url('post/like'); ?>',
+			data:{feedback_id:feedback_id, user_id:user_id, totl_likes:totl_likes}
+		}).done(function(data){
+			// console.log(data);
+			if (data.is_liked == 1) {
+				var totl = parseInt(data.likes) + 1;	
+				$('#'+element).parent().find('#totl_likes').val(totl);
+							
+				$('#'+element).html('<i class="fa fa-heart" aria-hidden="true"></i><span class="total-likes"> '+totl+'</span>');
+				toastr.success(data.message, 'Success Alert', {timeOut: 5000});
+			}
+			else
+			{
+				var totl = parseInt(data.likes) - 1;
+				$('#'+element).parent().find('#totl_likes').val(totl);
+				
+				$('#'+element).html('<i class="fa fa-heart-o" aria-hidden="true"></i><span class="total-likes"> '+totl+'</span>');
+				toastr.warning(data.message, 'Success Alert', {timeOut: 5000});
+			}
+		});
+	});
+</script>

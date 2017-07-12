@@ -204,7 +204,7 @@ span.profile-text span i{color:#fff; cursor:pointer; float: right; font-size: 18
 .post-listing-follow-btn .back-arrow{float:left; cursor: pointer;}
 
 .post-listing-follow-btn .follow-btn {float: none;margin: 0 auto;width: 106px;border:#72777f solid 1px; border-radius:20px; padding:5px 20px;}
-.post-listing-follow-btn .follow-btn.fill{background:#53e69d;  border:#53e69d solid 1px; color:#fff;}
+.post-listing-follow-btn .follow-btn.fill{background:#53e69d;  border:#53e69d solid 1px; color:#fff;cursor: pointer;}
 .post-listing-follow-btn .follow-btn.fill i{color:#fff;}
 
 .follow-btn-default {float: none;margin: 0 20px 0 auto;width: 106px;border:#72777f solid 1px; border-radius:20px; padding:5px 20px; }

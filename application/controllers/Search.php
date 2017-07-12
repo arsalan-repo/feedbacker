@@ -58,4 +58,22 @@ class Search extends CI_Controller {
 		
 		echo json_encode($json);
 	}
+	
+	public function results() {
+		//check post and save data
+        if ($this->input->is_ajax_request() && $this->input->post('btn_save')) {
+			$this->form_validation->set_rules('email', 'Email', 'trim|valid_email|required');
+			
+			if ($this->form_validation->run() == FALSE) {
+				$this->session->set_flashdata('error', validation_errors());
+				redirect('user/profile');
+			}
+		}
+		
+		$this->data['module_name'] = 'Post';
+        $this->data['section_title'] = 'Search';
+		
+		/* Load Template */
+		$this->template->front_render('post/search', $this->data);
+	}
 }

@@ -81,11 +81,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
         </div>
         <?php } ?>
         <div class="post-detail-comment-form">
-          <h2>Write a comment</h2>
+          <h2><?php echo $this->lang->line('write_comment'); ?></h2>
           <form id="form-reply-post" name="form-reply-post" method="post" action="">
-            <label>Comment</label>
-            <input type="text" name="feedback_cont" id="feedback_cont" placeholder="Write comment here" />
-            <input type="text" name="location" id="location" placeholder="Location" />
+            <label><?php echo $this->lang->line('comment'); ?></label>
+            <input type="text" name="feedback_cont" id="feedback_cont" placeholder="<?php echo $this->lang->line('comment_here'); ?>" />
+            <input type="text" name="location" id="location" placeholder="<?php echo $this->lang->line('location'); ?>" />
           </form>
           <div class="post-btn-block">
             <div class="camera-map-icon"> 
@@ -94,7 +94,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                 <input name="Select File" type="file" />
             </div>            
             <img src="<?php echo base_url().'assets/images/map-icon.png'; ?>" alt="" /> </div>
-            <span class="post-btn">Post</span> </div>
+            <span class="post-btn"><?php echo $this->lang->line('post'); ?></span> </div>
     	</div>
     </div>
   </div>
