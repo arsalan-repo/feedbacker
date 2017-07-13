@@ -11,6 +11,7 @@
 <script src="<?php echo base_url().'assets/js/jquery-1.12.1.min.js';?>"></script>
 <!-- jQuery Validate -->
 <script src="<?php echo base_url().'assets/js/jquery.validate.min.js';?>"></script>
+<script src="<?php echo base_url().'assets/js/additional-methods.js';?>"></script>
 </head>
 
 <body>
@@ -117,7 +118,9 @@ $(function() {
 		
 		// Specify the validation error messages
 		messages: {
-			name: "Please enter your name",
+			name: {
+				required: "Please enter your name"
+			},
 			email: "Please enter a valid email address",
 			country: "Please select your country",
 			password: {

@@ -35,15 +35,15 @@ defined('BASEPATH') OR exit('No direct script access allowed');
       <h3><?php echo $this->lang->line('edit_profile'); ?> <span class="close-edit-popup"><img src="<?php echo base_url().'assets/images/close-icon.png'; ?>" alt="" /></span></h3>
       <?php
       $attributes = array('class' => '', 'id' => 'edit-profile-form');
-      echo form_open('user/update_profile', $attributes);
+      echo form_open('user/profile', $attributes);
       ?>
       <div class="login-form-block-edit-profile">
         <div class="edit-profile-popup-pic">
 		<?php 
 		if(isset($user_data['photo'])) {
-			echo '<img src="'.S3_CDN . 'uploads/user/thumbs/' . $user_data['photo'].'" alt="" />';
+			echo '<img id="profile" src="'.S3_CDN . 'uploads/user/thumbs/' . $user_data['photo'].'" alt="" height="134px" width="133px" />';
 		} else {
-			echo '<img src="'.ASSETS_URL . 'images/user-avatar-big.png" alt="" />';
+			echo '<img id="profile" src="'.ASSETS_URL . 'images/user-avatar-big.png" alt="" height="134px" width="133px" />';
 		} ?>
 		</div>
         <div class="fileUpload update-pic-btn">
@@ -65,20 +65,21 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		  </li>
 		  <li>
 			<label><?php echo $this->lang->line('birth_date'); ?></label>
-			<input type="text" name="dob" id="datepicker" placeholder="" value="<?php echo $user_data['dob']; ?>" />
-
+			<input type="text" name="dob" id="dob" placeholder="" value="<?php echo $user_data['dob']; ?>" />
 		  </li>
 		  <li class="country-select">
-			<label><?php echo $this->lang->line('country'); ?></label>
-			<!-- <input name="textfield" placeholder="Jordan" id="textfield" type="text"> -->
-			<select name="countries1" id="countries1">
-			  <option value="1">US</option>
-
-			  <option value="2">JO</option>
-			  <option value="3">IN</option>                  
-
-			</select>
-		  </li>
+            <label>Country</label>
+            <select name="country" id="country" class="form-control select2">
+                <option value="" disabled="disabled" selected="selected">Select Country</option>
+                <?php
+                foreach ($country_list as $country) {
+                    ?>
+                    <option value="<?php echo $country['country_code']; ?>" <?php if($user_data['country'] == $country['country_code']) echo 'selected="selected"'; ?>><?php echo $country['country_name']; ?></option>
+                    <?php
+                }
+                ?>
+            </select>
+          </li>
 		  <li>
 		  	<input type="hidden" name="user_id" id="user_id" value="<?php echo $user_data['id']; ?>" />
 			<input type="submit" name="btn_save" id="btn_save" value="<?php echo $this->lang->line('save'); ?>" />
@@ -91,6 +92,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 <!-- /.content-wrapper -->
 <script type="text/javascript">
 $(document).ready(function() {
+	
+	// Get Feedbacks and Followings
 	var element = $('.profile-listing-block');
 	var user_id = $('#edit-profile-form').find('#user_id').val();		
 	
@@ -99,38 +102,101 @@ $(document).ready(function() {
 		url: '<?php echo site_url('user/feedbacks'); ?>',
 		data:{user_id:user_id}
 	}).done(function(data){
-//		console.log(data);
 		element.html(data);
 	});
-	
-	$('#show-feedbacks').click(function(e) {
-		e.preventDefault();
-		
-		$.ajax({
-			type:'POST',
-			url: '<?php echo site_url('user/feedbacks'); ?>',
-			data:{user_id:user_id}
-		}).done(function(data){
-	//		console.log(data);
-			element.html(data);
-			$('#show-followings').removeClass("blue-btn").addClass("normal-btn");
-			$('#show-feedbacks').removeClass("normal-btn").addClass("blue-btn");
-		});
+			
+	// Load Datepicker
+	$("#dob").datepicker({
+		changeMonth: true,
+		changeYear: true,
+		dateFormat:'yy-mm-dd',
+		maxDate: '0',
+		yearRange: "-100:+0", // last hundred years
 	});
 	
-	$('#show-followings').click(function(e) {
-		e.preventDefault();
+	// Form validations
+	$("#edit-profile-form").validate({
+	
+		// Specify the validation rules
+		rules: {
+			name: {
+				required: true
+			},
+			country: {
+				required: true
+			}
+		},
 		
-		$.ajax({
-			type:'POST',
-			url: '<?php echo site_url('user/followings'); ?>',
-			data:{user_id:user_id}
-		}).done(function(data){
-	//		console.log(data);
-			element.html(data);
-			$('#show-feedbacks').removeClass("blue-btn").addClass("normal-btn");
-			$('#show-followings').removeClass("normal-btn").addClass("blue-btn");
-		});
+		// Specify the validation error messages
+		messages: {
+			name: {
+				required: "Please enter your name"
+			},
+			country: "Please select your country"
+		},
+		
+		submitHandler: function(form) {
+			$(".wrapper").removeClass("edit-profile-popup-open");
+			
+			$.ajax({
+				dataType: 'json',
+				type:'POST',
+				url: form.action,
+				data: $("#edit-profile-form").serialize()
+			}).done(function(data){
+				toastr.success(data.message, 'Success Alert', {timeOut: 5000});
+			});
+			
+			return false;
+		}
 	});
 });
+
+$(".edit-profile-btn").click(function(){
+	$(".wrapper").addClass("edit-profile-popup-open");
+});
+
+$('#show-feedbacks').click(function(e) {
+	e.preventDefault();
+	
+	$.ajax({
+		type:'POST',
+		url: '<?php echo site_url('user/feedbacks'); ?>',
+		data:{user_id:user_id}
+	}).done(function(data){
+		element.html(data);
+		$('#show-followings').removeClass("blue-btn").addClass("normal-btn");
+		$('#show-feedbacks').removeClass("normal-btn").addClass("blue-btn");
+	});
+});
+
+$('#show-followings').click(function(e) {
+	e.preventDefault();
+	
+	$.ajax({
+		type:'POST',
+		url: '<?php echo site_url('user/followings'); ?>',
+		data:{user_id:user_id}
+	}).done(function(data){
+		element.html(data);
+		$('#show-feedbacks').removeClass("blue-btn").addClass("normal-btn");
+		$('#show-followings').removeClass("normal-btn").addClass("blue-btn");
+	});
+});
+
+$("#photo").change(function(){
+	imagePreview(this);
+});
+
+function imagePreview(input) {
+	if (input.files && input.files[0]) {
+		var reader = new FileReader();
+		
+		reader.onload = function (e) {
+			$('#profile').attr('src', e.target.result);
+		}
+		
+		reader.readAsDataURL(input.files[0]);
+	}
+}
 </script>

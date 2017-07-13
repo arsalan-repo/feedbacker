@@ -137,11 +137,116 @@ class User extends CI_Controller {
 	public function profile() {
 		// Check post and save data
         if ($this->input->is_ajax_request() && $this->input->post('btn_save')) {
-			$this->form_validation->set_rules('email', 'Email', 'trim|valid_email|required');
+			$this->form_validation->set_rules('name', 'Name', 'trim|required');
+//			$this->form_validation->set_rules('email', 'Email', 'trim|valid_email|required');
+			$this->form_validation->set_rules('country', 'Country', 'trim|required');
 			
 			if ($this->form_validation->run() == FALSE) {
 				$this->session->set_flashdata('error', validation_errors());
 				redirect('user/profile');
+			}
+			
+			$user_id = $this->input->post('user_id');
+			$gender = $this->input->post('gender');
+			$name = $this->input->post('name');
+//			$email = $this->input->post('email');
+			$country = $this->input->post('country');
+			$dob = $this->input->post('dob');
+			
+			$update_data = array();
+			
+			if ($gender != '') {
+                $update_data['gender'] = $gender;
+            }
+            if ($name != '') {
+                $update_data['name'] = $name;
+            }
+            /*if ($email != '') {
+                $update_data['email'] = $email;
+            }*/
+            if ($country != '') {
+                $update_data['country'] = $country;
+            }
+            if ($dob != '') {
+                $update_data['dob'] = $dob;
+            }
+            
+			// Image Upload Starts
+            if (isset($_FILES['photo']['name']) && $_FILES['photo']['name'] != '') {
+                $config['upload_path'] = $this->config->item('user_main_upload_path');
+                $config['thumb_upload_path'] = $this->config->item('user_thumb_upload_path');
+                $config['allowed_types'] = 'jpg|png|jpeg|gif';
+                $config['file_name'] = time();
+
+                $this->load->library('upload');
+                $this->upload->initialize($config);
+                
+                //Uploading Image
+                $this->upload->do_upload('photo');
+                
+                //Getting Uploaded Image File Data
+                $imgdata = $this->upload->data();
+                $imgerror = $this->upload->display_errors();
+                
+                if ($imgerror == '') {
+                    
+                    //Configuring Thumbnail 
+                    $config_thumb['image_library'] = 'gd2';
+                    $config_thumb['source_image'] = $config['upload_path'] . $imgdata['file_name'];
+                    $config_thumb['new_image'] = $config['thumb_upload_path'] . $imgdata['file_name'];
+                    $config_thumb['create_thumb'] = TRUE;
+                    $config_thumb['maintain_ratio'] = FALSE;
+                    $config_thumb['thumb_marker'] = '';
+                    $config_thumb['width'] = $this->config->item('user_thumb_width');
+                    $config_thumb['height'] = $this->config->item('user_thumb_height');
+
+                    //Loading Image Library
+                    $this->load->library('image_lib', $config_thumb);
+                    $dataimage = $imgdata['file_name'];
+                    
+                    //Creating Thumbnail
+                    $this->image_lib->resize();
+                    $thumberror = $this->image_lib->display_errors();
+                    
+                    // AWS S3 Upload
+                    $thumb_file_path = str_replace("main", "thumbs", $imgdata['file_path']);
+                    $thumb_file_name = $config['thumb_upload_path'] . $imgdata['raw_name'].$imgdata['file_ext'];
+                    
+                    $this->s3->putObjectFile($imgdata['full_path'], S3_BUCKET, $config_thumb['source_image'], S3::ACL_PUBLIC_READ);
+                    $this->s3->putObjectFile($thumb_file_path.$dataimage, S3_BUCKET, $thumb_file_name, S3::ACL_PUBLIC_READ);
+
+                    // Remove File from Local Storage
+                    unlink($config_thumb['source_image']);
+                    unlink($thumb_file_name);
+                } else {
+                    $thumberror = '';
+                }
+
+                if ($imgerror != '' || $thumberror != '') {
+                    $error[0] = $imgerror;
+                    $error[1] = $thumberror;
+                } else {
+                    $main_old_file = $this->config->item('user_main_upload_path') . $user_data[0]['photo'];
+                    $thumb_old_file = $this->config->item('user_thumb_upload_path') . $user_data[0]['photo'];
+
+                    $error = array();
+                }
+
+                if ($error) {
+                    echo json_encode(array('result' => array(), 'message' => $error[0], 'status' => 0));
+                    die();
+                }
+                $update_data['photo'] = $dataimage;
+            } // Image Upload Ends
+			
+			if(!empty($update_data)) {
+                $this->common->update_data($update_data, 'users', 'id', $user_id);
+				
+				echo json_encode(array('message' => $this->lang->line('success_msg_profile_saved'), 'status' => 1));
+                die();
+			} else {
+				echo json_encode(array('message' => $this->lang->line('success_no_profile_update'), 'status' => 0));
+                die();
 			}
 		}
 		
@@ -153,6 +258,7 @@ class User extends CI_Controller {
 		$user_result = $this->common->select_data_by_condition('users', $contition_array, $data = '*', $sortby = '', $orderby = '', $limit = '', $offset = '', $join_str = array());
 		
 		$this->data['user_data'] = $user_result[0];
+		$this->data['country_list'] = $this->common->select_data_by_condition('countries', $contition_array = array(), '*', $short_by = 'country_name', $order_by = 'ASC', $limit = '', $offset = '');
 		
 		/* Load Template */
 		$this->template->front_render('user/profile', $this->data);
@@ -421,188 +527,6 @@ class User extends CI_Controller {
 			echo json_encode($response);
 		}
 	}
-
-    function update_profile() {
-        $user_id = $this->input->post('user_id');
-        $gender = $this->input->post('gender');
-        $name = $this->input->post('name');
-        $email = $this->input->post('email');
-        $country = $this->input->post('country');
-        $dob = $this->input->post('dob');
-        
-        $update_data = array();
-        $error = '';
-        
-        if ($user_id == '') {
-            $error = 1;
-            echo json_encode(array('RESULT' => array(), 'MESSAGE' => 'Please enter user id', 'STATUS' => 0));
-            die();
-        } else {
-            if ($email != '') {
-                $condition_array = array('id !=' => $user_id);
-                $check_result = $this->common->check_unique_avalibility('users', 'email', $email, '', '', $condition_array);
-    
-                if ($check_result == 1) {
-                    $error = 1;
-                    echo json_encode(array('RESULT' => array(), 'MESSAGE' => $this->lang->line('error_msg_email_exits'), 'STATUS' => 0));
-                    //$this->returnData($data = array(), $message = "Email id already exits", $status = 0);
-                    die();
-                }
-            }
-
-            $condition_array = array('id' => $user_id);
-            $user_data = $this->common->select_data_by_condition('users', $condition_array, $data = 'id, name, email, gender, dob, country, photo', $short_by = '', $order_by = '', $limit = '', $offset = '', $join_str = array(), $group_by = '');
-
-            if ($gender != '') {
-                $update_data['gender'] = $gender;
-            }
-            if ($name != '') {
-                $update_data['name'] = $name;
-            }
-            if ($email != '') {
-                $update_data['email'] = $email;
-            }
-            if ($country != '') {
-                $update_data['country'] = $country;
-            }
-            if ($dob != '') {
-                $update_data['dob'] = $dob;
-            }
-            
-            if (isset($_FILES['image']['name']) && $_FILES['image']['name'] != '') {
-                $config['upload_path'] = $this->config->item('user_main_upload_path');
-                $config['thumb_upload_path'] = $this->config->item('user_thumb_upload_path');
-                $config['allowed_types'] = 'jpg|png|jpeg|gif';
-                $config['file_name'] = time();
-
-                $this->load->library('upload');
-                $this->upload->initialize($config);
-                
-                //Uploading Image
-                $this->upload->do_upload('image');
-                
-                //Getting Uploaded Image File Data
-                $imgdata = $this->upload->data();
-                $imgerror = $this->upload->display_errors();
-                
-                if ($imgerror == '') {
-                    
-                    //Configuring Thumbnail 
-                    $config_thumb['image_library'] = 'gd2';
-                    $config_thumb['source_image'] = $config['upload_path'] . $imgdata['file_name'];
-                    $config_thumb['new_image'] = $config['thumb_upload_path'] . $imgdata['file_name'];
-                    $config_thumb['create_thumb'] = TRUE;
-                    $config_thumb['maintain_ratio'] = FALSE;
-                    $config_thumb['thumb_marker'] = '';
-                    $config_thumb['width'] = $this->config->item('user_thumb_width');
-                    $config_thumb['height'] = $this->config->item('user_thumb_height');
-
-                    //Loading Image Library
-                    $this->load->library('image_lib', $config_thumb);
-                    $dataimage = $imgdata['file_name'];
-                    
-                    //Creating Thumbnail
-                    $this->image_lib->resize();
-                    $thumberror = $this->image_lib->display_errors();
-                    
-                    // AWS S3 Upload
-                    $thumb_file_path = str_replace("main", "thumbs", $imgdata['file_path']);
-                    $thumb_file_name = $config['thumb_upload_path'] . $imgdata['raw_name'].$imgdata['file_ext'];
-                    
-                    $this->s3->putObjectFile($imgdata['full_path'], S3_BUCKET, $config_thumb['source_image'], S3::ACL_PUBLIC_READ);
-                    $this->s3->putObjectFile($thumb_file_path.$dataimage, S3_BUCKET, $thumb_file_name, S3::ACL_PUBLIC_READ);
-//                  echo $s3file = S3_CDN.$config_thumb['source_image'];
-//                  echo "<br/>";
-//                  echo $s3file = S3_CDN.$thumb_file_name; exit();
-
-                    // Remove File from Local Storage
-                    unlink($config_thumb['source_image']);
-                    unlink($thumb_file_name);
-                } else {
-                    $thumberror = '';
-                }
-
-                if ($imgerror != '' || $thumberror != '') {
-                    $error[0] = $imgerror;
-                    $error[1] = $thumberror;
-                } else {
-                    $main_old_file = $this->config->item('user_main_upload_path') . $user_data[0]['photo'];
-                    $thumb_old_file = $this->config->item('user_thumb_upload_path') . $user_data[0]['photo'];
-
-                    /*    if (file_exists($main_old_file)) {
-                      unlink($main_old_file);
-                      }
-                      if (file_exists($thumb_old_file)) {
-                      unlink($thumb_old_file);
-                      } */
-                    $error = array();
-                }
-
-                if ($error) {
-                    echo json_encode(array('RESULT' => array(), 'MESSAGE' => $error[0], 'STATUS' => 0));
-                    die();
-                }
-                $update_data['photo'] = $dataimage;
-            }
-            
-            if(!empty($update_data)) {
-                $this->common->update_data($update_data, 'users', 'id', $user_id);
-                if(isset($update_data['gender'])) {
-                    $user_data[0]['gender'] = $update_data['gender'];
-                }
-                if(isset($update_data['name'])) {
-                    $user_data[0]['name'] = $update_data['name'];
-                }
-                if(isset($update_data['email'])) {
-                    $user_data[0]['email'] = $update_data['email'];
-                }
-                if(isset($update_data['country'])) {
-                    $user_data[0]['country'] = $update_data['country'];
-                }
-                if(isset($update_data['dob'])) {
-                    $date = date_create($user_data[0]['dob']);
-                    $user_data[0]['dob'] = date_format($date, 'd-M-Y');
-                } else {
-                    $user_data[0]['dob'] = "";
-                }
-
-                if(isset($update_data['photo'])) {
-                    $user_data[0]['photo'] = S3_CDN . 'uploads/user/thumbs/' . $update_data['photo'];
-                } elseif(isset($user_data[0]['photo'])) {
-                    $user_data[0]['photo'] = S3_CDN . 'uploads/user/thumbs/' . $user_data[0]['photo'];
-                } else {
-                    $user_data[0]['photo'] = ASSETS_URL . 'images/user-avatar.png';
-                }
-
-                array_walk_recursive($user_data, function (&$item, $key) {
-                    $item = null === $item ? '' : $item;
-                });             
-                                                
-                echo json_encode(array('RESULT' => $user_data, 'MESSAGE' => $this->lang->line('success_msg_profile_saved'), 'STATUS' => 1));
-                die();
-            } else {
-                if(isset($user_data[0]['photo'])) {
-                    $user_data[0]['photo'] = S3_CDN . 'uploads/user/thumbs/' . $user_data[0]['photo'];
-                } else {
-                    $user_data[0]['photo'] = ASSETS_URL . 'images/user-avatar.png';
-                }
-                if(isset($user_data[0]['dob'])) {
-                    $date = date_create($user_data[0]['dob']);
-                    $user_data[0]['dob'] = date_format($date, 'd-M-Y');
-                } else {
-                    $user_data[0]['dob'] = "";
-                }
-
-                array_walk_recursive($user_data, function (&$item, $key) {
-                    $item = null === $item ? '' : $item;
-                });
-                
-                echo json_encode(array('RESULT' => $user_data, 'MESSAGE' => $this->lang->line('success_no_profile_update'), 'STATUS' => 0));
-                //$this->returnData($data = array(), $message = "Email id already exits", $status = 0);
-                die();
-            }
-        }
-    }
 	
 	public function settings() {
 		$this->data['module_name'] = 'User';
