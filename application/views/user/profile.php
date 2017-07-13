@@ -153,46 +153,46 @@ $(document).ready(function() {
 			return false;
 		}
 	});
-});
-
-$(".edit-profile-btn").click(function(){
-	$(".wrapper").addClass("edit-profile-popup-open");
-});
-
-$(".close-edit-popup").click(function(){
-	$(".wrapper").removeClass("edit-profile-popup-open");
-});
-
-$('#show-feedbacks').click(function(e) {
-	e.preventDefault();
 	
-	$.ajax({
-		type:'POST',
-		url: '<?php echo site_url('user/feedbacks'); ?>',
-		data:{user_id:user_id}
-	}).done(function(data){
-		element.html(data);
-		$('#show-followings').removeClass("blue-btn").addClass("normal-btn");
-		$('#show-feedbacks').removeClass("normal-btn").addClass("blue-btn");
+	$(".edit-profile-btn").click(function(){
+		$(".wrapper").addClass("edit-profile-popup-open");
 	});
-});
-
-$('#show-followings').click(function(e) {
-	e.preventDefault();
 	
-	$.ajax({
-		type:'POST',
-		url: '<?php echo site_url('user/followings'); ?>',
-		data:{user_id:user_id}
-	}).done(function(data){
-		element.html(data);
-		$('#show-feedbacks').removeClass("blue-btn").addClass("normal-btn");
-		$('#show-followings').removeClass("normal-btn").addClass("blue-btn");
+	$(".close-edit-popup").click(function(){
+		$(".wrapper").removeClass("edit-profile-popup-open");
 	});
-});
-
-$("#photo").change(function(){
-	imagePreview(this);
+	
+	$('#show-feedbacks').click(function(e) {
+		e.preventDefault();
+		
+		$.ajax({
+			type:'POST',
+			url: '<?php echo site_url('user/feedbacks'); ?>',
+			data:{user_id:user_id}
+		}).done(function(data){
+			element.html(data);
+			$('#show-followings').removeClass("blue-btn").addClass("normal-btn");
+			$('#show-feedbacks').removeClass("normal-btn").addClass("blue-btn");
+		});
+	});
+	
+	$('#show-followings').click(function(e) {
+		e.preventDefault();
+		
+		$.ajax({
+			type:'POST',
+			url: '<?php echo site_url('user/followings'); ?>',
+			data:{user_id:user_id}
+		}).done(function(data){
+			element.html(data);
+			$('#show-feedbacks').removeClass("blue-btn").addClass("normal-btn");
+			$('#show-followings').removeClass("normal-btn").addClass("blue-btn");
+		});
+	});
+	
+	$("#photo").change(function(){
+		imagePreview(this);
+	});
 });
 
 function imagePreview(input) {
