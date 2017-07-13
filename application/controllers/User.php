@@ -543,9 +543,47 @@ class User extends CI_Controller {
 		$this->data['module_name'] = 'User';
         $this->data['section_title'] = 'Settings';
 		
+		// Get Languages
+		$contition_array = array('lang_status' => 1);
+        $this->data['languages'] = $this->common->select_data_by_condition('languages', $contition_array, $data = 'lang_id, lang_code, lang_name');
+		
+		// Get Settings
+		$condition_array = array('id' => 4);
+        $this->data['terms'] = $this->common->select_data_by_condition('pages', $condition_array, 'id, name, description');
+		
 		/* Load Template */
 		$this->template->front_render('user/settings', $this->data);
 	}
+	
+	// Set Language
+    function set_language() {
+        $lang_id = $this->input->post('lang_id');
+
+        if ($lang_id == '') {
+            echo json_encode(array('RESULT' => array(), 'MESSAGE' => 'Please select your language', 'STATUS' => 0));
+            die();
+        }
+
+        $data = array('lang_id' => $lang_id);
+        $update_settings = $this->common->update_data($data, 'users', 'id', $this->user['id']);
+
+        if($update_settings) {
+			// Update Session Data
+			$this->user['lang_id'] = $lang_id;
+			
+			$contition_array = array('lang_id' => $lang_id);
+			$language = $this->common->select_data_by_condition('languages', $contition_array, $data = 'lang_code');
+			$this->user['language'] = $language[0]['lang_code'];
+			
+			$this->session->set_userdata('mec_user', $this->user);
+			
+			echo json_encode(array('message' => $this->lang->line('success_language_set'), 'status' => 1));
+            die();
+        } else {
+            echo json_encode(array('message' => $this->lang->line('error_something_wrong'), 'status' => 0));
+            die();
+        }
+    }
 	
 	public function notifications() {
 		$this->data['module_name'] = 'User';

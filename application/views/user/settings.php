@@ -14,25 +14,27 @@ defined('BASEPATH') OR exit('No direct script access allowed');
           <li class="tab-link" data-tab="tab-4"><?php echo $this->lang->line('terms_cond'); ?></li>
       </ul>
       <div id="tab-1" class="tab-content language-tab current">
-          <form id="form1" name="form1" method="post" action="">
+          <?php
+			$attributes = array('id' => 'lang-form');
+			echo form_open('user/set_language', $attributes); ?>
             <ul>
+              <?php foreach($languages as $lang) { ?>
               <li>
-              
-				 <input type="radio" name="radiog_dark" id="radio4" class="css-checkbox" />
-                 <label for="radio4" class="css-label radGroup2">English</label>
+				 <input type="radio" name="lang_id" id="<?php echo $lang['lang_code']; ?>" value="<?php echo $lang['lang_id']; ?>" class="css-checkbox" <?php if($user_info['lang_id'] == $lang['lang_id']) echo 'checked="checked"'; ?>/>
+                 <label for="<?php echo $lang['lang_code']; ?>" class="css-label radGroup2"><?php echo $lang['lang_name']; ?></label>
               </li>
+			  <?php } ?>
               <li>
-				 <input type="radio" name="radiog_dark" id="radio5" class="css-checkbox" checked="checked"/>
-                 <label for="radio5" class="css-label radGroup2">Arabic</label>
-              </li>
-              <li>
-                <input type="submit" name="button" id="button" value="<?php echo $this->lang->line('save'); ?>" />
+			  	<input type="hidden" name="lang_code" id="lang_code" value="<?php echo $lang['lang_code']; ?>" />
+                <input type="submit" name="btn_save" id="btn_save" value="<?php echo $this->lang->line('save'); ?>" />
               </li>
             </ul>
-          </form>
+          <?php echo form_close(); ?>
       </div>
       <div id="tab-2" class="tab-content change-password-tab">
-          <form id="form1" name="form1" method="post" action="">
+          <?php
+			$attributes = array('id' => 'pass-form');
+			echo form_open('user/change_password', $attributes); ?>
             <ul>
               <li>
                 <label><?php echo $this->lang->line('old_pass'); ?></label>
@@ -51,10 +53,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
               </li>
               <li> </li>
             </ul>
-          </form>
+          <?php echo form_close(); ?>
       </div>
       <div id="tab-3" class="tab-content contact-tab">
-          <form id="form1" name="form1" method="post" action="">
+          <?php
+			$attributes = array('id' => 'contact-form');
+			echo form_open('user/contact_us', $attributes); ?>
             <ul>
               <li>
                 <label><?php echo $this->lang->line('name'); ?></label>
@@ -73,13 +77,33 @@ defined('BASEPATH') OR exit('No direct script access allowed');
               </li>
               <li> </li>
             </ul>
-          </form>
+          <?php echo form_close(); ?>
       </div>
       <div id="tab-4" class="tab-content terms-tab">
-          <p> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque mattis in nulla eget faucibus. In lacinia ligula sed condimentum consectetur. Integer magna felis, varius consectetur nisl ac, aliquam feugiat ipsum. Vestibulum aliquam lectus ac eros accumsan, quis porttitor enim auctor. Quisque id porttitor enim. Donec sit amet metus malesuada, condimentum ipsum in, vulputate quam. Vestibulum sit amet nisi ac odio ornare lobortis quis non tellus. Nunc sit amet eros orci. Cras nec lectus in turpis sodales ultrices. </p>
-          <p>Nam ac tempor dolor, eu accumsan odio. Sed non sem convallis, gravida lacus eu, sagittis neque. Praesent ut felis mattis, vehicula turpis ut, rutrum orci. Donec elementum ipsum at ligula eleifend, id vulputate nibh gravida. Sed laoreet iaculis elit, sit amet elementum urna. Fusce massa ex, facilisis dapibus arcu in, lacinia ultricies diam. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Donec mollis commodo felis id placerat. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Ut sit amet enim consequat, rutrum magna et, semper nunc. </p>
+          <?php echo $terms[0]['description']; ?>
       </div>
       
     </div>
   </div>
 <!-- /.content-wrapper -->
+<script type="text/javascript">
+$(document).ready(function() {
+	// Set Language
+	$("#lang-form").submit(function(event) {	
+		event.preventDefault();
+		
+		$.ajax({
+			dataType: 'json',
+			type:'POST',
+			url: this.action,
+			data: $(this).serialize()
+		}).done(function(data){
+			if(data.status == 1) {
+				toastr.success(data.message, 'Success Alert', {timeOut: 5000});
+			} else {
+				toastr.error(data.message, 'Failure Alert', {timeOut: 5000});
+			}
+		});
+	});
+});
+</script>
