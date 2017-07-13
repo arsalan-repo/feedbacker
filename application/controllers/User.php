@@ -585,6 +585,50 @@ class User extends CI_Controller {
         }
     }
 	
+	//Change Password
+    function change_password() {
+        $old_pass = $this->input->post('old_pass');
+        $new_pass = $this->input->post('new_pass');
+
+        $error = '';
+        if ($old_pass == '') {
+            $error = 1;
+            echo json_encode(array('message' => $this->lang->line('error_msg_old_pass_message'), 'status' => 0));
+            die();
+        }
+        if ($new_pass == '') {
+            $error = 1;
+            echo json_encode(array('message' => $this->lang->line('error_msg_new_pass_message'), 'status' => 0));
+            die();
+        }
+        if ($error == 1) {
+            echo json_encode(array('message' => $this->lang->line('error_msg_details'), 'status' => 0));
+            die();
+        } else {
+
+            // check old password is correct or not
+            $check_old_pass = $this->common->select_data_by_id('users', 'id', $this->user['id'], $data = 'password', $join_str = array());
+
+            if (count($check_old_pass) > 0) {
+                $old_db_pass = $check_old_pass[0]['password'];
+
+                if (md5($old_pass) != $old_db_pass) {
+                    echo json_encode(array('message' => $this->lang->line('error_msg_correct_old_password'), 'status' => 0));
+                    die();
+                } else {
+                    $data = array('password' => md5($new_pass));
+                    $update = $this->common->update_data($data, 'users', 'id', $this->user['id']);
+					
+                    echo json_encode(array('message' => $this->lang->line('success_change_password'), 'status' => 1));
+                    die();
+                }
+            } else {
+                echo json_encode(array('message' => $this->lang->line('no_record_found'), 'status' => 0));
+                die();
+            }
+        }
+    }
+	
 	public function notifications() {
 		$this->data['module_name'] = 'User';
         $this->data['section_title'] = 'Notifications';

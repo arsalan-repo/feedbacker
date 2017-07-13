@@ -580,7 +580,7 @@ class V1 extends CI_Controller {
             die();
         }
         if ($error == 1) {
-            echo (array('RESULT' => array(), 'MESSAGE' => $this->lang->line('error_msg_details'), 'STATUS' => 0));
+            echo json_encode(array('RESULT' => array(), 'MESSAGE' => $this->lang->line('error_msg_details'), 'STATUS' => 0));
             die();
         } else {
 

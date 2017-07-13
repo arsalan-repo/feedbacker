@@ -33,25 +33,24 @@ defined('BASEPATH') OR exit('No direct script access allowed');
       </div>
       <div id="tab-2" class="tab-content change-password-tab">
           <?php
-			$attributes = array('id' => 'pass-form');
+			$attributes = array('id' => 'pass-form',  'autocomplete' => 'off');
 			echo form_open('user/change_password', $attributes); ?>
             <ul>
               <li>
                 <label><?php echo $this->lang->line('old_pass'); ?></label>
-                <input type="password" placeholder="" name="textfield" id="textfield" />
+                <input type="password" placeholder="" name="old_pass" id="old_pass" />
               </li>
               <li>
                 <label><?php echo $this->lang->line('new_pass'); ?></label>
-                <input type="text" placeholder="" name="textfield" id="textfield" />
+                <input type="password" placeholder="" name="new_pass" id="new_pass" />
               </li>
               <li>
                 <label><?php echo $this->lang->line('confirm_pass'); ?></label>
-                <input type="text" name="textfield" placeholder="" id="textfield" />
+                <input type="password" placeholder="" name="confirm_pass" id="confirm_pass" />
               </li>
               <li>
-                <input type="submit" name="button" id="button" value="<?php echo $this->lang->line('save'); ?>" />
+                <input type="submit" name="btn_save" id="btn_save" value="<?php echo $this->lang->line('save'); ?>" />
               </li>
-              <li> </li>
             </ul>
           <?php echo form_close(); ?>
       </div>
@@ -104,6 +103,60 @@ $(document).ready(function() {
 				toastr.error(data.message, 'Failure Alert', {timeOut: 5000});
 			}
 		});
+	});
+	
+	// Change Password
+	$("#pass-form").validate({
+	
+		// Specify the validation rules
+		rules: {
+			old_pass: {
+				required: true,
+				minlength: 3,
+				maxlength: 15
+			},
+			new_pass: {
+				required: true,
+				minlength: 3,
+				maxlength: 15
+			},
+			confirm_pass: {
+				required: true,
+				equalTo: "#new_pass",
+				minlength: 3,
+				maxlength: 15
+			}
+		},
+		
+		// Specify the validation error messages
+		messages: {
+			old_pass: {
+				required: "Please enter your existing password"
+			},
+			new_pass: {
+				required: "Please enter your new password"
+			},
+			confirm_pass: {
+				required: "Please confirm your new password"
+			},
+		},
+		
+		submitHandler: function(form) {
+			$.ajax({
+				dataType: 'json',
+				type:'POST',
+				url: form.action,
+				data: $("#pass-form").serialize()
+			}).done(function(data){
+				if(data.status == 1) {
+					toastr.success(data.message, 'Success Alert', {timeOut: 5000});
+				} else {
+					toastr.error(data.message, 'Failure Alert', {timeOut: 5000});
+				}
+			});
+			
+			return false;
+		}
 	});
 });
 </script>
