@@ -40,7 +40,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
         <div class="middle-content-block" id="post-data">
           <?php 
 		  if (!empty($feedbacks)) {
-		  	$this->load->view('user/feedbacks', $feedbacks);
+		  	$this->load->view('user/ajax', $feedbacks);
           } else {
           	echo $no_record_found;
           } ?>
