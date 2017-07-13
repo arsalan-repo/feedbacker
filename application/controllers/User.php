@@ -241,10 +241,16 @@ class User extends CI_Controller {
                 $update_data['photo'] = $dataimage;
 				
 				$this->user['photo'] = $dataimage;  
-				$this->session->set_userdata('mec_user', $this->user);
             } // Image Upload Ends
 			
 			if(!empty($update_data)) {
+				// Update Session Data
+				$this->user['name'] = $name;
+				$this->user['country'] = $country;
+				$this->user['gender'] = $gender;
+				$this->user['dob'] = $dob;
+				
+				$this->session->set_userdata('mec_user', $this->user);
                 $this->common->update_data($update_data, 'users', 'id', $user_id);
 				
 				echo json_encode(array('message' => $this->lang->line('success_msg_profile_saved'), 'status' => 1));
