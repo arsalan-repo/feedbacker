@@ -118,6 +118,7 @@ span.profile-text span i{color:#fff; cursor:pointer; float: right; font-size: 18
 .home-left-profile {background: #005db9;border-radius: 10px;float: left;overflow:hidden;padding: 88px 0 0;width: 100%;}
 .home-left-section {background: #fff;float:left;padding: 0px 20px 25px;}
 .home-left-profile-thumb {border: 3px solid #fff;border-radius: 3px;float: left;margin-right: 15px;margin-top: -25px;}
+.home-left-profile-thumb img {height: 75px; width: 75px;}
 .home-left-profile-name {color: #31323e;font-size: 18px;font-weight: 600;}
 .home-left-profile-designation {font-size: 14px;color: #878893;}
 .home-left-followers-block {padding: 20px 0;color:#005db9;font-size:16px;}

@@ -10,9 +10,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			<div class="container">
 				<?php 
 				if(isset($user_data['photo'])) {
-				echo '<img src="'.S3_CDN . 'uploads/user/thumbs/' . $user_data['photo'].'" alt="" height="134px" width="133px" />';
+				echo '<img src="'.S3_CDN . 'uploads/user/thumbs/' . $user_data['photo'].'" alt="" />';
 				} else {
-				echo '<img src="'.ASSETS_URL . 'images/user-avatar-big.png" alt="" height="134px" width="133px" />';
+				echo '<img src="'.ASSETS_URL . 'images/user-avatar-big.png" alt="" />';
 				}
 				?>
 				<h3><?php echo $user_data['name']; ?></h3>
@@ -41,9 +41,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
         <div class="edit-profile-popup-pic">
 		<?php 
 		if(isset($user_data['photo'])) {
-			echo '<img id="profile" src="'.S3_CDN . 'uploads/user/thumbs/' . $user_data['photo'].'" alt="" height="134px" width="133px" />';
+			echo '<img id="profile" src="'.S3_CDN . 'uploads/user/thumbs/' . $user_data['photo'].'" alt="" />';
 		} else {
-			echo '<img id="profile" src="'.ASSETS_URL . 'images/user-avatar-big.png" alt="" height="134px" width="133px" />';
+			echo '<img id="profile" src="'.ASSETS_URL . 'images/user-avatar-big.png" alt="" />';
 		} ?>
 		</div>
         <div class="fileUpload update-pic-btn">

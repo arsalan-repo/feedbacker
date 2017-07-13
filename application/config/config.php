@@ -562,8 +562,8 @@ $config['user_main_max_height'] = '10000';
 
 //Path to upload user's Thumbnail File
 $config['user_thumb_upload_path'] = 'uploads/user/thumbs/';
-$config['user_thumb_width'] = '250';
-$config['user_thumb_height'] = '250';
+$config['user_thumb_width'] = '135';
+$config['user_thumb_height'] = '135';
 
 /* End of file config.php */
 /* Location: ./application/config/config.php */
