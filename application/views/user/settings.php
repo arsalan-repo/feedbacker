@@ -61,18 +61,18 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             <ul>
               <li>
                 <label><?php echo $this->lang->line('name'); ?></label>
-                <input type="text" placeholder="" name="textfield" id="textfield" />
+                <input type="text" placeholder="" name="name" id="name" />
               </li>
               <li>
                 <label><?php echo $this->lang->line('email'); ?></label>
-                <input type="text" placeholder="" name="textfield" id="textfield" />
+                <input type="text" placeholder="" name="email" id="email" />
               </li>
               <li>
                 <label><?php echo $this->lang->line('comment'); ?></label>
-                <input type="text" name="textfield" placeholder="" id="textfield" />
+                <input type="text" placeholder="" name="message" id="message" />
               </li>
               <li>
-                <input type="submit" name="button" id="button" value="<?php echo $this->lang->line('send'); ?>" />
+                <input type="submit" name="btn_save" id="btn_save" value="<?php echo $this->lang->line('send'); ?>" />
               </li>
               <li> </li>
             </ul>
@@ -147,6 +147,58 @@ $(document).ready(function() {
 				type:'POST',
 				url: form.action,
 				data: $("#pass-form").serialize()
+			}).done(function(data){
+				if(data.status == 1) {
+					toastr.success(data.message, 'Success Alert', {timeOut: 5000});
+				} else {
+					toastr.error(data.message, 'Failure Alert', {timeOut: 5000});
+				}
+			});
+			
+			return false;
+		}
+	});
+	
+	// Contact Us
+	$("#contact-form").validate({
+	
+		// Specify the validation rules
+		rules: {
+			name: {
+				required: true,
+				minlength: 3,
+				maxlength: 25
+			},
+			email: {
+				required: true,
+				email: true
+			},
+			message: {
+				required: true,
+				minlength: 3,
+				maxlength: 500
+			}
+		},
+		
+		// Specify the validation error messages
+		messages: {
+			name: {
+				required: "Please enter your name"
+			},
+			email: {
+				required: "Please enter your email"
+			},
+			message: {
+				required: "Please enter your message"
+			},
+		},
+		
+		submitHandler: function(form) {
+			$.ajax({
+				dataType: 'json',
+				type:'POST',
+				url: form.action,
+				data: $("#contact-form").serialize()
 			}).done(function(data){
 				if(data.status == 1) {
 					toastr.success(data.message, 'Success Alert', {timeOut: 5000});

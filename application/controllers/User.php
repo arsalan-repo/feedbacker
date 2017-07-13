@@ -629,6 +629,59 @@ class User extends CI_Controller {
         }
     }
 	
+	// Contact Us
+    function contact_us() {
+        $name = $this->input->post('name');
+        $email = $this->input->post('email');
+        $message = $this->input->post('message');
+
+        if ($name == '') {
+            $error = 1;
+            echo json_encode(array('RESULT' => array(), 'MESSAGE' => $this->lang->line('error_msg_name'), 'STATUS' => 0));
+            exit();
+        }
+        if ($email == '') {
+            $error = 1;
+            echo json_encode(array('RESULT' => array(), 'MESSAGE' => $this->lang->line('error_msg_email'), 'STATUS' => 0));
+            exit();
+        }
+		if ($message == '') {
+            $error = 1;
+            echo json_encode(array('RESULT' => array(), 'MESSAGE' => $this->lang->line('error_msg_message'), 'STATUS' => 0));
+            exit();
+        } else {
+
+            $insert_array['name'] = $name;
+            $insert_array['email'] = trim($email);
+            $insert_array['message'] = $message;
+            $insert_array['posted_on'] = date('Y-m-d h:i:s');
+
+            $insert_result = $this->common->insert_data_getid($insert_array, $tablename = 'contactus');
+            $condition_array = array('emailid' => '3');
+            $emailformat = $this->common->select_data_by_condition('emails', $condition_array, '*');
+
+            $mail_body = $emailformat[0]['varmailformat'];
+
+            $phone = 'N/A';
+            $subject = 'You\'ve got new enquiry!';
+
+            $mail_body = html_entity_decode(str_replace("%name%", ucfirst($name), str_replace("%user_email%", $email, str_replace("%phone%", $phone, str_replace("%subject%", $subject, str_replace("%message%", $message, stripslashes($mail_body)))))));
+
+            // Find where to send new enquiry
+            $settings = $this->common->getSettings('contact_mail');
+
+            $send_mail = $this->common->sendMail($settings[0]['setting_value'], '', $emailformat[0]['varsubject'], $mail_body);
+
+            if ($send_mail) {
+                echo json_encode(array('message' => $this->lang->line('success_msg_sent_message'), 'status' => 1));
+                exit();
+            } else {
+                echo json_encode(array('message' => $this->lang->line('error_msg_not_able_to_send_msg'), 'status' => 0));
+                exit();
+            }
+        }
+    }
+	
 	public function notifications() {
 		$this->data['module_name'] = 'User';
         $this->data['section_title'] = 'Notifications';

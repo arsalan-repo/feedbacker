@@ -513,7 +513,7 @@ class V1 extends CI_Controller {
                 exit();
             } else {
                 // echo json_encode(array('RESULT' => array(), 'MESSAGE' => $this->lang->line('error_msg_not_able_to_send_msg'), 'STATUS' => 0));
-                echo json_encode(array('RESULT' => array(), 'MESSAGE' => $this->lang->line('success_msg_sent_message'), 'STATUS' => 1));
+                echo json_encode(array('RESULT' => array(), 'MESSAGE' => $this->lang->line('error_msg_not_able_to_send_msg'), 'STATUS' => 0));
                 exit();
             }
         }
