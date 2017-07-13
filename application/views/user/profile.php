@@ -10,9 +10,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			<div class="container">
 				<?php 
 				if(isset($user_data['photo'])) {
-				echo '<img src="'.S3_CDN . 'uploads/user/thumbs/' . $user_data['photo'].'" alt="" />';
+				echo '<img src="'.S3_CDN . 'uploads/user/thumbs/' . $user_data['photo'].'" alt="" height="134px" width="133px" />';
 				} else {
-				echo '<img src="'.ASSETS_URL . 'images/user-avatar-big.png" alt="" />';
+				echo '<img src="'.ASSETS_URL . 'images/user-avatar-big.png" alt="" height="134px" width="133px" />';
 				}
 				?>
 				<h3><?php echo $user_data['name']; ?></h3>
@@ -34,8 +34,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
     <div class="login-form-fields">
       <h3><?php echo $this->lang->line('edit_profile'); ?> <span class="close-edit-popup"><img src="<?php echo base_url().'assets/images/close-icon.png'; ?>" alt="" /></span></h3>
       <?php
-      $attributes = array('class' => '', 'id' => 'edit-profile-form');
-      echo form_open('user/profile', $attributes);
+      $attributes = array('id' => 'edit-profile-form', 'enctype' => 'multipart/form-data');
+      echo form_open_multipart('user/profile', $attributes);
       ?>
       <div class="login-form-block-edit-profile">
         <div class="edit-profile-popup-pic">
@@ -86,6 +86,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		  </li>
 		</ul>
       </div>
+	  <?php echo form_close(); ?>
 	</div>
   </div>
 </div>
@@ -137,12 +138,14 @@ $(document).ready(function() {
 		
 		submitHandler: function(form) {
 			$(".wrapper").removeClass("edit-profile-popup-open");
-			
+
 			$.ajax({
 				dataType: 'json',
 				type:'POST',
 				url: form.action,
-				data: $("#edit-profile-form").serialize()
+				data: new FormData(form),
+				processData: false,
+				contentType: false
 			}).done(function(data){
 				toastr.success(data.message, 'Success Alert', {timeOut: 5000});
 			});
@@ -154,6 +157,10 @@ $(document).ready(function() {
 
 $(".edit-profile-btn").click(function(){
 	$(".wrapper").addClass("edit-profile-popup-open");
+});
+
+$(".close-edit-popup").click(function(){
+	$(".wrapper").removeClass("edit-profile-popup-open");
 });
 
 $('#show-feedbacks').click(function(e) {

@@ -18,6 +18,7 @@ class User extends CI_Controller {
 		}
 		
 		// Load library
+		$this->load->library('s3');
 		$this->load->library('template', 'facebook');
 
         $this->data['title'] = "User | Feedbacker ";
@@ -142,8 +143,8 @@ class User extends CI_Controller {
 			$this->form_validation->set_rules('country', 'Country', 'trim|required');
 			
 			if ($this->form_validation->run() == FALSE) {
-				$this->session->set_flashdata('error', validation_errors());
-				redirect('user/profile');
+				echo json_encode(array('error' => validation_errors(), 'status' => 0));
+                die();
 			}
 			
 			$user_id = $this->input->post('user_id');
@@ -226,17 +227,21 @@ class User extends CI_Controller {
                     $error[0] = $imgerror;
                     $error[1] = $thumberror;
                 } else {
-                    $main_old_file = $this->config->item('user_main_upload_path') . $user_data[0]['photo'];
-                    $thumb_old_file = $this->config->item('user_thumb_upload_path') . $user_data[0]['photo'];
+                    $main_old_file = $this->config->item('user_main_upload_path') . $this->user['photo'];
+                    $thumb_old_file = $this->config->item('user_thumb_upload_path') . $this->user['photo'];
 
                     $error = array();
                 }
 
                 if ($error) {
-                    echo json_encode(array('result' => array(), 'message' => $error[0], 'status' => 0));
+                    echo json_encode(array('message' => $error[0], 'status' => 0));
                     die();
                 }
+				
                 $update_data['photo'] = $dataimage;
+				
+				$this->user['photo'] = $dataimage;  
+				$this->session->set_userdata('mec_user', $this->user);
             } // Image Upload Ends
 			
 			if(!empty($update_data)) {
