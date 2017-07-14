@@ -43,22 +43,6 @@ class Search extends CI_Controller {
         $this->output->set_header('Pragma: no-cache');
     }
 	
-	public function index() {
-		$json = [];
-
-		$this->load->database();
-
-		if(!empty($this->input->get("q"))){
-			$this->db->like('title', $this->input->get("q"));
-			$query = $this->db->select('title_id as id,title as text')
-						->limit(10)
-						->get("titles");
-			$json = $query->result();
-		}
-		
-		echo json_encode($json);
-	}
-	
 	public function results() {
 		//check post and save data
         if ($this->input->is_ajax_request() && $this->input->post('btn_save')) {

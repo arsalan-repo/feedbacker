@@ -9,7 +9,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	$attributes = array('class' => '', 'id' => 'create-post-form');
 	echo form_open('post/create', $attributes);
 	?>
-    <div class="container creatae-post-content">
+    <div class="container creatae-post-content ui-widget">
       <h2><?php echo $this->lang->line('create_post'); ?></h2>
       
         <label><?php echo $this->lang->line('write_about'); ?></label>
@@ -36,6 +36,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 <script type="application/javascript">
 // When the browser is ready...
 $(function() {
+	// Set Autocomplete Off
+	$("#create-post-form").attr('autocomplete', 'off');
 
 	$(".geo-map").click(function() {
 		if (navigator.geolocation) {
@@ -45,8 +47,34 @@ $(function() {
 		}
 	});
 	
-	// Set Autocomplete Off
-	$("#create-post-form").attr('autocomplete', 'off');
+	var availableTags = [
+      "ActionScript",
+      "AppleScript",
+      "Asp",
+      "BASIC",
+      "C",
+      "C++",
+      "Clojure",
+      "COBOL",
+      "ColdFusion",
+      "Erlang",
+      "Fortran",
+      "Groovy",
+      "Haskell",
+      "Java",
+      "JavaScript",
+      "Lisp",
+      "Perl",
+      "PHP",
+      "Python",
+      "Ruby",
+      "Scala",
+      "Scheme"
+    ];
+	
+    $( "#title" ).autocomplete({
+    	source: "<?php echo site_url('title/search'); ?>"
+    });
 	
 	// Setup form validation on the #register-form element
 	$(".post-btn").click(function() {

@@ -8,34 +8,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
     <div class="logo"><a href="<?php echo base_url(); ?>"><img src="<?php echo base_url().'assets/images/white-logo.png'; ?>" alt="" /></a></div>
     <div class="header-right">
       <div class="header-search">
-        <?php //echo form_open('post/search'); ?>
-        <!-- <input type="text" name="qstring" placeholder="Type in to search" id="qstring" />
-        <button type="submit"></button> -->
-        <?php //echo form_close(); ?>
-        <!-- http://itsolutionstuff.com/post/codeigniter-3-select2-ajax-autocomplete-from-database-example-with-demoexample.html -->
-        <select class="itemName form-control" name="itemName" placeholder="<?php echo $this->lang->line('type_search'); ?>">
-
-        </select>
-
-	<script type="text/javascript">
-		var str = $('.itemName').attr('placeholder');
-        $('.itemName').select2({
-            placeholder: str,
-            ajax: {
-                url: '/search',
-                dataType: 'json',
-                delay: 250,
-                processResults: function (data) {
-                    return {
-                        results: data
-                    };
-                },
-                cache: true
-            }
-        });
-    </script>
-
-    </div>
+	  	<input type="text" placeholder="<?php echo $this->lang->line('type_search'); ?>" name="qs" id="qs" />
+		<button type="button"></button>
+      </div>
     <div class="header-create-post"><a href="<?php echo site_url('post/create'); ?>"><?php echo $this->lang->line('create_post'); ?></a></div>
     <div class="header-notification">
         <!--<span class="notification-count"></span>-->

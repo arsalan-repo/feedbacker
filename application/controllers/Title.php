@@ -92,4 +92,10 @@ class Title extends CI_Controller {
 		$this->template->front_render('post/create', $this->data);
 	}
 	
+	public function search() {
+		if ($this->input->is_ajax_request()) {
+			echo json_encode(array('Royal', 'Royal Palace', 'Royal Jordanian'));
+		}
+	}
+	
 }

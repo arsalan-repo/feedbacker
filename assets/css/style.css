@@ -94,7 +94,7 @@ header .container{ position: relative;}
 .header-right {float: right;max-width:1000px;}
 .header-search {float: left;padding-right: 20px;width:490px;padding-top:6px;position:relative;}
 input[type="submit"] {background: #181a53;border: medium none;border-radius: 20px;color: #eef6fc;cursor: pointer;font-size: 16px;padding: 10px 0;}
-.header-search button {background: url("../images/header-serch-icon.png") no-repeat scroll left center;border: medium none;cursor: pointer; line-height: 40px;padding: 22px 20px;position: absolute;right: 15px;top: 0;width: 30px;}
+.header-search button {background: url("../images/header-serch-icon.png") no-repeat scroll left center;border: medium none;cursor: pointer; line-height: 40px;padding: 25px 20px;position: absolute;right: 15px;top: 0;width: 30px;}
 .header-search input[type="text"] {background: none;border: 1px solid #373973;padding:0px 25px;color:#9d9daa;line-height:38px;font-size:13px;border-radius: 50px;}
 .header-notification{float: left;padding:9px 20px; margin-top: 5px;}
 .header-flag {float: left; margin-top:5px;  /*border: 1px solid #2d2e5d;border-radius: 7px;padding: 16px 5px 10px 10px;width: 70px;*/}
