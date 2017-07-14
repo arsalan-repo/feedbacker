@@ -82,19 +82,25 @@ defined('BASEPATH') OR exit('No direct script access allowed');
         <?php } ?>
         <div class="post-detail-comment-form">
           <h2><?php echo $this->lang->line('write_comment'); ?></h2>
-          <form id="form-reply-post" name="form-reply-post" method="post" action="">
+		  <?php
+			$attributes = array('id' => 'form-reply-post');
+			echo form_open('post/reply', $attributes);
+			?>
             <label><?php echo $this->lang->line('comment'); ?></label>
             <input type="text" name="feedback_cont" id="feedback_cont" placeholder="<?php echo $this->lang->line('comment_here'); ?>" />
             <input type="text" name="location" id="location" placeholder="<?php echo $this->lang->line('location'); ?>" />
-          </form>
-          <div class="post-btn-block">
-            <div class="camera-map-icon"> 
-            <div class="camera-icon-block">
-                <span>Choose File</span>
-                <input name="Select File" type="file" />
-            </div>            
-            <img src="<?php echo base_url().'assets/images/map-icon.png'; ?>" alt="" /> </div>
-            <span class="post-btn"><?php echo $this->lang->line('post'); ?></span> </div>
+			<input type="hidden" id="title_id" value="<?php echo $row['title_id']; ?>" />
+			<div class="post-btn-block">
+				<div class="camera-map-icon"> 
+					<div class="camera-icon-block">
+						<span>Choose File</span>
+						<input name="Select File" type="file" />
+					</div>            
+					<img src="<?php echo base_url().'assets/images/map-icon.png'; ?>" alt="" /> 
+				</div>
+				<span class="post-btn"><?php echo $this->lang->line('post'); ?></span> 
+			</div>
+			<?php echo form_close(); ?>
     	</div>
     </div>
   </div>

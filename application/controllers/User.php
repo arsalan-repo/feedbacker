@@ -67,7 +67,8 @@ class User extends CI_Controller {
 		// Get user country		
 		if($country == '') {
 			$getcountry = $this->common->select_data_by_id('users', 'id', $this->user['id'], 'country', '');
-			$country = $getcountry[0]['country'];
+			//$country = $getcountry[0]['country'];
+			$country = $this->user['country'];
 		} else {
 			$this->user['country'] = $country;  
 			
