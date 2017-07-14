@@ -125,7 +125,7 @@ class User extends CI_Controller {
 			$response = $this->load->view('user/ajax', $this->data);
 			echo json_encode($response);
 		} else {
-			$feedback = $this->common->select_data_by_condition('feedback', $contition_array, $data, $sortby = 'feedback.datetime', $orderby = 'DESC', $this->perPage, 5, $join_str, $group_by = '');
+			$feedback = $this->common->select_data_by_condition('feedback', $contition_array, $data, $sortby = 'feedback.datetime', $orderby = 'DESC', $this->perPage, 0, $join_str, $group_by = '');
 			
 			if(count($feedback) > 0) {
 				// Get Likes, Followings and Other details
