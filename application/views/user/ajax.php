@@ -115,14 +115,16 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			// console.log(data);
 			if (data.is_followed == 1) {
 				$('.follow-btn-'+title_id).each(function() {
-					$(this).html('Unfollow');
+					$(this).addClass('unfollow-btn');
+					$(this).html('<?php echo $this->lang->line('unfollow'); ?>');
 				});
 				toastr.success(data.message, 'Success Alert', {timeOut: 5000});
 			}
 			else
 			{
 				$('.follow-btn-'+title_id).each(function() {
-					$(this).html('Follow <i class="fa fa-plus" aria-hidden="true"></i>');
+					$(this).removeClass('unfollow-btn');
+					$(this).html('<?php echo $this->lang->line('follow'); ?> <i class="fa fa-plus" aria-hidden="true"></i>');
 				});
 				toastr.warning(data.message, 'Success Alert', {timeOut: 5000});
 			}
