@@ -109,26 +109,36 @@ class User extends CI_Controller {
 			
 			$feedback = $this->common->select_data_by_condition('feedback', $contition_array, $data, $sortby = 'feedback.datetime', $orderby = 'DESC', $this->perPage, $start, $join_str, $group_by = '');
 			
-			// Get Likes, Followings and Other details
-			$result = $this->common->getFeedbacks($feedback, $this->user['id']);
-			
-			// Append Ad Banners
-			$return_array = $this->common->adBanners($result, $country, $this->input->get("page"));
-			
-			$this->data['feedbacks'] = $return_array;
+			if(count($feedback) > 0) {
+				// Get Likes, Followings and Other details
+				$result = $this->common->getFeedbacks($feedback, $this->user['id']);
+				
+				// Append Ad Banners
+				$return_array = $this->common->adBanners($result, $country, $this->input->get("page"));
+				
+				$this->data['feedbacks'] = $return_array;
+			} else {
+				$this->data['feedbacks'] = array();
+				$this->data['no_record_found'] = $this->lang->line('no_results');
+			}
 			
 			$response = $this->load->view('user/ajax', $this->data);
 			echo json_encode($response);
 		} else {
 			$feedback = $this->common->select_data_by_condition('feedback', $contition_array, $data, $sortby = 'feedback.datetime', $orderby = 'DESC', $this->perPage, 5, $join_str, $group_by = '');
 			
-			// Get Likes, Followings and Other details
-			$result = $this->common->getFeedbacks($feedback, $this->user['id']);
-			
-			// Append Ad Banners
-			$return_array = $this->common->adBanners($result, $country);
-			
-			$this->data['feedbacks'] = $return_array;
+			if(count($feedback) > 0) {
+				// Get Likes, Followings and Other details
+				$result = $this->common->getFeedbacks($feedback, $this->user['id']);
+				
+				// Append Ad Banners
+				$return_array = $this->common->adBanners($result, $country);
+				
+				$this->data['feedbacks'] = $return_array;
+			} else {
+				$this->data['feedbacks'] = array();
+				$this->data['no_record_found'] = $this->lang->line('no_results');
+			}
 		
 			/* Load Template */
 			$this->template->front_render('user/dashboard', $this->data);
