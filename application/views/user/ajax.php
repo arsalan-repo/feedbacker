@@ -59,7 +59,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             <span class="post-follow-back-arrow">
                 <img src="<?php echo ASSETS_URL.'images/reply-arrow.png'; ?>" alt="" title="<?php echo $this->lang->line('reply'); ?>" />
             </span>
-            <span class="follow-btn-default follow-btn-<?php echo $row['title_id']; ?>" id="follow-btn-<?php echo $row['id']; ?>">
+            <span class="follow-btn-default <?php if($row['is_followed']) echo 'unfollow-btn'; ?> follow-btn-<?php echo $row['title_id']; ?>" id="follow-btn-<?php echo $row['id']; ?>">
                 <?php if ($row['is_followed']) { ?>
                     <?php echo $this->lang->line('unfollow'); ?>
                 <?php } else { ?>    
