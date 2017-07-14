@@ -83,7 +83,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
         <div class="post-detail-comment-form">
           <h2><?php echo $this->lang->line('write_comment'); ?></h2>
 		  <?php
-			$attributes = array('id' => 'form-reply-post');
+			$attributes = array('class' => 'form-reply-post', 'id' => 'form-reply-'.$row['id']);
 			echo form_open('post/reply', $attributes);
 			?>
             <label><?php echo $this->lang->line('comment'); ?></label>
