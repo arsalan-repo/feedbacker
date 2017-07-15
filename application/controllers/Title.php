@@ -1,11 +1,16 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
+require 'vendor/autoload.php';
+use Elasticsearch\ClientBuilder;
+
 class Title extends CI_Controller {
 	
 	public $data;
 	
 	public $user;
+	
+	private $aws_client;
 
     public function __construct() {
         parent::__construct();
@@ -16,7 +21,10 @@ class Title extends CI_Controller {
 		}
 		
 		// Load library
+		$this->load->library('s3');
 		$this->load->library('template');
+		
+		$this->aws_client = ClientBuilder::create()->setHosts(["search-feedbacker-q3gdcfwrt27ulaeee5gz3zbezm.eu-west-1.es.amazonaws.com:80"])->build();
 
         $this->data['title'] = "Title | Feedbacker ";
 
@@ -92,10 +100,54 @@ class Title extends CI_Controller {
 		$this->template->front_render('post/create', $this->data);
 	}
 	
-	public function search() {
+	// Get Titles/Suggestions
+    public function search() {
 		if ($this->input->is_ajax_request()) {
-			echo json_encode(array('Royal', 'Royal Palace', 'Royal Jordanian'));
+			$search_string = $this->input->post('term');
+			//$titles = $this->common->getTitles($search_string, $order=null, $order_type='ASC', $offset='', $limit='');
+	
+			$params = ['index' => 'title'];
+			$response = $this->aws_client->indices()->exists($params);
+	
+			if(!$response){
+				$indexParams = [
+					'index' => 'title',
+					'body' => [
+						'settings' => [
+							'number_of_shards' => 5,
+							'number_of_replicas' => 1
+						]
+					]
+				];
+	
+				$response = $this->aws_client->indices()->create($indexParams);
+			}
+	
+	
+			$params = [
+				'index' => 'title',
+				'body' => [
+					'query' => [
+						'query_string' => [
+							'query' => 'title:*'.$search_string.'*'
+						],
+					]
+				]
+			];
+	
+			$title = $this->aws_client->search($params);
+	
+			$titles = [];
+			foreach ($title['hits']['hits'] as $key => $value) {
+				$titles[] = $value['_source'];
+			}
+			
+			print_r($titles);
+			exit;
+	
+			echo json_encode(array('RESULT' => $titles, 'MESSAGE' => 'SUCCESS', 'STATUS' => 1));
+			die();
 		}
-	}
+    }
 	
 }
