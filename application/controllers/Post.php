@@ -6,6 +6,8 @@ class Post extends CI_Controller {
 	public $data;
 	
 	public $user;
+	
+	private $aws_client;
 
     public function __construct() {
         parent::__construct();
@@ -16,7 +18,10 @@ class Post extends CI_Controller {
 		}
 		
 		// Load library
+		$this->load->library('s3');
 		$this->load->library('template');
+		
+		$this->aws_client = ClientBuilder::create()->setHosts(["search-feedbacker-q3gdcfwrt27ulaeee5gz3zbezm.eu-west-1.es.amazonaws.com:80"])->build();
 
         $this->data['title'] = "Post | Feedbacker ";
 
