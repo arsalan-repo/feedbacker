@@ -253,7 +253,7 @@ class Post extends CI_Controller {
             $insert_array['longitude'] = $this->input->post('longitude');
             $insert_array['location'] = $this->input->post('location');
             
-            if($country != '') {
+            if($this->input->post('country') != '') {
                 $insert_array['country'] = $this->input->post('country');
             } else {
                 $getcountry = $this->common->select_data_by_id('users', 'id', $this->user['id'], 'country', '');
@@ -293,33 +293,6 @@ class Post extends CI_Controller {
             $response = $this->aws_client->index($docParams);
 
             if ($insert_result) {
-                $return_array['id'] = $insert_result;
-                $return_array['feedback'] = $feedback;
-                $return_array['latitude'] = $latitude;
-                $return_array['longitude'] = $longitude;
-                $return_array['location'] = $location;
-
-                if($feedback_img != '') {
-                    $return_array['image'] = S3_CDN . 'uploads/feedback/main/' . $feedback_img;
-                }
-
-                if($feedback_thumb != '') {
-                    $return_array['thumb'] = S3_CDN . 'uploads/feedback/thumbs/' . $feedback_thumb;
-                }
-                
-                if($feedback_video != '') {
-                    $return_array['video'] = S3_CDN . 'uploads/feedback/video/' . $feedback_video;
-                }
-                
-                if($country != '') {
-                    $return_array['country'] = $country;
-                }
-
-                // Null to Empty String
-                array_walk_recursive($return_array, function (&$item, $key) {
-                    $item = null === $item ? '' : $item;
-                });
-
                 // Check / Add Notification for users
                 $this->common->notification('', $user_id, $title_id, $insert_result, $replied_to = '', 2);
 
