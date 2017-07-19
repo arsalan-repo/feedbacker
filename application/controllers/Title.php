@@ -143,7 +143,7 @@ class Title extends CI_Controller {
 			}
 			*/
 			
-			$search_condition = 'title LIKE "'.$search_string%.'" AND deleted = 0';
+			$search_condition = 'title LIKE "$search_string%" AND deleted = 0';
 			$titles = $this->common->select_data_by_search('titles', $search_condition, $contition_array = array(), $data = 'title_id, title', $sortby = '', $orderby = '', $limit = '', $offset = '', $join_str = '', $custom_order_by = '', $group_by='');
 			
 			print_r($titles);

@@ -252,10 +252,18 @@ class Common extends CI_Model {
 		);
 		
 		if(!empty($country)) {
-			$search_condition = "feedback.country = '".$country."' AND replied_to IS NULL AND feedback.deleted = 0 AND feedback.status = 1 AND feedback.title_id NOT IN (".$follow_ids.")";
+			$country_cond = " AND feedback.country = '".$country."'";
 		} else {
-			$search_condition = "replied_to IS NULL AND feedback.deleted = 0 AND feedback.status = 1 AND feedback.title_id NOT IN (".$follow_ids.")";
+			$country_cond = "";
 		}
+		
+		if(!empty($follow_ids)) {
+			$follow_cond = " AND feedback.title_id NOT IN (".$follow_ids.")";
+		} else {
+			$follow_cond = "";
+		}
+		
+		$search_condition = "replied_to IS NULL AND feedback.deleted = 0 AND feedback.status = 1 ".$country_cond.$follow_cond;
 		
 		$to_follow = $this->common->select_data_by_search('feedback', $search_condition, $contition_array = array(), 'feedback_id, feedback.title_id, title, name, photo, feedback_cont, feedback_img, feedback_thumb, feedback_video, replied_to, location, feedback.datetime as time', $sortby = 'feedback.datetime', $orderby = 'DESC', $limit = '10', $offset = '', $join_str_wt, $custom_order_by = '', $group_by = 'feedback.title_id');
 		
