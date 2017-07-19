@@ -550,7 +550,13 @@ class V1 extends CI_Controller {
     // Terms And Conditions @Viral
     function terms_and_conditions() {
 
-        $condition_array = array('id' => 4);
+        $language = $this->input->post('language');
+		
+		if ($language == '') {
+			$language = 'en';
+		}
+		
+		$condition_array = array('page_id' => 'terms_cond', 'pages.lang_code' => $language);
         $page_list = $this->common->select_data_by_condition('pages', $condition_array, 'id, name, description');
         echo json_encode(array('RESULT' => $page_list, 'MESSAGE' => '', 'STATUS' => 1));
         exit();

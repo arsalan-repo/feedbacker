@@ -65,6 +65,13 @@
                 </a>
             </li>
             <!--End Manage Ads-->
+			<!--Terms And Conditions-->
+            <li <?php if ($this->uri->segment(2) == 'terms') { ?> class="active treeview" <?php } else { ?> class="treeview"   <?php } ?>>
+                <a href="<?php echo base_url('admin/terms'); ?>">    
+                    <i class="fa fa-hand-o-right"></i><span>Terms And Conditions</span>
+                </a>
+            </li>
+            <!--Terms And Conditions-->
             <!--Start Settings -->
             <li <?php if ($this->uri->segment(2) == 'settings') { ?> class="active treeview" <?php } else { ?> class="treeview"   <?php } ?>>
                 <a href="<?php echo base_url('admin/settings'); ?>">    

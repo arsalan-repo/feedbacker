@@ -559,7 +559,7 @@ class User extends CI_Controller {
         $this->data['languages'] = $this->common->select_data_by_condition('languages', $contition_array, $data = 'lang_id, lang_code, lang_name');
 		
 		// Get Settings
-		$condition_array = array('id' => 4);
+		$condition_array = array('page_id' => 'terms_cond', 'pages.lang_code' => $this->user['language']);
         $this->data['terms'] = $this->common->select_data_by_condition('pages', $condition_array, 'id, name, description');
 		
 		/* Load Template */
