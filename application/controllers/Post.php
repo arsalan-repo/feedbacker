@@ -1,6 +1,9 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
+require 'vendor/autoload.php';
+use Elasticsearch\ClientBuilder;
+
 class Post extends CI_Controller {
 	
 	public $data;
