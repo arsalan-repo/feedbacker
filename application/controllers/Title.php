@@ -1,8 +1,8 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-require 'vendor/autoload.php';
-use Elasticsearch\ClientBuilder;
+//require 'vendor/autoload.php';
+//use Elasticsearch\ClientBuilder;
 
 class Title extends CI_Controller {
 	
@@ -10,7 +10,7 @@ class Title extends CI_Controller {
 	
 	public $user;
 	
-	private $aws_client;
+	//private $aws_client;
 
     public function __construct() {
         parent::__construct();
@@ -24,7 +24,7 @@ class Title extends CI_Controller {
 		$this->load->library('s3');
 		$this->load->library('template');
 		
-		$this->aws_client = ClientBuilder::create()->setHosts(["search-feedbacker-q3gdcfwrt27ulaeee5gz3zbezm.eu-west-1.es.amazonaws.com:80"])->build();
+		//$this->aws_client = ClientBuilder::create()->setHosts(["search-feedbacker-q3gdcfwrt27ulaeee5gz3zbezm.eu-west-1.es.amazonaws.com:80"])->build();
 
         $this->data['title'] = "Title | Feedbacker ";
 
@@ -103,9 +103,9 @@ class Title extends CI_Controller {
 	// Get Titles/Suggestions
     public function search() {
 		if ($this->input->is_ajax_request()) {
-			$search_string = $this->input->post('term');
-			//$titles = $this->common->getTitles($search_string, $order=null, $order_type='ASC', $offset='', $limit='');
-	
+			$search_string = $this->input->get('term');
+
+			/*
 			$params = ['index' => 'title'];
 			$response = $this->aws_client->indices()->exists($params);
 	
@@ -141,10 +141,14 @@ class Title extends CI_Controller {
 			foreach ($title['hits']['hits'] as $key => $value) {
 				$titles[] = $value['_source'];
 			}
+			*/
+			
+			$search_condition = 'title LIKE "'.$search_string%.'" AND deleted = 0';
+			$titles = $this->common->select_data_by_search('titles', $search_condition, $contition_array = array(), $data = 'title_id, title', $sortby = '', $orderby = '', $limit = '', $offset = '', $join_str = '', $custom_order_by = '', $group_by='');
 			
 			print_r($titles);
-			exit;
-	
+			exit();
+			
 			echo json_encode(array('RESULT' => $titles, 'MESSAGE' => 'SUCCESS', 'STATUS' => 1));
 			die();
 		}
