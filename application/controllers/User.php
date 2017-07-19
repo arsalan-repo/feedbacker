@@ -7,7 +7,7 @@ class User extends CI_Controller {
 	
 	public $user;
 	
-	private $perPage = 5;
+	private $perPage = 10;
 
     public function __construct() {
         parent::__construct();
