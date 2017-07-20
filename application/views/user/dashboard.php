@@ -4,6 +4,16 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 ?>
 
 <!-- Content Wrapper. Contains page content -->
+<?php if ($this->session->flashdata('error')) { ?>  
+	<div class="div-toastr-error">
+		<?php echo $this->session->flashdata('error'); ?>
+	</div>
+<?php } ?>
+<?php if ($this->session->flashdata('success')) { ?>  
+	<div class="div-toastr-success">
+		<?php echo $this->session->flashdata('success'); ?>
+	</div>
+<?php } ?>
 <div class="content-secion">
     <div class="container">
       <div class="left-content">
@@ -78,6 +88,22 @@ defined('BASEPATH') OR exit('No direct script access allowed');
     </div>
     
     <script type="text/javascript">
+		// When the browser is ready...
+		$(function() {
+			// jQuery Toastr
+			if ($.trim($(".div-toastr-error").html()).length > 0) {
+				$(".div-toastr-error p").each(function( index ) {
+					toastr.error($(this).html(), 'Failure Alert', {timeOut: 5000});
+				});
+			}
+			
+			if ($.trim($(".div-toastr-success").html()).length > 0) {
+				$(".div-toastr-success p").each(function( index ) {
+					toastr.success($(this).html(), 'Success Alert', {timeOut: 5000});
+				});
+			}
+		});
+	
         var page = 1;
         $(window).scroll(function() {
             if($(window).scrollTop() + $(window).height() >= $(document).height()) {

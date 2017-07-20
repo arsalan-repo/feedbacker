@@ -297,7 +297,7 @@ class Post extends CI_Controller {
                 $this->common->notification('', $user_id, $title_id, $insert_result, $replied_to = '', 2);
 
                 $this->session->set_flashdata('success', '<p>'.$this->lang->line('success_feedback_submit').'</p>');
-				redirect('post/create');
+				redirect('user/dashboard');
             } else {
 				$this->session->set_flashdata('error', '<p>'.$this->lang->line('error_feedback_submit').'</p>');
 				redirect('post/create');
