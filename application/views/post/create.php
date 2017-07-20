@@ -75,7 +75,7 @@ $(function() {
           }, response );
         },
 		focus: function( event, ui ) {
-			$( "#title" ).val( ui.item.title );
+//			$( "#title" ).val( ui.item.title );
 			return false;
 		},
 		select: function( event, ui ) {
