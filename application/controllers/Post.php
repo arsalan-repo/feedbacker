@@ -302,14 +302,7 @@ class Post extends CI_Controller {
             $insert_array['latitude'] = $this->input->post('latitude');
             $insert_array['longitude'] = $this->input->post('longitude');
             $insert_array['location'] = $this->input->post('location');
-            
-            if($this->input->post('country') != '') {
-                $insert_array['country'] = $this->input->post('country');
-            } else {
-                $getcountry = $this->common->select_data_by_id('users', 'id', $this->user['id'], 'country', '');
-                $insert_array['country'] = $getcountry[0]['country'];
-            }
-            
+            $insert_array['country'] = $this->user('country');
             $insert_array['datetime'] = date('Y-m-d H:i:s');
 
             $insert_result = $this->common->insert_data_getid($insert_array, $tablename = 'feedback');
