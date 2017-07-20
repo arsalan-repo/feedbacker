@@ -237,8 +237,58 @@ class Post extends CI_Controller {
             }
             // Video Upload End
 
-            $insert_array['title_id'] = $this->input->post('title_id');
-            $insert_array['user_id'] = $this->user['id'];
+            // Check / Add Title
+			$title = trim($this->input->post('title'));
+			
+			$params = ['index' => 'title'];
+			$response = $this->aws_client->indices()->exists($params);
+	
+			if(!$response){
+				$indexParams = [
+					'index' => 'title',
+					'body' => [
+						'settings' => [
+							'number_of_shards' => 5,
+							'number_of_replicas' => 1
+						]
+					]
+				];
+	
+				$response = $this->aws_client->indices()->create($indexParams);
+			}
+			
+			// Check If title exists
+			$contition_array = array('title' => $title);
+			$check_title = $this->common->select_data_by_condition('titles', $contition_array, $data = '*', $sortby = '', $orderby = '', $limit = '', $offset = '', $join_str = array(), $group_by='');
+			
+			if(count($check_title) > 0) {
+				// Restore If deleted
+				$update_data = array('deleted' => 0);
+				$update_result = $this->common->update_data($update_data, 'titles', 'title_id', $check_title[0]['title_id']);
+	
+				$insert_array['title_id'] = $check_title[0]['title_id'];
+			} else {
+				$insert_result = $this->common->insert_data_getid(array('title' => $title), $tablename = 'titles');
+		
+				$docParams = [
+					'index' => 'title',
+					'type' => 'title_type',
+					'id' => $insert_result,
+					'body' => ['title' => $title,'title_id' => $insert_result]
+				]; 
+		
+				$response = $this->aws_client->index($docParams);
+				
+				// Auto Follow Title
+				$follow_array['user_id'] = $this->user['id'];
+				$follow_array['title_id'] = $insert_result;
+				
+				$auto_follow = $this->common->insert_data($follow_array, $tablename = 'followings');
+		
+				$insert_array['title_id'] = $insert_result;
+			}
+            
+			$insert_array['user_id'] = $this->user['id'];
             $insert_array['feedback_cont'] = $this->input->post('feedback_cont');
             if($feedback_img != '') {
                 $insert_array['feedback_img'] = $feedback_img;
