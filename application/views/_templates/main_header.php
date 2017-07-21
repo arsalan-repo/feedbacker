@@ -8,8 +8,40 @@ defined('BASEPATH') OR exit('No direct script access allowed');
     <div class="logo"><a href="<?php echo base_url(); ?>"><img src="<?php echo base_url().'assets/images/white-logo.png'; ?>" alt="" /></a></div>
     <div class="header-right">
       <div class="header-search">
-	  	<input type="text" placeholder="<?php echo $this->lang->line('type_search'); ?>" name="qs" id="qs" />
-		<button type="button"></button>
+	  <?php
+		$attributes = array('id' => 'search-form', 'method' => 'get');
+		echo form_open('search', $attributes);
+		?>
+	  	<input type="text" placeholder="<?php echo $this->lang->line('type_search'); ?>" name="qs" id="qs" required="true" />
+		<button type="submit"></button>
+		<?php echo form_close(); ?>
+		<script type="text/javascript">
+			$(function() {
+				$("#qs").autocomplete({
+					minLength: 2,
+					source: function( request, response ) {
+					  $.getJSON( "<?php echo site_url('title/search'); ?>", {
+						term: request.term
+					  }, response );
+					},
+					focus: function( event, ui ) {
+						return false;
+					},
+					select: function( event, ui ) {
+						$( "#qs" ).val( ui.item.title );
+						return false;
+					}
+				})
+				.autocomplete( "instance" )._renderItem = function( ul, item ) {
+					return $( "<li>" )
+					.append( "<div>" + item.title + "</div>" )
+					.appendTo( ul );
+				};
+				
+				$.validator.messages.required = '';
+				$('#search-form').validate({});
+			});
+		</script>
       </div>
     <div class="header-create-post"><a href="<?php echo site_url('post/create'); ?>"><?php echo $this->lang->line('create_post'); ?></a></div>
     <div class="header-notification">

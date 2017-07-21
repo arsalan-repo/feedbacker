@@ -35,6 +35,57 @@ class Common extends CI_Model {
       return $text;
     }
 	
+	function searchLog($qs, $user_id) {
+		// Get User's Country
+		$get_country = $this->common->user_country($user_id);
+		$country_id = $get_country[0]['country'];
+
+		// Check If keyword Exists
+		$condition_log = "`search_keyword` LIKE '".$qs."'";
+		$search_log = $this->common->select_data_by_search('search_log', $condition_log, $condition_array = array(), '*', $sortby = '', $orderby = '', $limit = '', $offset = '', $join_str = array());
+
+		if(count($search_log) > 0) {
+			// Append User ID
+			if(strpos($search_log[0]['user_ids'], ',') === false) {
+				if($user_id !== $search_log[0]['user_ids']) {
+					$update_array['user_ids'] = $search_log[0]['user_ids'].",".$user_id;
+				}
+			} else {
+				$userArr = explode(',', $search_log[0]['user_ids']);
+
+				if(!in_array($user_id, $userArr)) {
+					$update_array['user_ids'] = $search_log[0]['user_ids'].",".$user_id;
+				}
+			}
+
+			// Append Country ID
+			if(strpos($search_log[0]['country_ids'], ',') === false) {
+				if($country_id !== $search_log[0]['country_ids']) {
+					$update_array['country_ids'] = $search_log[0]['country_ids'].",".$country_id;
+				}
+			} else {
+				$userArr = explode(',', $search_log[0]['country_ids']);
+
+				if(!in_array($country_id, $userArr)) {
+					$update_array['country_ids'] = $search_log[0]['country_ids'].",".$country_id;
+				}
+			}
+
+			// Update Entry
+			$search_count = $search_log[0]['search_count'] + 1;
+			$update_array['search_count'] = $search_count;
+			$this->common->update_data($update_array, 'search_log', 'slog_id', $search_log[0]['slog_id']);
+		} else {
+			// Add New Entry
+			$insert_array['search_keyword'] = $qs;
+			$insert_array['search_count'] = 1;
+			$insert_array['user_ids'] = $user_id;
+			$insert_array['country_ids'] = $country_id;
+			
+			$this->common->insert_data($insert_array, $tablename = 'search_log');
+		}
+	}
+	
 	function getFeedbacks($feedbacks, $user_id) {
 		$return_array = array();
 		
