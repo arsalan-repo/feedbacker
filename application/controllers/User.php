@@ -73,6 +73,7 @@ class User extends CI_Controller {
 			$this->user['country'] = $country;  
 			
 			$this->session->set_userdata('mec_user', $this->user);	
+			$this->data['user_info'] = $this->user;
 		}
 		
 		// Trends
