@@ -106,7 +106,8 @@ class User extends CI_Controller {
 		$data = 'feedback_id, feedback.title_id, title, users.id as user_id, name, photo, feedback_cont, feedback_img, feedback_thumb, feedback_video, replied_to, location, feedback.datetime as time';
 		
 		if (!empty($this->input->get("page"))) {
-			$start = ceil($this->input->get("page") * $this->perPage);
+			$page = ceil($this->input->get("page") - 1);
+			$start = ceil($page * $this->perPage);
 			
 			$feedback = $this->common->select_data_by_condition('feedback', $contition_array, $data, $sortby = 'feedback.datetime', $orderby = 'DESC', $this->perPage, $start, $join_str, $group_by = '');
 			
