@@ -22,7 +22,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		<label><?php echo $this->lang->line('location'); ?></label>
 		<input type="text" name="location" id="location" placeholder="" />
 		<label><?php echo $this->lang->line('your_feedback'); ?></label>
-		<input type="text" name="feedback_cont" id="feedback_cont" placeholder="" />
+		<textarea name="feedback_cont" id="feedback_cont" placeholder="" rows="10"></textarea>
 		<div class="post-btn-block">
 			<div class="camera-map-icon">
 				<div class="camera-icon-block">

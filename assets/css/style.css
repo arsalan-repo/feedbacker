@@ -112,6 +112,7 @@ span.profile-text span i{color:#fff; cursor:pointer; float: right; font-size: 18
 .language-text a{ color: #181a53; font-size: 11px; display: inline-block; padding: 0 3px;}
 .language-text .lang-selected a{ color: #005db9}
 .content-secion {width: 100%;float: left; padding:20px 0 0; min-height:800px;}
+.content-secion textarea{width: 100%;}
 .left-content{width:260px; padding-right:10px; float:left;}
 .middle-content{width:680px; padding:0 20px 0 10px; float:left;}
 .middle-content-block{float:left; width:100%;}
