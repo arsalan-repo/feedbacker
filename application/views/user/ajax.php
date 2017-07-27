@@ -43,14 +43,14 @@ defined('BASEPATH') OR exit('No direct script access allowed');
         <span class="post-name"><?php echo $row['name']; ?></span> 
         <span class="post-address"><?php echo $row['location']; ?></span>
         <p><?php echo $row['feedback']; ?></p>
-        <?php if (!empty($row['feedback_img'])) { ?>
+        <?php if (!empty($row['feedback_thumb'])) { ?>
             <div class="post-large-img">
             <?php if(isset($row['ads'])) { ?>
                 <a href="<?php echo $row['ads_url']; ?>" target="_blank">
-                    <img src="<?php echo $row['feedback_img']; ?>" alt="" />
+                    <img src="<?php echo $row['feedback_thumb']; ?>" alt="" />
                 </a>
             <?php } else { ?>
-                <img src="<?php echo $row['feedback_img']; ?>" alt="" />	
+                <img src="<?php echo $row['feedback_thumb']; ?>" alt="" />	
             <?php } ?>
             </div>
         <?php } ?>
