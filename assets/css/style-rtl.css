@@ -149,8 +149,9 @@ span.profile-text span i{color:#fff; cursor:pointer; float: left; font-size: 18p
 .post-designation, .post-name, .post-address {color: #131315;display: block;font-size: 14px;font-weight: 600;width: 100%;}
 .post-designation {color: #ea9707;font-size: 18px;}
 .post-designation a{color: #ea9707;}
-.post-address {padding: 0 0 10px;color: #858692;}
+.post-address {padding: 0 0 10px;color: #858692;text-align: right;}
 .post-large-img {border: 1px solid #c8cdd0;border-radius: 10px;margin-bottom:20px;float: right;overflow: hidden;}
+.post-reply-img {border: 1px solid #c8cdd0;border-radius: 10px;margin-bottom:20px;overflow: hidden;}
 .post-large-img > img {width: 100%;}
 .post-large-img h3, .post-large-img p {margin: 0;padding: 0 10px 10px;}
 .post-follow-block {float: left;padding: 0px 0 10px;width: 100%;}
@@ -196,7 +197,7 @@ span.profile-text span i{color:#fff; cursor:pointer; float: left; font-size: 18p
 .profile-listing a{color:#ff835a; text-decoration:none;}
 .profile-listing-img-thumb {border-radius: 100%;float: right;margin: 0 0 10px 10px;overflow: hidden;width: 32px;}
 .listing-post-profile-name, .listing-post-profile-time {color: #434b57;font-size: 14px;font-weight: 600;display: block; text-align: right;}
-.listing-post-profile-time {color: #9c9c9c;font-weight: 400;}
+.listing-post-profile-time {color: #9c9c9c;font-weight: 400;float: right;}
 .post-profile-time-text{color: #9c9c9c;display: block;font-weight: 400; font-size:14px;}
 .listing-post-name-block {float: left;padding: 20px 0;width: 100%;}
 .listing-post-name {color: #ff835a;font-size: 20px;font-weight: 700;text-align: right; float: right;}
