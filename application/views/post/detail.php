@@ -83,7 +83,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
               <h2><?php echo $this->lang->line('write_comment'); ?></h2>
               <?php
 				$attributes = array('id' => 'reply-post-form', 'enctype' => 'multipart/form-data');
-				echo form_open_multipart('post/reply/'.$feedback['id'], $attributes);
+				echo form_open_multipart('post/reply', $attributes);
 				?>
                 <label><?php echo $this->lang->line('comment'); ?></label>
 				<textarea name="feedback_cont" id="feedback_cont" placeholder="<?php echo $this->lang->line('comment_here'); ?>" rows="10"></textarea>
@@ -99,6 +99,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					</div>
 					<span class="post-btn"><?php echo $this->lang->line('post'); ?></span>
 				</div>
+				<input type="hidden" name="id" id="id" value="<?php echo $feedback['id']; ?>" />
 				<input type="hidden" name="latitude" id="latitude" value="" />
 				<input type="hidden" name="longitude" id="longitude" value="" />
 				<?php echo form_close(); ?>

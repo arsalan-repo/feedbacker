@@ -56,10 +56,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
         <?php } ?>
         <?php if(!isset($row['ads'])) { ?>
         <div class="post-follow-block"> 
-            <span class="post-follow-back-arrow">
+            <span class="post-follow-back-arrow" id="reply-btn-<?php echo $row['id']; ?>">
                 <img src="<?php echo ASSETS_URL.'images/reply-arrow.png'; ?>" alt="" title="<?php echo $this->lang->line('reply'); ?>" />
             </span>
-            <span class="follow-btn-default <?php if($row['is_followed']) echo 'unfollow-btn'; ?> follow-btn-<?php echo $row['title_id']; ?>" id="follow-btn-<?php echo $row['id']; ?>">
+            <span class="follow-btn-default <?php if($row['is_followed']) echo 'unfollow-btn'; ?> follow-btn-<?php echo $row['title_id']; ?>">
                 <?php if ($row['is_followed']) { ?>
                     <?php echo $this->lang->line('unfollow'); ?>
                 <?php } else { ?>    
@@ -80,32 +80,135 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             <input type="hidden" id="user_id" value="<?php echo $user_id; ?>" />
         </div>
         <?php } ?>
-        <div class="post-detail-comment-form">
-          <h2><?php echo $this->lang->line('write_comment'); ?></h2>
-		  <?php
-			$attributes = array('class' => 'form-reply-post', 'id' => 'form-reply-'.$row['id']);
-			echo form_open('post/reply', $attributes);
-			?>
-            <label><?php echo $this->lang->line('comment'); ?></label>
-            <input type="text" name="feedback_cont" id="feedback_cont" placeholder="<?php echo $this->lang->line('comment_here'); ?>" />
-            <input type="text" name="location" id="location" placeholder="<?php echo $this->lang->line('location'); ?>" />
-			<input type="hidden" id="title_id" value="<?php echo $row['title_id']; ?>" />
-			<div class="post-btn-block">
-				<div class="camera-map-icon"> 
-					<div class="camera-icon-block">
-						<span>Choose File</span>
-						<input name="Select File" type="file" />
-					</div>            
-					<img src="<?php echo base_url().'assets/images/map-icon.png'; ?>" alt="" /> 
-				</div>
-				<span class="post-btn"><?php echo $this->lang->line('post'); ?></span> 
-			</div>
-			<?php echo form_close(); ?>
-    	</div>
     </div>
   </div>
 <?php } ?>
+<div class="post-detail-comment-form" title="<?php echo $this->lang->line('write_comment'); ?>">
+  <?php
+	$attributes = array('id' => 'reply-post-form', 'enctype' => 'multipart/form-data');
+	echo form_open_multipart('post/reply', $attributes);
+	?>
+	<label><?php echo $this->lang->line('comment'); ?></label>
+	<textarea name="feedback_cont" id="feedback_cont" placeholder="<?php echo $this->lang->line('comment_here'); ?>" rows="10"></textarea>
+	<input type="text" name="location" id="location" placeholder="<?php echo $this->lang->line('location'); ?>" />
+  
+	<div class="post-btn-block">
+		<div class="camera-map-icon">
+			<div class="camera-icon-block">
+				<span>Choose File</span>
+				<input name="feedback_img" id="feedback_img" type="file" />
+			</div>
+			<img src="<?php echo base_url().'assets/images/map-icon.png'; ?>" class="geo-map" alt="" />
+		</div>
+		<span class="post-btn"><?php echo $this->lang->line('post'); ?></span>
+	</div>
+	<input type="hidden" name="id" id="id" value="" />
+	<input type="hidden" name="latitude" id="latitude" value="" />
+	<input type="hidden" name="longitude" id="longitude" value="" />
+	<?php echo form_close(); ?>
+	<img id="preview" src="" alt="" height="200" width="200" />
+</div>
 <script type="application/javascript">
+	$(function(){
+		var dialog, form;
+		
+		dialog = $(".post-detail-comment-form").dialog({
+			autoOpen: false,
+			width: 680,
+			modal: true,
+			resizable: false,
+			buttons: false,
+			close: function() {
+				form[0].reset();
+				
+				$("#feedback_cont-error").remove();
+				$("#feedback_cont").removeClass( "error" );
+			}
+		});
+		
+		form = dialog.find( "form" );
+		
+		dialog.find( ".post-btn" ).on( "click", function( event ) {
+			event.preventDefault();
+			
+			$("#feedback_cont-error").remove();
+			$("#feedback_cont").removeClass( "error" );
+			
+			if ($("#feedback_cont").val().length == 0) {
+				$("#feedback_cont").addClass( "error" );
+				$('<label id="feedback_cont-error" class="error" for="feedback_cont">Please enter a feedback</label>').insertAfter("#feedback_cont");
+				
+				return false;
+			}
+			
+			$.ajax({
+				dataType: 'json',
+				type:'POST',
+				url: form[0].action,
+				data: new FormData(form[0]),
+				processData: false,
+				contentType: false
+			}).done(function(data){
+				toastr.success(data.message, 'Success Alert', {timeOut: 5000});
+			});
+			
+			dialog.dialog( "close" );
+			return true;
+		});
+		
+		$('.post-follow-back-arrow').off("click").on("click",function(e){
+			var feedback_id = $(this).parent().find('#feedback_id').val();
+			dialog.find( "#id" ).val(feedback_id);
+			dialog.dialog( "open" );
+		});
+		
+		$("#feedback_img").change(function(){
+			imagePreview(this);
+		});
+		
+		$(".geo-map").click(function() {
+			if (navigator.geolocation) {
+				navigator.geolocation.getCurrentPosition(showLocation);
+			} else { 
+				$('#location').html('Geolocation is not supported by this browser.');
+			}
+		});
+	});
+	
+	function showLocation(position) {
+		var latitude = position.coords.latitude;
+		var longitude = position.coords.longitude;
+		
+		$.ajax({
+			type:'POST',
+			url:'<?php echo site_url('post/get_location'); ?>',
+			data:'latitude='+latitude+'&longitude='+longitude,
+			success:function(response){
+				if(response){
+					var objJSON = JSON.parse(response);
+					$('#location').val(objJSON.location);
+					
+					$( "#latitude" ).val( latitude );
+					$( "#longitude" ).val( longitude );
+				}else{
+					toastr.error('Error getting location. Try later!', 'Failure Alert', {timeOut: 5000});
+				}
+			}
+		});
+	}
+	
+	function imagePreview(input) {
+		if (input.files && input.files[0]) {
+			var reader = new FileReader();
+			
+			reader.onload = function (e) {
+				$('#preview').attr('src', e.target.result);
+			}
+			
+			reader.readAsDataURL(input.files[0]);
+		}
+	}
+
 	$('.follow-btn-default').off("click").on("click",function(e){
 		e.preventDefault();
 		

@@ -15,8 +15,8 @@ $(document).ready(function(){
 		$(".header-profile ul").slideToggle("300");
 	})
 
-	$(".post-follow-back-arrow").click(function(){
-		$(this).parent().parent().parent(".post-profile-block").addClass("show-comment-box").siblings().removeClass("show-comment-box");
-	});
+//	$(".post-follow-back-arrow").click(function(){
+//		$(this).parent().parent().parent(".post-profile-block").addClass("show-comment-box").siblings().removeClass("show-comment-box");
+//	});
 
 });

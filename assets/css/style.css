@@ -270,6 +270,7 @@ input[type='file']{ cursor: pointer;}
 .post-detail-comment-form h2{color:#434b57; font-size:16px;}
 .post-detail-comment-form label{color:#8a8a98; font-size:14px; padding:20px 0;}
 .post-detail-comment-form input{color:#bebebe; font-size:16px;}
+.post-detail-comment-form textarea{width:100%;}
 .post-detail-comment-form .post-btn-block{padding:10px 0; float:left; width:100%;}
 
 /*tab css*/

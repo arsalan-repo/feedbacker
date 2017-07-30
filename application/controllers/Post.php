@@ -355,8 +355,10 @@ class Post extends CI_Controller {
 		$this->template->front_render('post/create', $this->data);
 	}
 	
-	public function reply($replied_to) {
+	public function reply() {
 		//check post and save data
+		$replied_to = $this->input->post('id');
+		
 		if ($replied_to == '') {
 			redirect('post/create');
         } else {
