@@ -35,7 +35,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				<img src="<?php echo $feedback['feedback_img']; ?>" alt="" />
             </div>
 			<?php } ?>
-          <p><?php echo $feedback['feedback']; ?></p>
+          <p><?php echo nl2br($feedback['feedback']); ?></p>
           <div class="post-listing-follow-btn"> 
             <?php if($feedback['is_followed'] == "") { ?>
             	<span class="follow-btn fill"><?php echo $this->lang->line('follow'); ?> <i class="fa fa-plus" aria-hidden="true"></i></span>	
@@ -70,7 +70,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			  <span class="post-address"><?php echo $row['location']; ?></span>
 			  <span class="listing-post-profile-time"><?php echo $row['time']; ?></span> </div>
             <div class="comment-description">
-              <p><?php echo $row['feedback']; ?></p>
+              <p><?php echo nl2br($row['feedback']); ?></p>
 			  <?php if (!empty($row['feedback_thumb'])) { ?>
 				<div class="post-reply-img">
 					<img src="<?php echo $row['feedback_thumb']; ?>" alt="" />	
@@ -137,7 +137,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
               	<img src="<?php echo $row['feedback_img']; ?>" alt="" />
               </div>
             <?php } ?>
-              <p><?php echo $row['feedback']; ?></p>
+              <p><?php echo nl2br($row['feedback']); ?></p>
               <div class="post-listing-follow-btn"> 
               	<span class="back-arrow">
                 	<img src="<?php echo base_url().'assets/images/reply-arrow.png'; ?>" alt="" />
