@@ -69,7 +69,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                 </span> 
             	<span class="post-name"><?php echo $row['name']; ?></span> 
             	<span class="post-address"><?php echo $row['location']; ?></span>
-                <p><?php echo $row['feedback']; ?></p>
+                <p><?php echo nl2br($row['feedback']); ?></p>
                 <?php if (!empty($feedback_img)) { ?>
               	<div class="post-large-img"> 
                 	<img src="<?php echo $feedback_img; ?>" alt="" />

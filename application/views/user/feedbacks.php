@@ -35,7 +35,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
           echo '<img src="'.base_url().'assets/images/feedback-placeholder-img.jpg" alt="" />';
         } ?>    
       </div>
-      <p class="user-feedbacks"><?php echo $row['feedback']; ?></p>
+      <p class="user-feedbacks"><?php echo nl2br($row['feedback']); ?></p>
       <div class="post-listing-follow-btn"> 
        <span class="back-arrow">
          <img src="<?php echo base_url().'assets/images/reply-arrow.png'; ?>" alt="" />
