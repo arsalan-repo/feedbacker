@@ -77,7 +77,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			<input type="hidden" id="feedback_id" value="<?php echo $row['id']; ?>" />
 			<input type="hidden" id="totl_likes" value="<?php echo $row['likes']; ?>" />			
             <input type="hidden" id="title_id" value="<?php echo $row['title_id']; ?>" />
-            <input type="hidden" id="user_id" value="<?php echo $user_id; ?>" />
         </div>
         <?php } ?>
     </div>
@@ -213,13 +212,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		e.preventDefault();
 		
 		var title_id = $(this).parent().find('#title_id').val();
-		var user_id = $(this).parent().find('#user_id').val();		
-	
+		
 		$.ajax({
 			dataType: 'json',
 			type:'POST',
 			url: '<?php echo site_url('title/follow'); ?>',
-			data:{title_id:title_id, user_id:user_id}
+			data:{title_id:title_id}
 		}).done(function(data){
 			// console.log(data);
 			if (data.is_followed == 1) {
@@ -246,13 +244,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		var element = $(this).attr('id');
 		var totl_likes = $(this).parent().find('#totl_likes').val();
 		var feedback_id = $(this).parent().find('#feedback_id').val();
-		var user_id = $(this).parent().find('#user_id').val();		
 	
 		$.ajax({
 			dataType: 'json',
 			type:'POST',
 			url: '<?php echo site_url('post/like'); ?>',
-			data:{feedback_id:feedback_id, user_id:user_id, totl_likes:totl_likes}
+			data:{feedback_id:feedback_id, totl_likes:totl_likes}
 		}).done(function(data){
 			// console.log(data);
 			if (data.is_liked == 1) {

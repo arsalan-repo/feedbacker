@@ -81,7 +81,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             </select>
           </li>
 		  <li>
-		  	<input type="hidden" name="user_id" id="user_id" value="<?php echo $user_data['id']; ?>" />
 			<input type="submit" name="btn_save" id="btn_save" value="<?php echo $this->lang->line('save'); ?>" />
 		  </li>
 		</ul>
@@ -96,12 +95,10 @@ $(document).ready(function() {
 	
 	// Get Feedbacks and Followings
 	var element = $('.profile-listing-block');
-	var user_id = $('#edit-profile-form').find('#user_id').val();		
 	
 	$.ajax({
 		type:'POST',
-		url: '<?php echo site_url('user/feedbacks'); ?>',
-		data:{user_id:user_id}
+		url: '<?php echo site_url('user/feedbacks'); ?>'
 	}).done(function(data){
 		element.html(data);
 	});
@@ -167,8 +164,7 @@ $(document).ready(function() {
 		
 		$.ajax({
 			type:'POST',
-			url: '<?php echo site_url('user/feedbacks'); ?>',
-			data:{user_id:user_id}
+			url: '<?php echo site_url('user/feedbacks'); ?>'
 		}).done(function(data){
 			element.html(data);
 			$('#show-followings').removeClass("blue-btn").addClass("normal-btn");
@@ -181,8 +177,7 @@ $(document).ready(function() {
 		
 		$.ajax({
 			type:'POST',
-			url: '<?php echo site_url('user/followings'); ?>',
-			data:{user_id:user_id}
+			url: '<?php echo site_url('user/followings'); ?>'
 		}).done(function(data){
 			element.html(data);
 			$('#show-feedbacks').removeClass("blue-btn").addClass("normal-btn");

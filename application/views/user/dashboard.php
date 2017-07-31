@@ -50,7 +50,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
         <div class="middle-content-block" id="post-data">
           <?php 
 		  if (!empty($feedbacks)) {
-		  	$this->load->view('user/ajax', $feedbacks);
+		  	$this->load->view('post/ajax', $feedbacks);
           } else {
           	echo $no_record_found;
           } ?>
@@ -75,11 +75,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				</div>
 				<div class="who-follow-add" id="who-follow-<?php echo $row['feedback_id']; ?>"> <?php echo $this->lang->line('follow'); ?> <i class="fa fa-plus" aria-hidden="true"></i></div>
 				<input type="hidden" id="title_id" value="<?php echo $row['title_id']; ?>" />
-				<input type="hidden" id="user_id" value="<?php echo $user_id; ?>" />
 			</div>
 			<?php } ?>
-		<?php } else { ?>
-			<div class="no-record"><?php echo $this->lang->line('no_results'); ?></div>
 		<?php } ?>
       </div>
     </div>
@@ -142,13 +139,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			
 			var element = $(this).attr('id');
 			var title_id = $(this).parent().find('#title_id').val();
-			var user_id = $(this).parent().find('#user_id').val();		
 		
 			$.ajax({
 				dataType: 'json',
 				type:'POST',
 				url: '<?php echo site_url('title/follow'); ?>',
-				data:{title_id:title_id, user_id:user_id}
+				data:{title_id:title_id}
 			}).done(function(data){
 				// console.log(data);
 				if (data.is_followed == 1) {

@@ -59,10 +59,9 @@ class Title extends CI_Controller {
 	// Follow / Unfollow Title
 	public function follow() {
 		if ($this->input->is_ajax_request()) {
-			$user_id = $this->input->post('user_id');
 			$title_id = $this->input->post('title_id');
 			
-			$condition_array = array('user_id' => $user_id, 'title_id' => $title_id);
+			$condition_array = array('user_id' => $this->user['id'], 'title_id' => $title_id);
 			$followings = $this->common->select_data_by_condition('followings', $condition_array, $data = '*', $short_by = '', $order_by = '', $limit = '1', $offset = '', $join_str = array(), $group_by = '');
 			
 			if(count($followings) > 0) {
@@ -72,7 +71,7 @@ class Title extends CI_Controller {
 				die();
 			} else {
 				// Follow Title
-				$insert_array['user_id'] = $user_id;
+				$insert_array['user_id'] = $this->user['id'];
 				$insert_array['title_id'] = $title_id;
 				
 				$insert_result = $this->common->insert_data($insert_array, $tablename = 'followings');

@@ -179,7 +179,7 @@ class Common extends CI_Model {
 		return $return_array;
 	}
 	
-	function adBanners($result, $country, $page = 1) {
+	function adBanners($result, $country, $show_on, $page = 1, $title = 0) {
 		$join_str = array(
 			array(
 				'table' => 'titles',
@@ -189,71 +189,73 @@ class Common extends CI_Model {
 			)
 		);
 
-		$contition_array = array('ads.show_on' => 'home', 'ads.country' => $country, 'ads.status' => 1, 'ads.deleted' => 0);
+		$contition_array = array('ads.show_on' => $show_on, 'ads.title_id' => $title, 'ads.country' => $country, 'ads.status' => 1, 'ads.deleted' => 0);
 		
 		$data = 'ads_id, ads.title_id, title, usr_name, usr_img, ads_cont, ads_img, ads_thumb, ads_video, ads.country, ads.show_on, ads.show_after, ads.repeat_for, ads.ads_url, ads.status, ads.datetime as time';
 		
 		$ads_list = $this->common->select_data_by_condition('ads', $contition_array, $data, $short_by = 'ads.datetime', $order_by = 'DESC', $limit = '', $offset = '', $join_str, $group_by = '');
 		
-		foreach($ads_list as $ads) {
-			$adArray = array(
-				array(
-					'id' => '',
-					'title_id' => '',
-					'title' => '',
-					'likes' => 0,
-					'followers' => 0,
-					'is_liked' => '',
-					'is_followed' => '',
-					'name' => $ads['usr_name'],
-					'feedback_video' => '',
-					'location' => '',
-					'feedback' => $ads['ads_cont'],
-					'ads_url' => $ads['ads_url'],
-					'ads' => 1
-				)
-			);
-			
-			if(isset($ads['usr_img'])) {
-				$adArray[0]['user_avatar'] = S3_CDN . 'uploads/user/thumbs/' . $ads['usr_img'];
-			} else {
-				$adArray[0]['user_avatar'] = ASSETS_URL . 'images/user-avatar.png';
-			}
-			
-			if($ads['ads_img'] !== "") {
-				$adArray[0]['feedback_img'] = S3_CDN . 'uploads/feedback/main/' . $ads['ads_img'];
-			} else {
-				$adArray[0]['feedback_img'] = "";
-			}
-
-			if($ads['ads_thumb'] !== "") {
-				$adArray[0]['feedback_thumb'] = S3_CDN . 'uploads/feedback/thumbs/' . $ads['ads_thumb'];
-			} elseif($ads['ads_img'] !== "") {
-				$adArray[0]['feedback_thumb'] = S3_CDN . 'uploads/feedback/main/' . $ads['ads_img'];
-			} else {
-				$adArray[0]['feedback_thumb'] = "";
-			}
+		if (!empty($ads_list)) {
+			foreach($ads_list as $ads) {
+				$adArray = array(
+					array(
+						'id' => '',
+						'title_id' => '',
+						'title' => '',
+						'likes' => 0,
+						'followers' => 0,
+						'is_liked' => '',
+						'is_followed' => '',
+						'name' => $ads['usr_name'],
+						'feedback_video' => '',
+						'location' => '',
+						'feedback' => $ads['ads_cont'],
+						'ads_url' => $ads['ads_url'],
+						'ads' => 1
+					)
+				);
 				
-			$adArray[0]['time'] = $this->common->timeAgo($ads['time']);
-			
-			// Check If banner has to be repeated
-			if($page <= $ads['repeat_for']) {
-				array_splice($result, $ads['show_after'], 0, $adArray);
+				if(isset($ads['usr_img'])) {
+					$adArray[0]['user_avatar'] = S3_CDN . 'uploads/user/thumbs/' . $ads['usr_img'];
+				} else {
+					$adArray[0]['user_avatar'] = ASSETS_URL . 'images/user-avatar.png';
+				}
+				
+				if($ads['ads_img'] !== "") {
+					$adArray[0]['feedback_img'] = S3_CDN . 'uploads/feedback/main/' . $ads['ads_img'];
+				} else {
+					$adArray[0]['feedback_img'] = "";
+				}
+	
+				if($ads['ads_thumb'] !== "") {
+					$adArray[0]['feedback_thumb'] = S3_CDN . 'uploads/feedback/thumbs/' . $ads['ads_thumb'];
+				} elseif($ads['ads_img'] !== "") {
+					$adArray[0]['feedback_thumb'] = S3_CDN . 'uploads/feedback/main/' . $ads['ads_img'];
+				} else {
+					$adArray[0]['feedback_thumb'] = "";
+				}
+					
+				$adArray[0]['time'] = $this->common->timeAgo($ads['time']);
+				
+				// Check If banner has to be repeated
+				if($page <= $ads['repeat_for']) {
+					array_splice($result, $ads['show_after'], 0, $adArray);
+				}
+				/*
+				if($ads['repeat_for'] > 0) {
+					$i = 0;
+					$total = $ads['show_after'] * $ads['repeat_for'];
+					for($n = 1; $n <= $total; $n++) {
+						if($n%$ads['show_after'] == 0) {
+							array_splice($result, $n+$i, 0, $adArray);
+							$i++;
+						}
+					}	
+				} else {
+					array_splice($result, $ads['show_after'], 0, $adArray);
+				}
+				*/
 			}
-			/*
-			if($ads['repeat_for'] > 0) {
-				$i = 0;
-				$total = $ads['show_after'] * $ads['repeat_for'];
-				for($n = 1; $n <= $total; $n++) {
-					if($n%$ads['show_after'] == 0) {
-						array_splice($result, $n+$i, 0, $adArray);
-						$i++;
-					}
-				}	
-			} else {
-				array_splice($result, $ads['show_after'], 0, $adArray);
-			}
-			*/
 		}
 		
 		return $result;

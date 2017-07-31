@@ -10,6 +10,8 @@ class Search extends CI_Controller {
 	
 	public $user;
 	
+	private $perPage = 10;
+	
 	private $aws_client;
 
     public function __construct() {
@@ -54,6 +56,12 @@ class Search extends CI_Controller {
 	public function index() {
 		$this->data['module_name'] = 'Search';
         $this->data['section_title'] = 'Search Results';
+		
+		// Trends
+		$this->data['trends'] = $this->common->getTrends($this->user['country']);
+		
+		// What to Follow
+		$this->data['to_follow'] = $this->common->whatToFollow($this->user['id'], $this->user['country']);
 	
 		$qs = $this->input->get('qs');
 		
@@ -175,35 +183,48 @@ class Search extends CI_Controller {
 		$search_condition = "(".$custom_in_sql.") AND db_feedback.deleted = 0 AND feedback.status = 1";
 		$data = 'feedback_id, feedback.title_id, title, users.id as user_id, name, photo, feedback_cont, feedback_img, feedback_thumb, feedback_video, replied_to, location, feedback.datetime as time';
 
-		$feedback = $this->common->select_data_by_search('feedback', $search_condition, $condition_array = array(), $data, $sortby = '', $orderby = '', $limit = '', $offset = '', $join_str,'(title = "'.$qs.'") DESC,(name = "'.$qs.'") DESC, length(title), length(name)');
-		
-		if(count($feedback) > 0) {
-			$return_array = $this->common->getFeedbacks($feedback, $this->user['id']);
+		if (!empty($this->input->get("page"))) {
+			$page = ceil($this->input->get("page") - 1);
+			$start = ceil($page * $this->perPage);
 			
-			// Append Ad Banners
-			$page = round($offset/20);
-			$return_array = $this->common->adBanners($return_array, $this->user['country']);
-
-			// Null to Empty String
-			array_walk_recursive($return_array, function (&$item, $key) {
-				$item = null === $item ? '' : $item;
-			});
-						
-			$this->data['qs'] = $qs;
-			$this->data['results'] = $return_array;
+			$feedback = $this->common->select_data_by_search('feedback', $search_condition, $condition_array = array(), $data, $sortby = '', $orderby = '', $this->perPage, $start, $join_str,'(title = "'.$qs.'") DESC,(name = "'.$qs.'") DESC, length(title), length(name)');
+			
+			if(count($feedback) > 0) {
+				// Get Likes, Followings and Other details
+				$return_array = $this->common->getFeedbacks($feedback, $this->user['id']);
+				
+				// Append Ad Banners
+				$return_array = $this->common->adBanners($return_array, $this->user['country'], 'search', $this->input->get("page"));
+							
+				$this->data['qs'] = $qs;
+				$this->data['feedbacks'] = $return_array;
+			} else {
+				$this->data['qs'] = $qs;
+				$this->data['feedbacks'] = array();
+			}
+			
+			$response = $this->load->view('post/ajax', $this->data);
+			echo json_encode($response);
 		} else {
-			$this->data['qs'] = $qs;
-			$this->data['results'] = array();
+			$feedback = $this->common->select_data_by_search('feedback', $search_condition, $condition_array = array(), $data, $sortby = '', $orderby = '', $this->perPage, 0, $join_str,'(title = "'.$qs.'") DESC,(name = "'.$qs.'") DESC, length(title), length(name)');
+		
+			if(count($feedback) > 0) {
+				// Get Likes, Followings and Other details
+				$return_array = $this->common->getFeedbacks($feedback, $this->user['id']);
+				
+				// Append Ad Banners
+				$return_array = $this->common->adBanners($return_array, $this->user['country'], 'search');
+							
+				$this->data['qs'] = $qs;
+				$this->data['feedbacks'] = $return_array;
+			} else {
+				$this->data['qs'] = $qs;
+				$this->data['feedbacks'] = array();
+			}
+		
+			/* Load Template */
+			$this->template->front_render('post/search', $this->data);
 		}
-		
-		// Trends
-		$this->data['trends'] = $this->common->getTrends($this->user['country']);
-		
-		// What to Follow
-		$this->data['to_follow'] = $this->common->whatToFollow($this->user['id'], $this->user['country']);
-		
-		/* Load Template */
-		$this->template->front_render('post/search', $this->data);
 	}
 	
 	public function results() {

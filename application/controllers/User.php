@@ -62,7 +62,6 @@ class User extends CI_Controller {
     public function dashboard($country = '') {
 		$this->data['module_name'] = 'User';
         $this->data['section_title'] = 'Dashboard';
-		$this->data['user_id'] = $this->user['id'];
 		
 		// Get user country		
 		if($country == '') {
@@ -117,7 +116,7 @@ class User extends CI_Controller {
 				$result = $this->common->getFeedbacks($feedback, $this->user['id']);
 				
 				// Append Ad Banners
-				$return_array = $this->common->adBanners($result, $country, $this->input->get("page"));
+				$return_array = $this->common->adBanners($result, $country, 'home', $this->input->get("page"));
 				
 				$this->data['feedbacks'] = $return_array;
 			} else {
@@ -125,7 +124,7 @@ class User extends CI_Controller {
 				$this->data['no_record_found'] = $this->lang->line('no_results');
 			}
 			
-			$response = $this->load->view('user/ajax', $this->data);
+			$response = $this->load->view('post/ajax', $this->data);
 			echo json_encode($response);
 		} else {
 			$feedback = $this->common->select_data_by_condition('feedback', $contition_array, $data, $sortby = 'feedback.datetime', $orderby = 'DESC', $this->perPage, 0, $join_str, $group_by = '');
@@ -135,7 +134,7 @@ class User extends CI_Controller {
 				$result = $this->common->getFeedbacks($feedback, $this->user['id']);
 				
 				// Append Ad Banners
-				$return_array = $this->common->adBanners($result, $country);
+				$return_array = $this->common->adBanners($result, $country, 'home');
 				
 				$this->data['feedbacks'] = $return_array;
 			} else {
@@ -160,7 +159,6 @@ class User extends CI_Controller {
                 die();
 			}
 			
-			$user_id = $this->input->post('user_id');
 			$gender = $this->input->post('gender');
 			$name = $this->input->post('name');
 //			$email = $this->input->post('email');
@@ -264,7 +262,7 @@ class User extends CI_Controller {
 				$this->user['dob'] = $dob;
 				
 				$this->session->set_userdata('mec_user', $this->user);
-                $this->common->update_data($update_data, 'users', 'id', $user_id);
+                $this->common->update_data($update_data, 'users', 'id', $this->user['id']);
 				
 				echo json_encode(array('message' => $this->lang->line('success_msg_profile_saved'), 'status' => 1));
                 die();
