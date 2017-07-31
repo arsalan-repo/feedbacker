@@ -111,6 +111,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	$(function(){
 		var dialog, form;
 		
+		if ($(".post-detail-comment-form").hasClass('ui-dialog-content')) {
+			$(".ui-dialog-content").remove();
+		}
+		
 		dialog = $(".post-detail-comment-form").dialog({
 			autoOpen: false,
 			width: 680,
