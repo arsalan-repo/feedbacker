@@ -908,9 +908,9 @@ body .ui-tooltip {
 	color: #333333;
 }
 .ui-widget-header {
-	border: 1px solid #dddddd;
-	background: #e9e9e9;
-	color: #333333;
+	border: 1px solid #181a53;
+	background: #181a53;
+	color: #eef6fc;
 	font-weight: bold;
 }
 .ui-widget-header a {
