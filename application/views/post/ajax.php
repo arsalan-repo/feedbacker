@@ -45,13 +45,21 @@ defined('BASEPATH') OR exit('No direct script access allowed');
         <p><?php echo nl2br($row['feedback']); ?></p>
         <?php if (!empty($row['feedback_thumb'])) { ?>
             <div class="post-large-img">
-            <?php if(isset($row['ads'])) { ?>
-                <a href="<?php echo $row['ads_url']; ?>" target="_blank">
-                    <img src="<?php echo $row['feedback_thumb']; ?>" alt="" />
-                </a>
-            <?php } else { ?>
-                <img src="<?php echo $row['feedback_thumb']; ?>" alt="" />	
-            <?php } ?>
+            <?php 
+				if(isset($row['ads'])) { ?>
+					<a href="<?php echo $row['ads_url']; ?>" target="_blank">
+						<img src="<?php echo $row['feedback_thumb']; ?>" alt="" />
+					</a>
+            <?php 
+				} elseif (!empty($row['feedback_video'])) {
+					echo '<video width="500" height="375" controls poster="'.$row['feedback_thumb'].'">
+					<source src="'.$row['feedback_video'].'" type="video/mp4">
+					Your browser does not support the video tag.
+					</video>';
+				} else {
+					echo '<img src="'.$row['feedback_thumb'].'" alt="" />';
+				} 
+			?>
             </div>
         <?php } ?>
         <?php if(!isset($row['ads'])) { ?>
