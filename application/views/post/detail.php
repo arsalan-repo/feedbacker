@@ -34,8 +34,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             <div class="listing-post-img">
 				<?php 
 				if (!empty($feedback['feedback_video'])) {
-					echo '<video width="500" height="375" controls>
-						<source src="' . $feedback['feedback_video'] . '" type="video/mp4">
+					echo '<video width="500" height="375" controls poster="'.$feedback['feedback_thumb'].'">
+						<source src="'.$feedback['feedback_video'].'" type="video/mp4">
 						Your browser does not support the video tag.
 						</video>';
 				} else {
