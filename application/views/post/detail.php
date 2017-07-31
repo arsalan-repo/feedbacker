@@ -30,12 +30,18 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				?>
             </div>
             <span class="listing-post-profile-name"><?php echo $feedback['name']; ?></span> <span class="listing-post-profile-time"><?php echo $feedback['time']; ?></span> </div>
-          	<?php if($feedback['feedback_img'] != "") { ?>
+			<p><?php echo nl2br($feedback['feedback']); ?></p>
             <div class="listing-post-img">
-				<img src="<?php echo $feedback['feedback_img']; ?>" alt="" />
+				<?php 
+				if (!empty($feedback['feedback_video'])) {
+					echo '<video width="500" height="375" controls>
+						<source src="' . $feedback['feedback_video'] . '" type="video/mp4">
+						Your browser does not support the video tag.
+						</video>';
+				} else {
+					echo '<img src="'.$feedback['feedback_img'].'" alt="" />';
+				} ?>
             </div>
-			<?php } ?>
-          <p><?php echo nl2br($feedback['feedback']); ?></p>
           <div class="post-listing-follow-btn"> 
             <?php if($feedback['is_followed'] == "") { ?>
             	<span class="follow-btn fill"><?php echo $this->lang->line('follow'); ?> <i class="fa fa-plus" aria-hidden="true"></i></span>	
