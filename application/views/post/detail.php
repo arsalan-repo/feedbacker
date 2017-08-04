@@ -9,7 +9,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
       <div class="post-detail-left">
         <div class="profile-listing">
           <div class="listing-post-name-block">
-          	<span class="listing-post-name"><?php echo $feedback['title']; ?></span> 
+          	<span class="listing-post-name"><a href="<?php echo site_url('post/title').'/'.$feedback['title_id']; ?>"><?php echo $feedback['title']; ?></a></span> 
             <span class="listing-post-followers">
 				<?php 
 				if($user_info['language'] == 'ar') {
@@ -42,21 +42,28 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					echo '<img src="'.$feedback['feedback_img'].'" alt="" />';
 				} ?>
             </div>
-          <div class="post-listing-follow-btn"> 
-            <?php if($feedback['is_followed'] == "") { ?>
-            	<span class="follow-btn fill"><?php echo $this->lang->line('follow'); ?> <i class="fa fa-plus" aria-hidden="true"></i></span>	
-            <?php } else { ?>
-            	<span class="follow-btn fill"><?php echo $this->lang->line('unfollow'); ?></span>
-			<?php } ?>
-            <?php if($feedback['is_liked'] == "") { ?>
-                <span class="wishlist empty">
-                    <i class="fa fa-heart-o" aria-hidden="true"></i> <?php echo $feedback['likes']; ?>
-                </span>
-			<?php } else { ?>
-                <span class="wishlist">
-                    <i class="fa fa-heart" aria-hidden="true"></i> <?php echo $feedback['likes']; ?>
-                </span>
-            <?php } ?>
+          <div class="post-listing-follow-btn">
+		  	<span class="post-follow-back-arrow" id="scrollToBottom">
+                <img src="<?php echo ASSETS_URL.'images/reply-arrow.png'; ?>" alt="" title="<?php echo $this->lang->line('reply'); ?>" />
+            </span> 
+            <span class="follow-btn-default <?php if($feedback['is_followed']) echo 'unfollow-btn'; ?> follow-btn-<?php echo $feedback['title_id']; ?>">
+                <?php if ($feedback['is_followed']) { ?>
+                    <?php echo $this->lang->line('unfollow'); ?>
+                <?php } else { ?>    
+                    <?php echo $this->lang->line('follow'); ?> <i class="fa fa-plus" aria-hidden="true"></i>
+                <?php } ?>
+            </span>
+            <span class="wishlist" id="post-wishlist-<?php echo $feedback['id']; ?>">
+				<?php if ($feedback['is_liked']) { ?>
+					<i class="fa fa-heart" aria-hidden="true" title="<?php echo $this->lang->line('unlike'); ?>"></i> 
+				<?php } else { ?>
+					<i class="fa fa-heart-o" aria-hidden="true" title="<?php echo $this->lang->line('like'); ?>"></i>
+				<?php } ?> 
+				<?php echo $feedback['likes']; ?>
+            </span>
+			<input type="hidden" id="feedback_id" value="<?php echo $feedback['id']; ?>" />
+			<input type="hidden" id="totl_likes" value="<?php echo $feedback['likes']; ?>" />			
+            <input type="hidden" id="title_id" value="<?php echo $feedback['title_id']; ?>" />
           </div>
           <div class="post-detail-comments-block">
           	<?php if(!empty($feedback['replies'])) { ?>
@@ -118,7 +125,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
       <?php if(count($others) > 0) { ?>
 		  <?php foreach($others as $row) { ?>
             <div class="profile-listing">
-              <div class="listing-post-name-block"> <span class="listing-post-name"><?php echo $row['title']; ?></span> 
+              <div class="listing-post-name-block"> <span class="listing-post-name"><a href="<?php echo site_url('post/title').'/'.$row['title_id']; ?>"><?php echo $row['title']; ?></a></span> 
 				  <span class="listing-post-followers">
 				  <?php 
 					if($user_info['language'] == 'ar') {
@@ -130,6 +137,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			  </div>
               <div class="profile-listing-img-thumb-block">
                 <div class="profile-listing-img-thumb">
+				<a href="<?php echo site_url('post/detail').'/'.$row['id']; ?>">
                 <?php
 				if(isset($row['user_avatar'])) {
 					echo '<img src="'.$row['user_avatar'].'" alt="" />';
@@ -137,6 +145,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					echo '<img src="'.ASSETS_URL . 'images/user-avatar.png" alt="" />';
 				}
 				?>
+				</a>
                 </div>
                 <span class="listing-post-profile-name"><?php echo $row['name']; ?></span> <span class="listing-post-profile-time"><?php echo $row['time']; ?></span> </div>
 			<?php if($row['feedback_img'] != "") { ?>
@@ -146,24 +155,28 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             <?php } ?>
               <p><?php echo nl2br($row['feedback']); ?></p>
               <div class="post-listing-follow-btn"> 
-              	<span class="back-arrow">
-                	<img src="<?php echo base_url().'assets/images/reply-arrow.png'; ?>" alt="" />
-                </span> 
-                <?php if($row['is_followed'] == "") { ?>
-            	<span class="follow-btn fill"><?php echo $this->lang->line('follow'); ?> <i class="fa fa-plus" aria-hidden="true"></i></span>	
-				<?php } else { ?>
-                    <span class="follow-btn fill"><?php echo $this->lang->line('unfollow'); ?></span>
-                <?php } ?>
-                <?php if($row['is_liked'] == "") { ?>
-                    <span class="wishlist empty">
-                        <i class="fa fa-heart-o" aria-hidden="true"></i> <?php echo $row['likes']; ?>
-                    </span>
-                <?php } else { ?>
-                    <span class="wishlist">
-                        <i class="fa fa-heart" aria-hidden="true"></i> <?php echo $row['likes']; ?>
-                    </span>
-                <?php } ?>
-              </div>
+				<span class="post-follow-back-arrow" id="reply-btn-<?php echo $row['id']; ?>">
+					<a href="<?php echo site_url('post/detail').'/'.$row['id']; ?>"><img src="<?php echo ASSETS_URL.'images/reply-arrow.png'; ?>" alt="" title="<?php echo $this->lang->line('reply'); ?>" /></a>
+				</span> 
+				<span class="follow-btn-default <?php if($row['is_followed']) echo 'unfollow-btn'; ?> follow-btn-<?php echo $row['title_id']; ?>">
+					<?php if ($row['is_followed']) { ?>
+						<?php echo $this->lang->line('unfollow'); ?>
+					<?php } else { ?>    
+						<?php echo $this->lang->line('follow'); ?> <i class="fa fa-plus" aria-hidden="true"></i>
+					<?php } ?>
+				</span>
+				<span class="wishlist" id="post-wishlist-<?php echo $row['id']; ?>">
+					<?php if ($row['is_liked']) { ?>
+						<i class="fa fa-heart" aria-hidden="true" title="<?php echo $this->lang->line('unlike'); ?>"></i> 
+					<?php } else { ?>
+						<i class="fa fa-heart-o" aria-hidden="true" title="<?php echo $this->lang->line('like'); ?>"></i>
+					<?php } ?> 
+					<?php echo $row['likes']; ?>
+				</span>
+				<input type="hidden" id="feedback_id" value="<?php echo $row['id']; ?>" />
+				<input type="hidden" id="totl_likes" value="<?php echo $row['likes']; ?>" />			
+				<input type="hidden" id="title_id" value="<?php echo $row['title_id']; ?>" />
+			 </div>
             </div>
           <?php } ?>
       <?php } ?>
@@ -180,6 +193,11 @@ $(function() {
 			toastr.error($(this).html(), 'Failure Alert', {timeOut: 5000});
 		});
 	}
+	
+	$('#scrollToBottom').bind("click", function () {
+		$('html, body').animate({ scrollTop: $(document).height() }, 1200);
+		return false;
+	});
 
 	// Set Autocomplete Off
 	$("#create-post-form").attr('autocomplete', 'off');
@@ -254,4 +272,66 @@ function imagePreview(input) {
 		reader.readAsDataURL(input.files[0]);
 	}
 }
+
+$('.follow-btn-default').off("click").on("click",function(e){
+	e.preventDefault();
+	
+	var title_id = $(this).parent().find('#title_id').val();
+	
+	$.ajax({
+		dataType: 'json',
+		type:'POST',
+		url: '<?php echo site_url('title/follow'); ?>',
+		data:{title_id:title_id}
+	}).done(function(data){
+		// console.log(data);
+		if (data.is_followed == 1) {
+			$('.follow-btn-'+title_id).each(function() {
+				$(this).addClass('unfollow-btn');
+				$(this).html('<?php echo $this->lang->line('unfollow'); ?>');
+			});
+			toastr.success(data.message, 'Success Alert', {timeOut: 5000});
+		}
+		else
+		{
+			$('.follow-btn-'+title_id).each(function() {
+				$(this).removeClass('unfollow-btn');
+				$(this).html('<?php echo $this->lang->line('follow'); ?> <i class="fa fa-plus" aria-hidden="true"></i>');
+			});
+			toastr.warning(data.message, 'Success Alert', {timeOut: 5000});
+		}
+	});
+});
+
+$('.wishlist').off("click").on("click",function(e){
+	e.preventDefault();
+	
+	var element = $(this).attr('id');
+	var totl_likes = $(this).parent().find('#totl_likes').val();
+	var feedback_id = $(this).parent().find('#feedback_id').val();
+
+	$.ajax({
+		dataType: 'json',
+		type:'POST',
+		url: '<?php echo site_url('post/like'); ?>',
+		data:{feedback_id:feedback_id, totl_likes:totl_likes}
+	}).done(function(data){
+		// console.log(data);
+		if (data.is_liked == 1) {
+			var totl = parseInt(data.likes) + 1;	
+			$('#'+element).parent().find('#totl_likes').val(totl);
+						
+			$('#'+element).html('<i class="fa fa-heart" aria-hidden="true"></i><span class="total-likes"> '+totl+'</span>');
+			toastr.success(data.message, 'Success Alert', {timeOut: 5000});
+		}
+		else
+		{
+			var totl = parseInt(data.likes) - 1;
+			$('#'+element).parent().find('#totl_likes').val(totl);
+			
+			$('#'+element).html('<i class="fa fa-heart-o" aria-hidden="true"></i><span class="total-likes"> '+totl+'</span>');
+			toastr.warning(data.message, 'Success Alert', {timeOut: 5000});
+		}
+	});
+});
 </script>
