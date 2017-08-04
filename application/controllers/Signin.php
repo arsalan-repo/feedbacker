@@ -335,8 +335,17 @@ class Signin extends CI_Controller {
 				
 				if ($check_result == 1) {
 					// CHECK IF USER BLOCKED
+					$join_str = array(
+						array(
+							'table' => 'languages',
+							'join_table_id' => 'languages.lang_id',
+							'from_table_id' => 'users.lang_id',
+							'join_type' => 'left'
+						)
+					);
+					
 					$contition_user = array('twitterid' => $userInfo->id);
-					$user_result = $this->common->select_data_by_condition('users', $contition_user, $data = 'id, name, email, password, country, lang_id, photo, twitterid, status', $sortby = '', $orderby = '', $limit = '', $offset = '', $join_str = array());
+					$user_result = $this->common->select_data_by_condition('users', $contition_user, $data = 'id, name, email, password, country, users.lang_id, languages.lang_code as language, photo, twitterid, status', $sortby = '', $orderby = '', $limit = '', $offset = '', $join_str);
 					
 					if ($user_result[0]['status'] == "0") {
 						$this->session->set_flashdata('error', $this->lang->line('error_account_blocked'));
@@ -356,13 +365,28 @@ class Signin extends CI_Controller {
 				} else {
 					// NEW SIGNUP
 					$userData['name'] = $userInfo->name;
-//					$userData['lang_id'] = $userInfo->lang; // It gives en
-					$userData['lang_id'] = 1;
 					$userData['twitterid'] = trim($userInfo->id);
 					$userData['country'] = 'JO';
 					$userData['status'] = 1;
 					$userData['create_date'] = date('Y-m-d h:i:s');
 					$userData['last_login'] = date('Y-m-d h:i:s');
+					
+					// Set Language
+					$lang_condition = array('lang_code' => 'en');
+					$lang_info = $this->common->select_data_by_condition('languages', $lang_condition, 'lang_id, lang_code');
+					
+					$userData['lang_id'] = $lang_info[0]['lang_id'];
+					$userData['language'] = $lang_info[0]['lang_code'];
+		
+					if ($userInfo->lang) {					
+						$lang2_condition = array('lang_code' => $userInfo->lang);
+						$lang2_info = $this->common->select_data_by_condition('languages', $lang2_condition, 'lang_id, lang_code');
+						
+						if (count($lang2_info) > 0) {
+							$userData['lang_id'] = $lang2_info[0]['lang_id'];
+							$userData['language'] = $lang2_info[0]['lang_code'];
+						}
+					}
 					
 					$insert_result = $this->common->insert_data_getid($userData, $tablename = 'users');
 					
