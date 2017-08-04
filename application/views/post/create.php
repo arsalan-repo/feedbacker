@@ -20,7 +20,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		<label><?php echo $this->lang->line('write_about'); ?></label>
 		<input type="text" name="title" id="title" placeholder="" />
 		<label><?php echo $this->lang->line('location'); ?></label>
-		<input type="text" name="location" id="location" placeholder="" />
+		<input type="text" name="location" id="location" placeholder="" readonly="" />
 		<label><?php echo $this->lang->line('your_feedback'); ?></label>
 		<textarea name="feedback_cont" id="feedback_cont" placeholder="" rows="10"></textarea>
 		<div class="post-btn-block">
@@ -63,7 +63,7 @@ $(function() {
 		if (navigator.geolocation) {
 			navigator.geolocation.getCurrentPosition(showLocation);
 		} else { 
-			$('#location').html('Geolocation is not supported by this browser.');
+			toastr.error('Geolocation is not supported by this browser', 'Failure Alert', {timeOut: 5000});
 		}
 	});
 	

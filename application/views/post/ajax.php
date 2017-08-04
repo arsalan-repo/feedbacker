@@ -97,7 +97,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	?>
 	<label><?php echo $this->lang->line('comment'); ?></label>
 	<textarea name="feedback_cont" id="feedback_cont" placeholder="<?php echo $this->lang->line('comment_here'); ?>" rows="10"></textarea>
-	<input type="text" name="location" id="location" placeholder="<?php echo $this->lang->line('location'); ?>" />
+	<input type="text" name="location" id="location" placeholder="<?php echo $this->lang->line('location'); ?>" readonly="" />
   
 	<div class="post-btn-block">
 		<div class="camera-map-icon">
@@ -181,7 +181,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			if (navigator.geolocation) {
 				navigator.geolocation.getCurrentPosition(showLocation);
 			} else { 
-				$('#location').html('Geolocation is not supported by this browser.');
+				toastr.error('Geolocation is not supported by this browser', 'Failure Alert', {timeOut: 5000});
 			}
 		});
 	});
