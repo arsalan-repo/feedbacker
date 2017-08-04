@@ -6,7 +6,7 @@
 <title>Welcome to Feedbacker</title>
 <link href="<?php echo base_url().'assets/css/font-awesome.min.css'; ?>" rel="stylesheet" type="text/css" />
 <?php 
-	if ($this->session->userdata['fb_lang'] == 'ar') { 
+	if (isset($this->session->userdata['fb_lang']) && $this->session->userdata['fb_lang'] == 'ar') { 
 		$style = 'style-rtl.css';
 		$responsive = 'responsive-rtl.css';
 	} else {
