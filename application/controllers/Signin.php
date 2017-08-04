@@ -187,25 +187,6 @@ class Signin extends CI_Controller {
 			
 //            $userData['profile_url'] = 'https://www.facebook.com/'.$userProfile['id'];
 //            $userData['picture_url'] = $userProfile['picture']['data']['url'];
-
-			// Set Language
-			$lang_condition = array('lang_code' => 'en');
-			$lang_info = $this->common->select_data_by_condition('languages', $lang_condition, 'lang_id, lang_code');
-			
-			$userData['lang_id'] = $lang_info[0]['lang_id'];
-			$userData['language'] = $lang_info[0]['lang_code'];
-
-			if ($userProfile['locale']) {
-				$getLang = explode('_', $userProfile['locale']);
-			
-				$lang2_condition = array('lang_code' => $getLang[0]);
-				$lang2_info = $this->common->select_data_by_condition('languages', $lang2_condition, 'lang_id, lang_code');
-				
-				if (count($lang2_info) > 0) {
-					$userData['lang_id'] = $lang2_info[0]['lang_id'];
-					$userData['language'] = $lang2_info[0]['lang_code'];
-				}
-			}
 			
 			// IF ALREADY EXISTS
 			$condition_array = array('deleted' => 0);
@@ -260,6 +241,25 @@ class Signin extends CI_Controller {
 				$userData['status'] = 1;
 				$userData['create_date'] = date('Y-m-d h:i:s');
 				$userData['last_login'] = date('Y-m-d h:i:s');
+				
+				// Set Language
+				$lang_condition = array('lang_code' => 'en');
+				$lang_info = $this->common->select_data_by_condition('languages', $lang_condition, 'lang_id, lang_code');
+				
+				$userData['lang_id'] = $lang_info[0]['lang_id'];
+				$userData['language'] = $lang_info[0]['lang_code'];
+	
+				if ($userProfile['locale']) {
+					$getLang = explode('_', $userProfile['locale']);
+				
+					$lang2_condition = array('lang_code' => $getLang[0]);
+					$lang2_info = $this->common->select_data_by_condition('languages', $lang2_condition, 'lang_id, lang_code');
+					
+					if (count($lang2_info) > 0) {
+						$userData['lang_id'] = $lang2_info[0]['lang_id'];
+						$userData['language'] = $lang2_info[0]['lang_code'];
+					}
+				}
 	
 				$insert_result = $this->common->insert_data_getid($userData, $tablename = 'users');
 				
