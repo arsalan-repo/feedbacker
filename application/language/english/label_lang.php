@@ -1,4 +1,23 @@
 <?php
+// Signin
+$lang['password'] = 'Password';
+$lang['login'] = 'Login';
+$lang['forgot_pass'] = 'Forgot Password';
+$lang['are_you_new'] = 'New User? Sign Up';
+$lang['login_with'] = 'or login with';
+
+// Forgot Password
+$lang['forgot_pass'] = 'Forgot Password?';
+$lang['forgot_instr'] = 'Enter your email below to receive your new password';
+$lang['reset_pass'] = 'Reset Password';
+$lang['back'] = 'Back';
+
+//Signup
+$lang['confirm_pass'] = 'Confirm Password';
+$lang['sign_up'] = 'Sign Up';
+$lang['have_account'] = 'Have an account?';
+$lang['sign_in'] = 'Sign In';
+
 // Header
 $lang['lbl_welcome'] = 'Welcome to Feedbacker ';
 $lang['create_post'] = 'Create Post';
@@ -38,7 +57,7 @@ $lang['language'] = 'Language';
 $lang['change_pass'] = 'Change Password';
 $lang['old_pass'] = 'Old Password';
 $lang['new_pass'] = 'New Password';
-$lang['confirm_pass'] = 'Confirm New Password';
+$lang['confirm_new_pass'] = 'Confirm New Password';
 $lang['contact_us'] = 'Contact Us';
 $lang['name'] = 'Name';
 $lang['email'] = 'Email';

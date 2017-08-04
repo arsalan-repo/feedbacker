@@ -45,7 +45,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                 <input type="password" placeholder="" name="new_pass" id="new_pass" />
               </li>
               <li>
-                <label><?php echo $this->lang->line('confirm_pass'); ?></label>
+                <label><?php echo $this->lang->line('confirm_new_pass'); ?></label>
                 <input type="password" placeholder="" name="confirm_pass" id="confirm_pass" />
               </li>
               <li>

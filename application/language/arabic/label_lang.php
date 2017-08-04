@@ -1,4 +1,23 @@
 <?php
+// Signin
+$lang['password'] = 'كلمه السر';
+$lang['login'] = 'تسجيل الدخول';
+$lang['forgot_pass'] = 'هل نسيت كلمة المرور';
+$lang['are_you_new'] = 'مستخدم جديد؟ سجل';
+$lang['login_with'] = 'أو تسجيل الدخول باستخدام';
+
+// Forgot Password
+$lang['forgot_pass'] = 'هل نسيت كلمة المرور';
+$lang['forgot_instr'] = 'أدخل بريدك الإلكتروني أدناه لتلقي كلمة المرور الجديدة';
+$lang['reset_pass'] = 'إعادة تعيين كلمة المرور';
+$lang['back'] = 'الى الخلف';
+
+//Signup
+$lang['confirm_pass'] = 'تأكيد كلمة المرور';
+$lang['sign_up'] = 'سجل';
+$lang['have_account'] = 'هل لديك حساب؟';
+$lang['sign_in'] = 'تسجيل الدخول';
+
 // Header
 $lang['lbl_welcome'] = 'مرحبا بكم في معلق';
 $lang['create_post'] = 'كتابة منشور';
@@ -38,7 +57,7 @@ $lang['language'] = 'اللغة';
 $lang['change_pass'] = 'تغير كلمة المرور';
 $lang['old_pass'] = 'كلمة المرور القديمة';
 $lang['new_pass'] = 'كلمة مرور جديد';
-$lang['confirm_pass'] = 'تاكيد كلمة المرور';
+$lang['confirm_new_pass'] = 'تاكيد كلمة المرور';
 $lang['contact_us'] = 'اتصل بنا';
 $lang['name'] = 'الاسم';
 $lang['email'] = 'البريد الالكرتوني';

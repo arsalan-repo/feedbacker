@@ -23,13 +23,15 @@ class Signin extends CI_Controller {
         // Load Login Model
         $this->load->model('common');
 		
-		// Load Language File		
-		if ($this->input->get('lang') == 'ar') {
-			$this->lang->load('message','arabic');
-			$this->lang->load('label','arabic');
-		} else {
-			$this->lang->load('message','english');
-			$this->lang->load('label','english');
+		// Load Language File
+		$this->lang->load('message','english');
+		$this->lang->load('label','english');		
+		
+		if (isset($this->session->userdata['fb_lang'])) {
+			if ($this->session->userdata['fb_lang'] == 'ar') {
+				$this->lang->load('message','arabic');
+				$this->lang->load('label','arabic');
+			}
 		}
 
         //remove catch so after logout cannot view last visited page if that page is this
@@ -70,6 +72,11 @@ class Signin extends CI_Controller {
 
 		/* Load Template */
 		$this->load->view('user/signin', $this->data);
+	}
+	
+	public function language($code) {
+		$this->session->set_userdata('fb_lang', $code);
+		redirect();
 	}
 	
 	public function forgot_password() {
@@ -152,11 +159,20 @@ class Signin extends CI_Controller {
 					$userinfo[0]['user_avatar'] = ASSETS_URL . 'images/user-avatar.png';
 				}
 				
-				$languages = $this->common->select_data_by_id('languages', 'lang_id', $userinfo[0]['lang_id'], $data = 'lang_code', $join_str = array());
-				$userinfo[0]['language'] = $languages[0]['lang_code'];
+				// Set Language
+				if (isset($this->session->userdata['fb_lang'])) {
+					$userinfo[0]['language'] = $this->session->userdata['fb_lang'];
 				
-				if($languages[0]['lang_code'] == 'ar') {
-					$this->lang->load('message','arabic');
+					if ($this->session->userdata['fb_lang'] == 'ar') {
+						$this->lang->load('message','arabic');
+					}
+				} else {
+					$languages = $this->common->select_data_by_id('languages', 'lang_id', $userinfo[0]['lang_id'], $data = 'lang_code', $join_str = array());
+					$userinfo[0]['language'] = $languages[0]['lang_code'];
+					
+					if($languages[0]['lang_code'] == 'ar') {
+						$this->lang->load('message','arabic');
+					}
 				}
 				
 				// Update last login

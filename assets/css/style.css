@@ -70,6 +70,8 @@ input{border:none; border-bottom:#c3c8d1 solid 1px; font-size:16px; color:#000; 
 .login-form-fields li{padding:0  0 15px; float:left; width:100%;}
 .login-form .logo {float: none;padding: 20px 0 50px;text-align: center;width: auto;}
 input[type="submit"]{background:#181a53; border-radius:20px; color: #eef6fc; font-size:16px; padding:10px 0; border:none; cursor:pointer;}
+.login-language-text{color:#8a8a98; font-size:13px;position: absolute;right: 34px;}
+.login-language-text a:link, .login-language-text a:visited {color:#8a8a98;}
 .forgot-text, .signup-text{color:#181a53; font-size:13px;}
 .signup-text{float:right;}
 .signup-text a{color:#181a53; text-decoration:none;}

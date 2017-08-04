@@ -5,8 +5,17 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Welcome to Feedbacker</title>
 <link href="<?php echo base_url().'assets/css/font-awesome.min.css'; ?>" rel="stylesheet" type="text/css" />
-<link href="<?php echo base_url().'assets/css/style.css'; ?>" rel="stylesheet" type="text/css" />
-<link href="<?php echo base_url().'assets/css/responsive.css'; ?>" rel="stylesheet" type="text/css" />
+<?php 
+	if ($this->session->userdata['fb_lang'] == 'ar') { 
+		$style = 'style-rtl.css';
+		$responsive = 'responsive-rtl.css';
+	} else {
+		$style = 'style.css';
+		$responsive = 'responsive.css';
+	}
+?>
+<link href="<?php echo base_url().'assets/css/'.$style; ?>" rel="stylesheet" type="text/css" />
+<link href="<?php echo base_url().'assets/css/'.$responsive; ?>" rel="stylesheet" type="text/css" />
 <!-- jQuery 1.12.1 -->
 <script src="<?php echo base_url().'assets/js/jquery-1.12.1.min.js';?>"></script>
 <!-- jQuery Validate -->
@@ -30,8 +39,8 @@
     <?php } ?>
       <div class="login-form-fields">
         <div class="forgot-text">
-            <strong>Forgot Password?</strong>
-            Enter your email below to receive your new password
+            <strong><?php echo $this->lang->line('forgot_pass'); ?></strong>
+            <?php echo $this->lang->line('forgot_instr'); ?>
         </div>
         <?php
 		$attributes = array('class' => '', 'id' => 'forgotpwd-form');
@@ -39,14 +48,14 @@
 		?>
         <ul>
           <li>
-            <label>Email</label>
+            <label><?php echo $this->lang->line('email'); ?></label>
             <input type="text" autocomplete="off" placeholder="" name="email" id="email" />
           </li>
           <li>
-            <input type="submit" name="btn_save" id="btn_save" value="Reset Password" />
+            <input type="submit" name="btn_save" id="btn_save" value="<?php echo $this->lang->line('reset_pass'); ?>" />
           </li>
           <li>
-          	<span class="have-an-account-text"><a href="<?php echo site_url(); ?>">Back</a></span>
+          	<span class="have-an-account-text"><a href="<?php echo site_url(); ?>"><?php echo $this->lang->line('back'); ?></a></span>
           </li>
         </ul>
         <?php echo form_close(); ?> 

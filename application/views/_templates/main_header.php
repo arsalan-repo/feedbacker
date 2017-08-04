@@ -321,8 +321,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					$class = '';    
 				}
 				
-				echo '<span class="'.$class.'"><a href="'.site_url('user/language').'/'.$lang['lang_code'].'">'.strtoupper($lang['lang_code']).'</a> </span>';
+				$langArray[] = '<span class="'.$class.'"><a href="'.site_url('user/language').'/'.$lang['lang_code'].'">'.strtoupper($lang['lang_code']).'</a> </span>';
 			}
+			
+			echo implode( ' | ', $langArray );
 		}
 		?>
     </div>

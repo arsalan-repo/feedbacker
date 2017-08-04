@@ -56,9 +56,10 @@ h1, h2, h3, h4, h5 ,h6, p{margin:0; padding:0  0 15px;}
 
 /*login*/
 .login-page {float: left;height: 100%;position: relative;width: 100%;}
-label{color:#8a8a98; font-size:14px; float:left; width:100%; padding:0px 0 5px;}
+label{color:#8a8a98; font-size:14px; float:right; padding:0px 0 5px;}
 label.error {color: red !important;}
 input{border:none; border-bottom:#c3c8d1 solid 1px; font-size:16px; color:#000; width:100%; padding:7px 0px; margin: 0 0 15px; float:left; text-align: right;}
+input[type=submit] {text-align: center !important;}
 .login-img img, .login-bg img {height: 100vh;object-fit: cover; -webkit-object-fit: cover; -ms-object-fit: cover;width: 100%;}
 .login-page span.login-img {left: 0;position: fixed;top: 0;width: 50%;}
 .login-img{position:relative;}
@@ -70,6 +71,8 @@ input{border:none; border-bottom:#c3c8d1 solid 1px; font-size:16px; color:#000; 
 .login-form-fields li{padding:0  0 15px; float:left; width:100%;}
 .login-form .logo {float: none;padding: 20px 0 50px;text-align: center;width: auto;}
 input[type="submit"]{background:#181a53; border-radius:20px; color: #eef6fc; font-size:16px; padding:10px 0; border:none; cursor:pointer;}
+.login-language-text{color:#8a8a98; font-size:13px;position: absolute;}
+.login-language-text a:link, .login-language-text a:visited {color:#8a8a98;}
 .forgot-text, .signup-text{color:#181a53; font-size:13px;}
 .signup-text{float:right;}
 .signup-text a{color:#181a53; text-decoration:none;}

@@ -5,8 +5,17 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Welcome to Feedbacker</title>
 <link href="<?php echo base_url().'assets/css/font-awesome.min.css'; ?>" rel="stylesheet" type="text/css" />
-<link href="<?php echo base_url().'assets/css/style.css'; ?>" rel="stylesheet" type="text/css" />
-<link href="<?php echo base_url().'assets/css/responsive.css'; ?>" rel="stylesheet" type="text/css" />
+<?php 
+	if ($this->session->userdata['fb_lang'] == 'ar') { 
+		$style = 'style-rtl.css';
+		$responsive = 'responsive-rtl.css';
+	} else {
+		$style = 'style.css';
+		$responsive = 'responsive.css';
+	}
+?>
+<link href="<?php echo base_url().'assets/css/'.$style; ?>" rel="stylesheet" type="text/css" />
+<link href="<?php echo base_url().'assets/css/'.$responsive; ?>" rel="stylesheet" type="text/css" />
 <!-- jQuery 1.12.1 -->
 <script src="<?php echo base_url().'assets/js/jquery-1.12.1.min.js';?>"></script>
 <!-- jQuery Validate -->
@@ -40,23 +49,44 @@
             	<img src="<?php echo base_url().'assets/images/logo.png'; ?>" alt="" />
             </a>
         </div>
+		<div class="login-language-text">
+			<?php
+			$contition_array = array('lang_status' => 1);
+			$languages = $this->common->select_data_by_condition('languages', $contition_array, $data = 'lang_code, lang_name');
+	
+			if(!empty($languages)) {
+				foreach($languages as $lang) {  
+					// Check for user preferred language
+					if($this->input->get('lang') == $lang['lang_code']) {
+						$class = 'lang-selected';
+					} else {
+						$class = '';    
+					}
+					
+					$langArray[] = '<span class="'.$class.'"><a href="'.site_url('signup/language').'/'.$lang['lang_code'].'">'.strtoupper($lang['lang_code']).'</a></span>';
+				}
+				
+				echo implode( ' | ', $langArray );
+			}
+			?>
+		</div>
         <?php
 		$attributes = array('class' => '', 'id' => 'signup-form');
 		echo form_open('signup/submit', $attributes);
 		?>
           <ul>
             <li>
-              <label>Name</label>
+              <label><?php echo $this->lang->line('name'); ?></label>
               <input type="text" autocomplete="off" placeholder="" name="name" id="name" />
             </li>
             <li>
-            <label>Email</label>
+            <label><?php echo $this->lang->line('email'); ?></label>
             <input type="text" autocomplete="off" placeholder="" name="email" id="email" />
             </li>
             <li class="country-select">
-            <label>Country</label>
+            <label><?php echo $this->lang->line('country'); ?></label>
             <select name="country" id="country" class="form-control select2">
-                <option value="" disabled="disabled" selected="selected">Select Country</option>
+                <option value="" disabled="disabled" selected="selected"><?php echo $this->lang->line('country'); ?></option>
                 <?php
                 foreach ($country_list as $country) {
                     ?>
@@ -67,16 +97,16 @@
             </select>
             </li>
             <li>
-              <label>Password</label>
+              <label><?php echo $this->lang->line('password'); ?></label>
               <input type="password" autocomplete="off" name="password" placeholder="" id="password" />
             </li>
-            <label>Confirm Password</label>
+            <label><?php echo $this->lang->line('confirm_pass'); ?></label>
             <input type="password" autocomplete="off" name="confirm_password" placeholder="" id="confirm_password" />
             </li>
             <li>
-              <input type="submit" name="signup" id="signup" value="Sign Up" />
+              <input type="submit" name="signup" id="signup" value="<?php echo $this->lang->line('sign_up'); ?>" />
             </li>
-            <li> <span class="have-an-account-text">Have an account? <a href="<?php echo site_url(); ?>">Sign In</a></span> </li>
+            <li> <span class="have-an-account-text"><?php echo $this->lang->line('have_account'); ?> <a href="<?php echo site_url(); ?>"><?php echo $this->lang->line('sign_in'); ?></a></span> </li>
           </ul>
         <?php echo form_close(); ?>
       </div>

@@ -19,6 +19,14 @@ class Signup extends CI_Controller {
 		
 		// Load Language File
 		$this->lang->load('message','english');
+		$this->lang->load('label','english');		
+		
+		if (isset($this->session->userdata['fb_lang'])) {
+			if ($this->session->userdata['fb_lang'] == 'ar') {
+				$this->lang->load('message','arabic');
+				$this->lang->load('label','arabic');
+			}
+		}
 
         //remove catch so after logout cannot view last visited page if that page is this
         $this->output->set_header('Last-Modified:' . gmdate('D, d M Y H:i:s') . 'GMT');
@@ -31,6 +39,11 @@ class Signup extends CI_Controller {
 		$this->data['country_list'] = $this->common->select_data_by_condition('countries', $contition_array = array(), '*', $short_by = 'country_name', $order_by = 'ASC', $limit = '', $offset = '');
 		
 		$this->load->view('user/signup', $this->data);
+	}
+	
+	public function language($code) {
+		$this->session->set_userdata('fb_lang', $code);
+		redirect('signup');
 	}
 	
 	public function submit() {
@@ -57,10 +70,16 @@ class Signup extends CI_Controller {
 		$insert_array['email'] = trim($email);
 		$insert_array['country'] = $country;
 		$insert_array['password'] = trim($md5_password);
-		//$insert_array['country'] = $country;
 		$insert_array['status'] = 1;
 		$insert_array['create_date'] = date('Y-m-d h:i:s');
 		$insert_array['modify_date'] = date('Y-m-d h:i:s');
+		
+		if (isset($this->session->userdata['fb_lang'])) {			
+			$lang_condition = array('lang_code' => $this->session->userdata['fb_lang']);
+			$lang_info = $this->common->select_data_by_condition('languages', $lang_condition, 'lang_id, lang_code');
+			
+			$insert_array['lang_id'] = $lang_info[0]['lang_id'];
+		}
 
 		$insert_result = $this->common->insert_data_getid($insert_array, $tablename = 'users');
 		
@@ -104,14 +123,13 @@ class Signup extends CI_Controller {
 			'name'	=>	$name,
 			'email' =>	$email,
 			'user_avatar'	=> ASSETS_URL . 'images/user-avatar.png',
-			//'country'		=> $user_result[0]['country'],
+			'country'		=> $country,
+			'language'		=> 'en'
 		);
 		
-		/*if($language != '') {
-			$return_array['language'] = $language;
-		} else {
-			$return_array['language'] = 'en';
-		}*/
+		if (isset($this->session->userdata['fb_lang'])) {
+			$user_info['language'] = $this->session->userdata['fb_lang'];
+		}
 		
 		$this->session->set_userdata('mec_user', $user_info);
 		
