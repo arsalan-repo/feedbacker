@@ -23,8 +23,14 @@ class Signin extends CI_Controller {
         // Load Login Model
         $this->load->model('common');
 		
-		// Load Language File
-		$this->lang->load('message','english');
+		// Load Language File		
+		if ($this->input->get('lang') == 'ar') {
+			$this->lang->load('message','arabic');
+			$this->lang->load('label','arabic');
+		} else {
+			$this->lang->load('message','english');
+			$this->lang->load('label','english');
+		}
 
         //remove catch so after logout cannot view last visited page if that page is this
         $this->output->set_header('Last-Modified:' . gmdate('D, d M Y H:i:s') . 'GMT');
@@ -181,6 +187,25 @@ class Signin extends CI_Controller {
 			
 //            $userData['profile_url'] = 'https://www.facebook.com/'.$userProfile['id'];
 //            $userData['picture_url'] = $userProfile['picture']['data']['url'];
+
+			// Set Language
+			$lang_condition = array('lang_code' => 'en');
+			$lang_info = $this->common->select_data_by_condition('languages', $lang_condition, 'lang_id, lang_code');
+			
+			$userData['lang_id'] = $lang_info[0]['lang_id'];
+			$userData['language'] = $lang_info[0]['lang_code'];
+
+			if ($userProfile['locale']) {
+				$getLang = explode('_', $userProfile['locale']);
+			
+				$lang2_condition = array('lang_code' => $getLang[0]);
+				$lang2_info = $this->common->select_data_by_condition('languages', $lang2_condition, 'lang_id, lang_code');
+				
+				if (count($lang2_info) > 0) {
+					$userData['lang_id'] = $lang2_info[0]['lang_id'];
+					$userData['language'] = $lang2_info[0]['lang_code'];
+				}
+			}
 			
 			// IF ALREADY EXISTS
 			$condition_array = array('deleted' => 0);
@@ -188,8 +213,17 @@ class Signin extends CI_Controller {
 
             if ($check_result == 1) {
 				// CHECK IF USER BLOCKED
+				$join_str = array(
+					array(
+						'table' => 'languages',
+						'join_table_id' => 'languages.lang_id',
+						'from_table_id' => 'users.lang_id',
+						'join_type' => 'left'
+					)
+				);
+				
 				$contition_user = array('fbid' => $userProfile['id']);
-				$user_result = $this->common->select_data_by_condition('users', $contition_user, $data = 'id, name, email, password, country, lang_id, photo, fbid, status', $sortby = '', $orderby = '', $limit = '', $offset = '', $join_str = array());
+				$user_result = $this->common->select_data_by_condition('users', $contition_user, $data = 'id, name, email, password, country, users.lang_id, languages.lang_code as language, photo, fbid, status', $sortby = '', $orderby = '', $limit = '', $offset = '', $join_str);
 				
 				if ($user_result[0]['status'] == "0") {
 					$this->session->set_flashdata('error', $this->lang->line('error_account_blocked'));
@@ -220,11 +254,6 @@ class Signin extends CI_Controller {
 				if ($userProfile['gender']) {
 					$userData['gender'] = ucfirst($userProfile['gender']);
 				}
-				
-				if ($userProfile['locale']) {
-					$getLang = explode('_', $userProfile['locale']);
-				}
-				$userData['lang_id'] = 1;
 				
 				$userData['fbid'] = trim($userProfile['id']);
 				$userData['country'] = 'JO';
