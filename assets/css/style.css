@@ -191,7 +191,7 @@ span.profile-text span i{color:#fff; cursor:pointer; float: right; font-size: 18
 .blue-btn a{color: #fff;}
 .profile-listing-block {float: left;padding: 30px 0;width: 100%;}
 .profile-listing-block ul{margin:0 -7px;}
-.profile-listing-block li {float: left;padding: 0 7px 15px;width: 33.3333%;}
+.profile-listing-block li {float: left;padding: 0 7px 15px;width: 33.3333%;min-height: 600px;}
 .profile-listing {background: #fff;border-radius: 5px;float: left;padding: 20px;width: 100%;}
 .profile-listing, .profile-listing p {color:#434b57; font-size:16px; font-weight:400;}
 .profile-listing p.user-feedbacks {min-height:400px;}
@@ -220,6 +220,7 @@ span.profile-text span i{color:#fff; cursor:pointer; float: right; font-size: 18
 
 .post-listing-follow-btn .wishlist{float:right; color:39c9c9c; font-size:14px;}
 .post-listing-follow-btn .wishlist i{/*color:#f32836;*/ font-size:20px; padding:2px 10px 0 0; float:left; cursor: pointer;}
+.post-listing-follow-btn .wishlist i.fa-heart {color: #f32836;}
 .post-listing-follow-btn .wishlist.empty i{color:#7a7f87;}
 
 /*create post*/
