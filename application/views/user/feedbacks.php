@@ -12,6 +12,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	  <div class="profile-listing">
 		<div class="profile-listing-img-thumb-block">
 		  <div class="profile-listing-img-thumb">
+			<a href="<?php echo site_url('post/detail').'/'.$row['id']; ?>">
 			<?php
 			if(isset($row['user_avatar'])) {
 				echo '<img src="'.$row['user_avatar'].'" alt="" />';
@@ -19,12 +20,15 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				echo '<img src="'.ASSETS_URL . 'images/user-avatar.png" alt="" />';
 			}
 			?>
+			</a>
 		  </div>
 		  <span class="listing-post-profile-name"><?php echo $row['name']; ?></span> 
 		  <span class="listing-post-profile-time"><?php echo $row['time']; ?></span> 
 		</div>
 		<div class="listing-post-name-block"> 
-			<span class="listing-post-name"><?php echo $row['title']; ?></span> 
+			<span class="listing-post-name">
+				<a href="<?php echo site_url('post/title').'/'.$row['title_id']; ?>"><?php echo $row['title']; ?></a>
+			</span>
 			<span class="listing-post-followers"><?php echo $row['followers']; ?> Followers</span> 
 		</div>
 		<div class="listing-post-img">
