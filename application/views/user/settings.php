@@ -79,7 +79,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
           <?php echo form_close(); ?>
       </div>
       <div id="tab-4" class="tab-content terms-tab">
-          <?php echo $terms[0]['description']; ?>
+          <?php echo nl2br($terms[0]['description']); ?>
       </div>
       
     </div>
