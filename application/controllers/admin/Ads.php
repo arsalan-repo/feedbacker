@@ -150,15 +150,16 @@ class Ads extends MY_Controller {
 			
 			//upload banner image
 			if (isset($_FILES['ads_image']['name']) && $_FILES['ads_image']['name'] != '') {
-                $config['upload_path'] = $this->config->item('feedback_main_upload_path');
-                $config['thumb_upload_path'] = $this->config->item('feedback_thumb_upload_path');
-                $config['allowed_types'] = $this->config->item('feedback_allowed_types');
-                $config['max_size'] = $this->config->item('feedback_main_max_size');
-                $config['max_width'] = $this->config->item('feedback_main_max_width');
-                $config['max_height'] = $this->config->item('feedback_main_max_height');
-                $config['file_name'] = time();
+                $adconfig['upload_path'] = $this->config->item('feedback_main_upload_path');
+                $adconfig['thumb_upload_path'] = $this->config->item('feedback_thumb_upload_path');
+                $adconfig['allowed_types'] = $this->config->item('feedback_allowed_types');
+                $adconfig['max_size'] = $this->config->item('feedback_main_max_size');
+                $adconfig['max_width'] = $this->config->item('feedback_main_max_width');
+                $adconfig['max_height'] = $this->config->item('feedback_main_max_height');
+                $adconfig['file_name'] = time();
     
-                $this->load->library('upload', $config);
+				$this->load->library('upload');
+				$this->upload->initialize($adconfig);
     
                 // Uploading Image
                 if (!$this->upload->do_upload('ads_image')) {
@@ -167,40 +168,43 @@ class Ads extends MY_Controller {
 					redirect('admin/ads');
                 } else {
                     // Getting Uploaded Image File Data
-                    $imgdata = $this->upload->data();                   
-                    $ads_img = $imgdata['file_name'];
+                    $adsdata = $this->upload->data();                   
+                    $ads_img = $adsdata['file_name'];
 
                     // Configuring Thumbnail 
-                    $config_thumb['image_library'] = 'gd2';
-                    $config_thumb['source_image'] = $config['upload_path'] . $imgdata['file_name'];
-                    $config_thumb['new_image'] = $config['thumb_upload_path'] . $imgdata['file_name'];
-                    $config_thumb['create_thumb'] = TRUE;
-                    $config_thumb['maintain_ratio'] = TRUE;
-                    $config_thumb['thumb_marker'] = '_thumb';
-                    $config_thumb['width'] = $this->config->item('feedback_thumb_width');
-                    $config_thumb['height'] = $this->config->item('feedback_thumb_height');
+                    $ad_thumb['image_library'] = 'gd2';
+                    $ad_thumb['source_image'] = $adconfig['upload_path'] . $adsdata['file_name'];
+                    $ad_thumb['new_image'] = $adconfig['thumb_upload_path'] . $adsdata['file_name'];
+                    $ad_thumb['create_thumb'] = TRUE;
+                    $ad_thumb['maintain_ratio'] = TRUE;
+                    $ad_thumb['thumb_marker'] = '_thumb';
+                    $ad_thumb['width'] = $this->config->item('feedback_thumb_width');
+                    $ad_thumb['height'] = $this->config->item('feedback_thumb_height');
 
                     // Loading Image Library
-                    $this->load->library('image_lib', $config_thumb);
+                    $this->load->library('image_lib', $ad_thumb);
 
                     // Creating Thumbnail
+					$this->image_lib->clear();
+					$this->image_lib->initialize($ad_thumb);
+					
                     if(!$this->image_lib->resize()) {
                         $error = array('error' => $this->image_lib->display_errors());
                         echo json_encode(array('RESULT' => $error, 'MESSAGE' => 'ERROR', 'STATUS' => 0));
                         exit();
                     } else {
-                        $ads_thumb = $imgdata['raw_name'].'_thumb'.$imgdata['file_ext'];
+                        $ads_thumb = $adsdata['raw_name'].'_thumb'.$adsdata['file_ext'];
                     }
                     
                     // AWS S3 Upload
-                    $thumb_file_path = str_replace("main", "thumbs", $imgdata['file_path']);
-                    $thumb_file_name = $config['thumb_upload_path'] . $imgdata['raw_name'].'_thumb'.$imgdata['file_ext'];
+                    $thumb_file_path = str_replace("main", "thumbs", $adsdata['file_path']);
+                    $thumb_file_name = $adconfig['thumb_upload_path'] . $adsdata['raw_name'].'_thumb'.$adsdata['file_ext'];
                     
-                    $this->s3->putObjectFile($imgdata['full_path'], S3_BUCKET, $config_thumb['source_image'], S3::ACL_PUBLIC_READ);
+                    $this->s3->putObjectFile($adsdata['full_path'], S3_BUCKET, $ad_thumb['source_image'], S3::ACL_PUBLIC_READ);
                     $this->s3->putObjectFile($thumb_file_path.$ads_thumb, S3_BUCKET, $thumb_file_name, S3::ACL_PUBLIC_READ);
 
                     // Remove File from Local Storage
-                    unlink($config_thumb['source_image']);
+                    unlink($ad_thumb['source_image']);
                     unlink($thumb_file_name);
                 }
 			}
