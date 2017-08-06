@@ -55,7 +55,14 @@ class User extends CI_Controller {
 		$this->user['language'] = $code;  
 		
 		$this->session->set_userdata('mec_user', $this->user);
-		redirect();
+		
+		$this->load->library('user_agent');
+		
+		//if ($this->agent->is_referral()) {
+			$refer =  $this->agent->referrer();
+		//}
+
+		redirect($refer);
 	}
 	
 	//display dashboard
