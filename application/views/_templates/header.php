@@ -7,7 +7,16 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
-	<title><?php echo $this->lang->line('lbl_welcome'); ?></title>
+	<title>
+	<?php
+		if (isset($section_title)) {
+			echo $section_title." | Feedbacker";
+		} else {
+			echo $this->lang->line('lbl_welcome');
+		}
+		//echo $this->lang->line('lbl_welcome'); 
+	?>
+	</title>
 	<link href="<?php echo base_url().'assets/css/font-awesome.min.css'; ?>" rel="stylesheet" type="text/css" />
 	<!-- Country Flags -->
 	<link rel="stylesheet" type="text/css" href="<?php echo base_url().'assets/css/dd.css'; ?>" />

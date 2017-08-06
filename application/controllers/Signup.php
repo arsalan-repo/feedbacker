@@ -38,6 +38,9 @@ class Signup extends CI_Controller {
 	public function index() {
 		$this->data['country_list'] = $this->common->select_data_by_condition('countries', $contition_array = array(), '*', $short_by = 'country_name', $order_by = 'ASC', $limit = '', $offset = '');
 		
+		$this->data['module_name'] = 'Sign Up';
+		$this->data['section_title'] = 'Sign Up';
+		
 		$this->load->view('user/signup', $this->data);
 	}
 	

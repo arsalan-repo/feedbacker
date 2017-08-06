@@ -12,7 +12,7 @@ class Signin extends CI_Controller {
             redirect('user/dashboard');
         }
 
-        $this->data['title'] = "Login | Feedbacker ";
+        $this->data['title'] = "Sign In | Feedbacker ";
 		
 		// Load facebook library
 		$this->load->library('facebook');
@@ -69,7 +69,9 @@ class Signin extends CI_Controller {
 			$this->data['oauthURL'] = $twitterUrl;
 		}
 		
-
+		$this->data['module_name'] = 'Sign In';
+		$this->data['section_title'] = 'Sign In';
+		
 		/* Load Template */
 		$this->load->view('user/signin', $this->data);
 	}
@@ -125,8 +127,11 @@ class Signin extends CI_Controller {
 			}
 		}
 		
+		$this->data['module_name'] = 'Forgot Password';
+		$this->data['section_title'] = 'Forgot Password';
+		
 		/* Load Template */
-		$this->load->view('user/forgot_password');
+		$this->load->view('user/forgot_password', $this->data);
 	}
 	
 	public function auth() {

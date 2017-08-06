@@ -350,7 +350,7 @@ class Post extends CI_Controller {
 		}
 		
 		$this->data['module_name'] = 'Post';
-        $this->data['section_title'] = 'Create';
+        $this->data['section_title'] = 'Create Post';
 		
 		/* Load Template */
 		$this->template->front_render('post/create', $this->data);
@@ -549,10 +549,7 @@ class Post extends CI_Controller {
 		}
 	}
 	
-	public function title($id) {
-		$this->data['module_name'] = 'Post';
-        $this->data['section_title'] = 'Title';
-		
+	public function title($id) {		
 		// Trends
 		$this->data['trends'] = $this->common->getTrends($this->user['country']);
 		
@@ -598,6 +595,9 @@ class Post extends CI_Controller {
 				$this->data['no_record_found'] = $this->lang->line('no_results');
 			}
 			
+			$this->data['module_name'] = 'Post';
+			$this->data['section_title'] = $feedback[0]['title'];
+			
 			$response = $this->load->view('post/ajax', $this->data);
 			echo json_encode($response);
 		} else {
@@ -615,6 +615,9 @@ class Post extends CI_Controller {
 				$this->data['feedbacks'] = array();
 				$this->data['no_record_found'] = $this->lang->line('no_results');
 			}
+			
+			$this->data['module_name'] = 'Post';
+			$this->data['section_title'] = $feedback[0]['title'];
 			
 			/* Load Template */
 			$this->template->front_render('post/title', $this->data);
@@ -756,6 +759,9 @@ class Post extends CI_Controller {
 			$this->data['others'] = array();
 			$this->data['no_record_found'] = $this->lang->line('no_record_found');
 		}
+		
+		$this->data['module_name'] = 'Post';
+		$this->data['section_title'] = $return_array['title'];
 		
 		/* Load Template */
 		$this->template->front_render('post/detail', $this->data);

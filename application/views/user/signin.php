@@ -3,7 +3,16 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Welcome to Feedbacker</title>
+<title>
+<?php
+	if (isset($section_title)) {
+		echo $section_title." | Feedbacker";
+	} else {
+		echo $this->lang->line('lbl_welcome');
+	}
+	//echo $this->lang->line('lbl_welcome'); 
+?>
+</title>
 <link href="<?php echo base_url().'assets/css/font-awesome.min.css'; ?>" rel="stylesheet" type="text/css" />
 <?php 
 	if (isset($this->session->userdata['fb_lang']) && $this->session->userdata['fb_lang'] == 'ar') { 

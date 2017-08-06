@@ -279,15 +279,15 @@ class User extends CI_Controller {
 			}
 		}
 		
-		$this->data['module_name'] = 'User';
-        $this->data['section_title'] = 'Profile';
-		
 		// Get User Information
 		$contition_array = array('id' => $this->user['id']);
 		$user_result = $this->common->select_data_by_condition('users', $contition_array, $data = '*', $sortby = '', $orderby = '', $limit = '', $offset = '', $join_str = array());
 		
 		$this->data['user_data'] = $user_result[0];
 		$this->data['country_list'] = $this->common->select_data_by_condition('countries', $contition_array = array(), '*', $short_by = 'country_name', $order_by = 'ASC', $limit = '', $offset = '');
+		
+		$this->data['module_name'] = 'User';
+        $this->data['section_title'] = $user_result[0]['name'];
 		
 		/* Load Template */
 		$this->template->front_render('user/profile', $this->data);
