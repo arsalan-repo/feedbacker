@@ -28,7 +28,7 @@ $lang['logout'] = 'تسجيل خروج';
 
 // Dashboard
 $lang['trends'] = 'الأكثر متابعة';
-$lang['what_tofollow'] = 'اقتراحات';
+$lang['what_tofollow'] = 'عناوين مقترحة';
 $lang['no_results'] = 'لا يوجد نتيجة';
 $lang['follow'] = 'متابعة';
 $lang['unfollow'] = 'الغاء المتابعة';

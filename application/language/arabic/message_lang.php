@@ -1,5 +1,5 @@
 <?php
-$lang['msg_login_success'] = 'مرحبا بكم في معلق';
+$lang['msg_login_success'] = 'مرحبا بكم في فيدباكر';
 $lang['msg_logout_success'] = 'لقد تم تسجيل خروجك بنجاح';
 
 // Error messages
@@ -44,10 +44,10 @@ $lang['no_records'] = 'لا يوجد معلومات، ستتوفر قريباً'
 
 $lang['weclome_message_after_login_success'] = '%s اهلاً بكم في فيدباكر';
 
-$lang['success_like_feedback'] = 'حببت هذا ملاحظاتك';
-$lang['success_unlike_feedback'] = 'لم يعجبك هذا ملاحظاتك';
-$lang['success_follow_title'] = 'لقد اتبعت هذا العنوان';
-$lang['success_unfollow_title'] = 'لقد ألغيت إلغاء هذا العنوان';
+$lang['success_like_feedback'] = 'تم الإعجاب بهذا التعليق';
+$lang['success_unlike_feedback'] = 'تم الغاء الإعجاب بهذا التعليق';
+$lang['success_follow_title'] = 'لقد قمت بمتابعة هذا العنوان';
+$lang['success_unfollow_title'] = 'لقد قمت بالغاء متابعة هذا العنوان';
 $lang['success_report_spam'] = 'شكرا لك، تم الإبلاغ عن هذه التعليقات';
 $lang['success_undo_report'] = 'تم التراجع عن الإجراء';
 $lang['success_language_set'] = 'لقد تم تحديد اللغة التي تم اختيارها مسبقا';
