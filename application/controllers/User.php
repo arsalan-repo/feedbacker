@@ -59,7 +59,7 @@ class User extends CI_Controller {
 		$this->load->library('user_agent');
 		
 		//if ($this->agent->is_referral()) {
-			$refer =  $this->agent->referrer();
+			$refer = $this->agent->referrer();
 		//}
 
 		redirect($refer);
