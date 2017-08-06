@@ -491,3 +491,7 @@ html .ui-button.ui-state-disabled:hover, html .ui-button.ui-state-disabled:activ
 .ajax-load{ background: #e1e1e1; padding: 10px 0px; width: 100%; }
 .div-toastr-error{ display: none; }
 .div-toastr-success{ display: none; }
+/* Show more */
+.morecontent span { display: none; }
+.morecontent a:link, .morecontent a:visited { color: #00b7b9; text-decoration: none; }
+.morelink { display: block; }

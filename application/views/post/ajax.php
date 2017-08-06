@@ -42,7 +42,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
         </span> 
         <span class="post-name"><?php echo $row['name']; ?></span> 
         <span class="post-address"><?php echo $row['location']; ?></span>
-        <p><?php echo nl2br($row['feedback']); ?></p>
+        <p><span class="more"><?php echo nl2br($row['feedback']); ?></span></p>
         <?php if (!empty($row['feedback_thumb'])) { ?>
             <div class="post-large-img">
             <?php 
@@ -117,6 +117,41 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 </div>
 <script type="application/javascript">
 	$(function(){
+		// Show More
+		var showChar = 100;  // How many characters are shown by default
+		var ellipsestext = "...";
+		var moretext = "Read More";
+		var lesstext = "Read Less";
+	
+		$('.more').each(function() {
+			var content = $(this).html();
+	 
+			if(content.length > showChar) {
+	 
+				var c = content.substr(0, showChar);
+				var h = content.substr(showChar, content.length - showChar);
+	 
+				var html = c + '<span class="moreellipses">' + ellipsestext+ '&nbsp;</span><span class="morecontent"><span>' + h + '</span>&nbsp;&nbsp;<a href="" class="morelink">' + moretext + '</a></span>';
+	 
+				$(this).html(html);
+			}
+	 
+		});
+	 
+		$(".morelink").off("click").on("click",function(e){
+			if($(this).hasClass("less")) {
+				$(this).removeClass("less");
+				$(this).html(moretext);
+			} else {
+				$(this).addClass("less");
+				$(this).html(lesstext);
+			}
+			$(this).parent().prev().toggle();
+			$(this).prev().toggle();
+			return false;
+		});
+		
+		// Reply Dialog
 		var dialog, form;
 		
 		if ($(".post-detail-comment-form").hasClass('ui-dialog-content')) {

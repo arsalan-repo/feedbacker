@@ -490,5 +490,10 @@ html .ui-button.ui-state-disabled:hover, html .ui-button.ui-state-disabled:activ
 .login-form-fields .dd .ddTitle .ddTitleText{ width: 100% !important; border-bottom: 1px solid #c3c8d1; padding: 5px 5px 5px 20px; text-align: right; }
 .login-form-fields .dd .ddTitle{ background:none;}
 .login-form-fields .dd .ddArrow{width: 0; margin-top: 0; height: 0; border-left:6px solid transparent; border-right:6px solid transparent; border-top:6px solid #c3c8d1; left:4px;}
+.ajax-load{ background: #e1e1e1; padding: 10px 0px; width: 100%; }
 .div-toastr-error{ display: none; }
 .div-toastr-success{ display: none; }
+/* Show more */
+.morecontent span { display: none; }
+.morecontent a:link, .morecontent a:visited { color: #00b7b9; text-decoration: none; }
+.morelink { display: block; }

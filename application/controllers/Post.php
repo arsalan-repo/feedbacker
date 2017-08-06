@@ -589,14 +589,14 @@ class Post extends CI_Controller {
 				// Append Ad Banners
 				$return_array = $this->common->adBanners($result, $this->user['country'], 'title', $this->input->get("page"), $id);
 				
+				$this->data['module_name'] = 'Post';
+				$this->data['section_title'] = $feedback[0]['title'];
+				
 				$this->data['feedbacks'] = $return_array;
 			} else {
 				$this->data['feedbacks'] = array();
 				$this->data['no_record_found'] = $this->lang->line('no_results');
 			}
-			
-			$this->data['module_name'] = 'Post';
-			$this->data['section_title'] = $feedback[0]['title'];
 			
 			$response = $this->load->view('post/ajax', $this->data);
 			echo json_encode($response);
